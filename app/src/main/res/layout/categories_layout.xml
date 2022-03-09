@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<net.noliaware.yumi.views.CategoriesView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/sf_pro_display_semibold"
+        android:text="@string/categories"
+        android:textColor="@color/black_font"
+        android:textSize="24sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/description_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/sf_pro_text_regular"
+        android:textColor="@color/grey_1"
+        android:textSize="18sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never" />
+
+</net.noliaware.yumi.views.CategoriesView>

@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import net.noliaware.yumi.R
 import net.noliaware.yumi.utils.*
+import net.noliaware.yumi.views.CategoryItemView.*
 
 class CategoryItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
@@ -31,7 +32,7 @@ class CategoryItemView(context: Context, attrs: AttributeSet?) : ViewGroup(conte
         titleTextView = findViewById(R.id.title_text_view)
     }
 
-    fun fillViewWithData(categoryItemViewAdapter: CategoryItemView.CategoryItemViewAdapter) {
+    fun fillViewWithData(categoryItemViewAdapter: CategoryItemViewAdapter) {
         countTextView.text = categoryItemViewAdapter.count.toString()
         iconImageView.setImageResource(context.drawableIdByName(categoryItemViewAdapter.iconName))
         titleTextView.text = categoryItemViewAdapter.title

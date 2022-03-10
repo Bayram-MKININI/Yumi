@@ -16,7 +16,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /*private fun hideSystemUI() {
+    /*
+    private fun hideSystemUI() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(window, mainContainer).let { controller ->
             controller.hide(WindowInsetsCompat.Type.systemBars())

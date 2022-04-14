@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.Yumi">
         <activity
-            android:name=".controllers.LoginActivity"
+            android:name="net.noliaware.yumi.presentation.controllers.LoginActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.SplashScreenTheme">
@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".controllers.MainActivity"
+            android:name="net.noliaware.yumi.presentation.controllers.MainActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"

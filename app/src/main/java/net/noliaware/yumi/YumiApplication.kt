@@ -1,15 +1,25 @@
 package net.noliaware.yumi
 
 import android.app.Application
-import net.noliaware.yumi.model.DataManager
+import net.noliaware.yumi.commun.di.appModule
+import net.noliaware.yumi.commun.di.loginFragmentVMModule
+import net.noliaware.yumi.commun.di.voucherListFragmentVMModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class YumiApplication : Application() {
 
-    private lateinit var dataManager: DataManager
-
     override fun onCreate() {
         super.onCreate()
-        DataManager.initialize(this)
-        dataManager = DataManager.get()
+        startKoin {
+            androidContext(this@YumiApplication)
+            modules(
+                listOf(
+                    appModule,
+                    loginFragmentVMModule,
+                    voucherListFragmentVMModule
+                )
+            )
+        }
     }
 }

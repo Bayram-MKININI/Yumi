@@ -19,6 +19,10 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
+fun generateToken(timestamp: String, methodName: String, randomString: String): String {
+    return "noliaware|$timestamp|${methodName}|${timestamp.reversed()}|$randomString".sha256()
+}
+
 fun Fragment.withArgs(vararg pairs: Pair<String, Any?>) = apply { arguments = bundleOf(*pairs) }
 
 fun DialogFragment.withArgs(vararg pairs: Pair<String, Any?>) =

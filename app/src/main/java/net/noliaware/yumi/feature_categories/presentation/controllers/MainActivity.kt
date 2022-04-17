@@ -1,0 +1,40 @@
+package net.noliaware.yumi.feature_categories.presentation.controllers
+
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
+import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.ACCOUNT_DATA
+import net.noliaware.yumi.commun.util.withArgs
+
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        supportFragmentManager.beginTransaction().run {
+            replace(
+                R.id.main_fragment_container,
+                HomeFragment().withArgs(ACCOUNT_DATA to intent.getSerializableExtra(ACCOUNT_DATA))
+            )
+            commit()
+        }
+    }
+
+    /*
+    private fun hideSystemUI() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, mainContainer).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+    }
+
+    private fun showSystemUI() {
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowInsetsControllerCompat(window, mainContainer).show(WindowInsetsCompat.Type.systemBars())
+    }
+     */
+}

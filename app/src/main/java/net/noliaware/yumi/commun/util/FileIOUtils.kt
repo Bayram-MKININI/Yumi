@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.noliaware.yumi.domain.model.DataManager
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.FileInputStream
@@ -68,7 +67,7 @@ class FileIOUtils {
             it.close()
         }
 
-        fun encryptDataAndSaveInFile(
+        /*fun encryptDataAndSaveInFile(
             context: Context,
             fileName: String,
             dataToSave: String
@@ -79,6 +78,8 @@ class FileIOUtils {
                 encryptText(dataToSave, DataManager.get().encryptionVector)
             )
         }
+
+         */
 
         private fun decryptText(data: Map<String, String>, password: String): String {
 
@@ -125,7 +126,7 @@ class FileIOUtils {
             return stringBuilder.toString()
         }
 
-        suspend fun readEncryptedDataFromFile(context: Context, fileName: String): String =
+        /*suspend fun readEncryptedDataFromFile(context: Context, fileName: String): String =
             withContext(Dispatchers.IO) {
 
                 val dataString = readFileFromInternalStorage(context, fileName)
@@ -143,5 +144,7 @@ class FileIOUtils {
 
                 return@withContext decryptText(outputMap, DataManager.get().encryptionVector)
             }
+
+         */
     }
 }

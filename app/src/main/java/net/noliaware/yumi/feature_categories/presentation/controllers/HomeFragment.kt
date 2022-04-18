@@ -13,7 +13,7 @@ import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_message.presentation.controllers.MailFragment
 import net.noliaware.yumi.feature_alerts.presentation.controllers.AlertsFragment
-import net.noliaware.yumi.feature_profile.presentation.controllers.ProfileFragment
+import net.noliaware.yumi.feature_profile.presentation.controllers.UserProfileFragment
 import net.noliaware.yumi.feature_categories.presentation.views.HomeMenuView
 import net.noliaware.yumi.feature_categories.presentation.views.HomeView
 
@@ -42,7 +42,7 @@ class HomeFragment : Fragment() {
 
             override fun onProfileButtonClicked() {
                 childFragmentManager.beginTransaction().run {
-                    replace(R.id.main_fragment_container, ProfileFragment())
+                    replace(R.id.main_fragment_container, UserProfileFragment())
                     commitAllowingStateLoss()
                 }
             }

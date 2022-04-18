@@ -1,0 +1,11 @@
+package net.noliaware.yumi.feature_profile.data.remote.dto
+
+
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
+data class UserAccountDTO(
+    @Json(name = "userAccount")
+    val userProfileDTO: UserProfileDTO
+)

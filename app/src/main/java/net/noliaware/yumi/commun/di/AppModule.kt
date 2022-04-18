@@ -10,10 +10,16 @@ import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.commun.BASE_URL
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
+import net.noliaware.yumi.feature_alerts.data.repository.AlertsRepository
+import net.noliaware.yumi.feature_alerts.data.repository.AlertsRepositoryImpl
 import net.noliaware.yumi.feature_categories.data.repository.CategoryRepository
 import net.noliaware.yumi.feature_categories.data.repository.CategoryRepositoryImpl
 import net.noliaware.yumi.feature_login.data.repository.LoginRepository
 import net.noliaware.yumi.feature_login.data.repository.LoginRepositoryImpl
+import net.noliaware.yumi.feature_message.data.repository.MessageRepository
+import net.noliaware.yumi.feature_message.data.repository.MessageRepositoryImpl
+import net.noliaware.yumi.feature_profile.data.repository.ProfileRepository
+import net.noliaware.yumi.feature_profile.data.repository.ProfileRepositoryImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -67,5 +73,20 @@ class AppModule {
     @Provides
     fun provideCategoryRepository(api: RemoteApi, sessionData: SessionData): CategoryRepository {
         return CategoryRepositoryImpl(api, sessionData)
+    }
+
+    @Provides
+    fun provideProfileRepository(api: RemoteApi, sessionData: SessionData): ProfileRepository {
+        return ProfileRepositoryImpl(api, sessionData)
+    }
+
+    @Provides
+    fun provideMessageRepository(api: RemoteApi, sessionData: SessionData): MessageRepository {
+        return MessageRepositoryImpl(api, sessionData)
+    }
+
+    @Provides
+    fun provideAlertsRepository(api: RemoteApi, sessionData: SessionData): AlertsRepository {
+        return AlertsRepositoryImpl(api, sessionData)
     }
 }

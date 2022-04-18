@@ -1,15 +1,14 @@
 package net.noliaware.yumi.feature_categories.data.repository
 
-import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.DataError
 import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.generateToken
+import net.noliaware.yumi.commun.util.getCommunWSParams
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import okio.IOException
 import retrofit2.HttpException
@@ -29,19 +28,16 @@ class CategoryRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            Log.e("parameters", generateVoucherListParams(categoryId).toString())
-
-            val remoteData =
-                api.fetchVouchersByCategory(
-                    timestamp = timestamp,
-                    saltString = randomString,
-                    token = generateToken(
-                        timestamp,
-                        "getAvailableVoucherListByCategory",
-                        randomString
-                    ),
-                    params = generateVoucherListParams(categoryId)
-                )
+            val remoteData = api.fetchVouchersForCategory(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(
+                    timestamp,
+                    GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY,
+                    randomString
+                ),
+                params = generateVoucherListParams(categoryId)
+            )
 
             remoteData.error?.let { errorDTO ->
 
@@ -76,14 +72,9 @@ class CategoryRepositoryImpl(
         }
     }
 
-    private fun generateVoucherListParams(categoryId: String) = mapOf(
-        LOGIN to sessionData.login,
-        APP_VERSION to BuildConfig.VERSION_NAME,
-        DEVICE_ID to sessionData.deviceId,
-        SESSION_ID to sessionData.sessionId,
-        SESSION_TOKEN to sessionData.sessionToken,
+    private fun generateVoucherListParams(categoryId: String) = mutableMapOf(
         CATEGORY_ID to categoryId
-    )
+    ).also { it.plusAssign(getCommunWSParams(sessionData)) }
 
     override fun getVoucherById(voucherId: String): Flow<Resource<Voucher>> = flow {
 
@@ -94,17 +85,16 @@ class CategoryRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            val remoteData =
-                api.fetchVoucherById(
-                    timestamp = timestamp,
-                    saltString = randomString,
-                    token = generateToken(
-                        timestamp,
-                        GET_VOUCHER,
-                        randomString
-                    ),
-                    params = generateVoucherByIdParams(voucherId)
-                )
+            val remoteData = api.fetchVoucherForId(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(
+                    timestamp,
+                    GET_VOUCHER,
+                    randomString
+                ),
+                params = generateVoucherByIdParams(voucherId)
+            )
 
             remoteData.error?.let { errorDTO ->
 
@@ -124,8 +114,8 @@ class CategoryRepositoryImpl(
                     }
                 }
 
-                remoteData.data?.let { voucherDTO ->
-                    emit(Resource.Success(data = voucherDTO.toVoucher() ))
+                remoteData.data?.let { getVoucherDTO ->
+                    emit(Resource.Success(data = getVoucherDTO.voucherDTO.toVoucher()))
                 }
             }
 
@@ -139,12 +129,7 @@ class CategoryRepositoryImpl(
         }
     }
 
-    private fun generateVoucherByIdParams(voucherId: String) = mapOf(
-        LOGIN to sessionData.login,
-        APP_VERSION to BuildConfig.VERSION_NAME,
-        DEVICE_ID to sessionData.deviceId,
-        SESSION_ID to sessionData.sessionId,
-        SESSION_TOKEN to sessionData.sessionToken,
+    private fun generateVoucherByIdParams(voucherId: String) = mutableMapOf(
         VOUCHER_ID to voucherId
-    )
+    ).also { it.plusAssign(getCommunWSParams(sessionData)) }
 }

@@ -52,14 +52,12 @@ class AccountsListFragment : AppCompatDialogFragment() {
 
     private fun refreshAdapters() {
 
-        Log.e("ManagedProfile", viewModel.managedProfiles.toString())
-
         viewModel.managedProfiles?.map { managedProfile ->
 
             AccountItemViewAdapter(
                 title = "${managedProfile.title} ${managedProfile.firstName} ${managedProfile.lastName}",
-                phoneNumber = "Tel: ${managedProfile.cellNumber}",
-                lastLogin = managedProfile.login
+                phoneNumber = "Tel: ${managedProfile.cellPhoneNumber}",
+                lastLogin = managedProfile.login ?: ""
             ).also { accountItemViewAdapter ->
 
                 managedProfile.categories.map { category ->

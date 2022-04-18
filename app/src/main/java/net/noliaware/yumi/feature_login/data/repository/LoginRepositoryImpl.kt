@@ -10,6 +10,7 @@ import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.DataError
 import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.generateToken
+import net.noliaware.yumi.commun.util.getCommunWSParams
 import net.noliaware.yumi.feature_login.domain.model.AccountData
 import net.noliaware.yumi.feature_login.domain.model.InitData
 import okio.IOException
@@ -149,14 +150,9 @@ class LoginRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun generateGetAccountParams(password: String) = mapOf(
-        LOGIN to sessionData.login,
-        APP_VERSION to BuildConfig.VERSION_NAME,
-        DEVICE_ID to sessionData.deviceId,
-        SESSION_ID to sessionData.sessionId,
-        SESSION_TOKEN to sessionData.sessionToken,
+    private fun generateGetAccountParams(password: String) = mutableMapOf(
         "password" to password
-    )
+    ).also { it.plusAssign(getCommunWSParams(sessionData)) }
 
     override fun selectAccountForId(accountId: String): Flow<Resource<AccountData>> = flow {
 
@@ -208,12 +204,7 @@ class LoginRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun generateSelectAccountParams(accountId: String) = mapOf(
-        LOGIN to sessionData.login,
-        APP_VERSION to BuildConfig.VERSION_NAME,
-        DEVICE_ID to sessionData.deviceId,
-        SESSION_ID to sessionData.sessionId,
-        SESSION_TOKEN to sessionData.sessionToken,
+    private fun generateSelectAccountParams(accountId: String) = mutableMapOf(
         "managedAccount" to accountId
-    )
+    ).also { it.plusAssign(getCommunWSParams(sessionData)) }
 }

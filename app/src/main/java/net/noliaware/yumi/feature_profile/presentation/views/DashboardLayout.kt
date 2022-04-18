@@ -1,4 +1,4 @@
-package net.noliaware.yumi.feature_categories.presentation.views
+package net.noliaware.yumi.feature_profile.presentation.views
 
 import android.content.Context
 import android.util.AttributeSet
@@ -8,11 +8,7 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.convertDpToPx
 import net.noliaware.yumi.commun.util.layoutToTopLeft
 
-
-class DashboardLayout : ViewGroup {
-
-    constructor(context: Context?) : super(context, null)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs, 0)
+class DashboardLayout(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 
@@ -32,9 +28,11 @@ class DashboardLayout : ViewGroup {
             )
         }
 
-        val rowCount = (childCount - 1) / columnCount + 1
-
-        viewHeight = rowCount * getChildAt(0).measuredHeight + ((rowCount + 1) * convertDpToPx(20))
+        if (childCount > 0) {
+            val rowCount = (childCount - 1) / columnCount + 1
+            viewHeight =
+                rowCount * getChildAt(0).measuredHeight + ((rowCount + 1) * convertDpToPx(20))
+        }
 
         setMeasuredDimension(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),

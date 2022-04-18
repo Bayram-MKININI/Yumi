@@ -5,16 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.READ_MESSAGE_FRAGMENT_TAG
 import net.noliaware.yumi.commun.SEND_MESSAGES_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.feature_message.presentation.views.MailItemView.MailItemViewAdapter
 import net.noliaware.yumi.feature_message.presentation.views.MailView
+import net.noliaware.yumi.feature_profile.presentation.controllers.UsedVouchersListFragmentViewModel
 
+@AndroidEntryPoint
 class MailFragment : Fragment() {
 
     private var mailView: MailView? = null
+    private val viewModel by viewModels<MailFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -1,4 +1,4 @@
-package net.noliaware.yumi.feature_categories.presentation.controllers
+package net.noliaware.yumi.feature_profile.presentation.controllers
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,18 +13,22 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.VOUCHER_DETAILS_FRAGMENT_TAG
+import net.noliaware.yumi.commun.VOUCHER_ID
 import net.noliaware.yumi.commun.util.DataError
 import net.noliaware.yumi.commun.util.UIEvent
+import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
-import net.noliaware.yumi.feature_categories.presentation.views.VoucherItemView
-import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView
-import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView.VouchersDetailsViewAdapter
+import net.noliaware.yumi.feature_categories.presentation.controllers.VoucherDetailsFragment
+import net.noliaware.yumi.feature_categories.presentation.views.VoucherItemView.VoucherItemViewAdapter
+import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
+import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView.VouchersListViewCallback
 
 @AndroidEntryPoint
-class VoucherDetailsFragment : AppCompatDialogFragment() {
+class UsedVouchersListFragment : AppCompatDialogFragment() {
 
-    private var vouchersDetailsView: VouchersDetailsView? = null
-    private val viewModel by viewModels<VoucherDetailsFragmentViewModel>()
+    private var vouchersListView: VouchersListView? = null
+    private val viewModel by viewModels<UsedVouchersListFragmentViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +40,9 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.vouchers_details_layout, container, false).apply {
-            vouchersDetailsView = this as VouchersDetailsView
-            vouchersDetailsView?.callback = vouchersDetailsViewCallback
+        return inflater.inflate(R.layout.vouchers_list_layout, container, false).apply {
+            vouchersListView = this as VouchersListView
+            vouchersListView?.callback = readMailViewCallback
         }
     }
 
@@ -72,55 +76,46 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.stateFlow.collect { vmState ->
-                vmState.data?.let { voucher ->
-                    bindViewToData(voucher)
+                vmState.data?.let { voucherList ->
+                    bindViewToData(voucherList)
                 }
             }
         }
     }
 
-    private fun bindViewToData(voucher: Voucher) {
+    private fun bindViewToData(voucherList: List<Voucher>) {
 
-        VouchersDetailsViewAdapter(
-            iconName = "ic_fruit_basket",
-            title = voucher.productLabel ?: "",
-            status = "Vérification en cours",
-            statusColor = ContextCompat.getColor(requireContext(), R.color.orange),
-            description = voucher.productDescription ?: ""
-        ).also {
-            vouchersDetailsView?.fillViewWithData(it)
+        voucherList.map { voucher ->
+            VoucherItemViewAdapter(
+                title = voucher.productLabel ?: "",
+                status = "Vérification en cours",
+                statusColor = ContextCompat.getColor(requireContext(), R.color.orange),
+                description = voucher.productLabel + " " + voucher.retailerLabel
+            )
+        }.also {
+            vouchersListView?.fillViewWithData(it)
         }
     }
 
-
-    /*viewModel.generatedBitmapLiveData.observe(
-    viewLifecycleOwner
-    ) { bitmap ->
-        vouchersDetailsView?.setVoucherBitmap(bitmap)
-    }
-
-     */
-    /*voucherDetailsFragmentViewModel.generateQrCode(
-    it.url,
-    resources.displayMetrics.widthPixels
-    )
-
-     */
-
-    private val vouchersDetailsViewCallback: VouchersDetailsView.VouchersDetailsViewCallback by lazy {
-        object : VouchersDetailsView.VouchersDetailsViewCallback {
+    private val readMailViewCallback: VouchersListViewCallback by lazy {
+        object : VouchersListViewCallback {
             override fun onBackButtonClicked() {
                 dismissAllowingStateLoss()
             }
 
-            override fun onUseVoucherButtonClicked() {
+            override fun onItemClickedAtIndex(index: Int) {
 
+                viewModel.stateFlow.value.data?.get(index)?.voucherId?.let { voucherId ->
+                    VoucherDetailsFragment().withArgs(
+                        VOUCHER_ID to voucherId
+                    ).show(childFragmentManager.beginTransaction(), VOUCHER_DETAILS_FRAGMENT_TAG)
+                }
             }
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        vouchersDetailsView = null
+        vouchersListView = null
     }
 }

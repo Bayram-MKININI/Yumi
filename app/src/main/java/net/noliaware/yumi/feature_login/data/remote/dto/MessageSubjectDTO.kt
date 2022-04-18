@@ -2,7 +2,7 @@ package net.noliaware.yumi.feature_login.data.remote.dto
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import net.noliaware.yumi.feature_message.domain.model.MessageSubject
+import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 
 @JsonClass(generateAdapter = true)
 data class MessageSubjectDTO(

@@ -4,20 +4,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.util.DataError
+import net.noliaware.yumi.commun.util.UIEvent
+import net.noliaware.yumi.feature_alerts.domain.model.Alert
 import net.noliaware.yumi.feature_alerts.domain.model.AlertPriority
-import net.noliaware.yumi.feature_alerts.presentation.views.AlertItemView
+import net.noliaware.yumi.feature_alerts.presentation.views.AlertItemView.AlertItemViewAdapter
 import net.noliaware.yumi.feature_alerts.presentation.views.AlertsView
-import net.noliaware.yumi.feature_categories.presentation.controllers.CategoriesFragmentViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
+@AndroidEntryPoint
 class AlertsFragment : Fragment() {
 
     private var alertsView: AlertsView? = null
-    private lateinit var categoriesFragmentViewModel: CategoriesFragmentViewModel
+    private val viewModel by viewModels<AlertsFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,28 +38,55 @@ class AlertsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        categoriesFragmentViewModel = ViewModelProvider(requireActivity())[CategoriesFragmentViewModel::class.java]
-        refreshAdapters()
+        collectFlows()
     }
 
-    private fun refreshAdapters() {
+    private fun collectFlows() {
 
-        val alertItemViewAdaptersList = mutableListOf<AlertItemView.AlertItemViewAdapter>()
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
 
-        /*categoriesFragmentViewModel.alertsList.forEach { alert ->
+            viewModel.eventFlow.collectLatest { sharedEvent ->
 
-            AlertItemViewAdapter(
-                sender = alert.from,
-                time = formatTimestampToString(alert.timestamp),
-                body = alert.text
-            ).also {
-                alertItemViewAdaptersList.add(it)
+                when (sharedEvent) {
+
+                    is UIEvent.ShowSnackBar -> {
+
+                        val message =
+                            when (sharedEvent.dataError) {
+                                DataError.NETWORK_ERROR -> getString(R.string.error_no_network)
+                                DataError.SYSTEM_ERROR -> getString(R.string.error_contact_support)
+                                DataError.NONE -> ""
+                            }
+
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         }
 
-         */
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.stateFlow.collect { vmState ->
+                vmState.data?.let { alertList ->
+                    bindViewToData(alertList)
+                }
+            }
+        }
+    }
 
-        AlertItemView.AlertItemViewAdapter(
+    private fun bindViewToData(alertList: List<Alert>) {
+
+        alertList.map { alert ->
+            AlertItemViewAdapter(
+                priority = AlertPriority.getAlertPriorityByName("red"),
+                sender = alert.alertDate,
+                time = alert.alertTime,
+                body = alert.alertText
+            )
+        }.also {
+            alertsView?.fillViewWithData(it)
+        }
+/*
+        AlertItemViewAdapter(
             priority = AlertPriority.getAlertPriorityByName("red"),
             sender = "Centre de santé",
             time = "02-12-2021",
@@ -61,7 +95,7 @@ class AlertsFragment : Fragment() {
             alertItemViewAdaptersList.add(it)
         }
 
-        AlertItemView.AlertItemViewAdapter(
+        AlertItemViewAdapter(
             priority = AlertPriority.getAlertPriorityByName("orange"),
             sender = "Covid-19",
             time = "08-12-2021",
@@ -70,15 +104,14 @@ class AlertsFragment : Fragment() {
             alertItemViewAdaptersList.add(it)
         }
 
-        AlertItemView.AlertItemViewAdapter(
+        AlertItemViewAdapter(
             sender = "Nouvelles mises à jour",
             time = "24-12-2021",
             body = "Vous pouvez recevoir une notification vous demandant si vous acceptez les nouvelles autorisations."
         ).also {
             alertItemViewAdaptersList.add(it)
         }
-
-        alertsView?.fillViewWithData(alertItemViewAdaptersList)
+        */
     }
 
     private fun formatTimestampToString(timestamp: Long): String {

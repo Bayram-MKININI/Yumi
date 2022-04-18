@@ -28,7 +28,6 @@
     <string name="address">Adresse</string>
     <string name="address_data">%s\n%s\n%s\n%s</string>
     <string name="phone_numbers">N° de tél</string>
-    <string name="phone_numbers_data">%s\n%s</string>
     <string name="occupation">Occupation</string>
 
     <string name="mail">Messagerie</string>

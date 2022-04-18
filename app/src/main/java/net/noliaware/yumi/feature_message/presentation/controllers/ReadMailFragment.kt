@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
 import java.text.SimpleDateFormat
 import java.util.*
 
+@AndroidEntryPoint
 class ReadMailFragment : AppCompatDialogFragment() {
 
     private var readMailView: ReadMailView? = null

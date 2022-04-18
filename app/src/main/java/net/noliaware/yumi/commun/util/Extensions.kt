@@ -3,6 +3,7 @@ package net.noliaware.yumi.commun.util
 import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
+import android.se.omapi.Session
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,9 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import net.noliaware.yumi.BuildConfig
+import net.noliaware.yumi.commun.*
+import net.noliaware.yumi.commun.domain.model.SessionData
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -22,6 +26,14 @@ import java.security.NoSuchAlgorithmException
 fun generateToken(timestamp: String, methodName: String, randomString: String): String {
     return "noliaware|$timestamp|${methodName}|${timestamp.reversed()}|$randomString".sha256()
 }
+
+fun getCommunWSParams(sessionData: SessionData) = mapOf(
+    LOGIN to sessionData.login,
+    APP_VERSION to BuildConfig.VERSION_NAME,
+    DEVICE_ID to sessionData.deviceId,
+    SESSION_ID to sessionData.sessionId,
+    SESSION_TOKEN to sessionData.sessionToken
+)
 
 fun Fragment.withArgs(vararg pairs: Pair<String, Any?>) = apply { arguments = bundleOf(*pairs) }
 

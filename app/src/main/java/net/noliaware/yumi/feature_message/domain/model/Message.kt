@@ -1,10 +1,14 @@
 package net.noliaware.yumi.feature_message.domain.model
 
 data class Message(
-    var id: String = "",
-    var from: String = "",
-    var to: String = "",
-    var timestamp: Long = 0,
-    var subject: String = "",
-    var text: String = ""
+    val messageId: Int,
+    val messageType: String,
+    val messageReadStatus: Int,
+    val messageDate: String,
+    val messageTime: Int,
+    val messageFrom: String,
+    val messageSubject: String,
+    val messageBody: String?,
+    val messageRank: Int,
+    val messageTotal: Int
 )

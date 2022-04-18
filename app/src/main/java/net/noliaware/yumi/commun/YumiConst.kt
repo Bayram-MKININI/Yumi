@@ -45,6 +45,7 @@ const val MESSAGE_OUTBOX_DAT = "message_outbox_dat"
 //FRAGMENT TAGS
 const val ACCOUNTS_LIST_FRAGMENT_TAG = "accounts_list_fragment"
 const val VOUCHERS_LIST_FRAGMENT_TAG = "vouchers_list_fragment"
+const val USED_VOUCHERS_LIST_FRAGMENT_TAG = "used_vouchers_list_fragment"
 const val VOUCHER_DETAILS_FRAGMENT_TAG = "voucher_details_fragment"
 const val READ_MESSAGE_FRAGMENT_TAG = "read_message_fragment"
 const val SEND_MESSAGES_FRAGMENT_TAG = "send_messages_fragment"

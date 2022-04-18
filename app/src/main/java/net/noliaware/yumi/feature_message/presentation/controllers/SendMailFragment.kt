@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.feature_message.presentation.views.SendMailView
 
+@AndroidEntryPoint
 class SendMailFragment : AppCompatDialogFragment() {
 
     private var sendMailView: SendMailView? = null
@@ -41,11 +42,11 @@ class SendMailFragment : AppCompatDialogFragment() {
     }
 
     private fun setUpEvents() {
-        mailFragmentViewModel.messageSent.observe(viewLifecycleOwner) {
+        /*mailFragmentViewModel.messageSent.observe(viewLifecycleOwner) {
             dismissAllowingStateLoss()
             Toast.makeText(context, getString(R.string.mail_sent), Toast.LENGTH_SHORT).show()
         }
-        /*mailFragmentViewModel.errorSentResponseLiveData.observe(viewLifecycleOwner) { errorResponse ->
+        mailFragmentViewModel.errorSentResponseLiveData.observe(viewLifecycleOwner) { errorResponse ->
             dismissAllowingStateLoss()
             activity?.handleErrorResponse(errorResponse)
         }
@@ -64,7 +65,7 @@ class SendMailFragment : AppCompatDialogFragment() {
             }
 
             override fun onSendMailClicked(subject: String, text: String) {
-                mailFragmentViewModel.sendMessageWebservice(subject, text)
+                //mailFragmentViewModel.sendMessageWebservice(subject, text)
             }
         }
     }

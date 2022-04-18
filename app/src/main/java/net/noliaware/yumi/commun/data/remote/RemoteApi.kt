@@ -3,10 +3,15 @@ package net.noliaware.yumi.commun.data.remote
 import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.data.remote.dto.ResponseDTO
 import net.noliaware.yumi.feature_alerts.data.remote.dto.AlertsDTO
-import net.noliaware.yumi.feature_categories.data.remote.dto.VoucherDTO
+import net.noliaware.yumi.feature_categories.data.remote.dto.GetVoucherDTO
 import net.noliaware.yumi.feature_categories.data.remote.dto.VouchersDTO
 import net.noliaware.yumi.feature_login.data.remote.dto.AccountDataDTO
 import net.noliaware.yumi.feature_login.data.remote.dto.InitDTO
+import net.noliaware.yumi.feature_message.data.remote.dto.MessagesDTO
+import net.noliaware.yumi.feature_message.data.remote.dto.SingleMessageDTO
+import net.noliaware.yumi.feature_profile.data.remote.dto.UsedVoucherCategoriesDTO
+import net.noliaware.yumi.feature_profile.data.remote.dto.UsedVouchersDTO
+import net.noliaware.yumi.feature_profile.data.remote.dto.UserAccountDTO
 import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
@@ -43,7 +48,7 @@ interface RemoteApi {
 
     @FormUrlEncoded
     @POST("$GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
-    suspend fun fetchVouchersByCategory(
+    suspend fun fetchVouchersForCategory(
         @Path(TIMESTAMP) timestamp: String,
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
@@ -52,12 +57,12 @@ interface RemoteApi {
 
     @FormUrlEncoded
     @POST("$GET_VOUCHER/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
-    suspend fun fetchVoucherById(
+    suspend fun fetchVoucherForId(
         @Path(TIMESTAMP) timestamp: String,
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<VoucherDTO>
+    ): ResponseDTO<GetVoucherDTO>
 
     @FormUrlEncoded
     @POST("$GET_ACCOUNT/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
@@ -66,7 +71,70 @@ interface RemoteApi {
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<AlertsDTO>
+    ): ResponseDTO<UserAccountDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_USED_VOUCHER_COUNT_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchUsedVouchersByCategory(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<UsedVoucherCategoriesDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_USED_VOUCHER_LIST_BY_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchUsedVouchersForCategory(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<UsedVouchersDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_INBOX_MESSAGE_LIST/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchInboxMessages(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<MessagesDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_INBOX_MESSAGE/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchInboxMessageForId(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<SingleMessageDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_OUTBOX_MESSAGE_LIST/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchOutboxMessages(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<MessagesDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_OUTBOX_MESSAGE/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchOutboxMessageForId(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<SingleMessageDTO>
+
+    @FormUrlEncoded
+    @POST("$SEND_MESSAGE/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun sendMessage(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<Boolean>
 
     @FormUrlEncoded
     @POST("$GET_ALERT_LIST/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")

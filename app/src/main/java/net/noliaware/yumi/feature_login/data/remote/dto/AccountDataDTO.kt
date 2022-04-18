@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import net.noliaware.yumi.feature_categories.data.remote.dto.CategoryDTO
 import net.noliaware.yumi.feature_login.domain.model.AccountData
-import net.noliaware.yumi.feature_profile.data.remote.dto.AccountProfileDTO
+import net.noliaware.yumi.feature_profile.data.remote.dto.UserProfileDTO
 
 @JsonClass(generateAdapter = true)
 data class AccountDataDTO(
@@ -19,13 +19,13 @@ data class AccountDataDTO(
     @Json(name = "voucherCountPerCategory")
     val categoryDTOs: List<CategoryDTO> = listOf(),
     @Json(name = "managedAccounts")
-    val managedAccountProfileDTOS: List<AccountProfileDTO> = listOf()
+    val managedAccountProfileDTOS: List<UserProfileDTO> = listOf()
 ) {
     fun toAccountData() = AccountData(
         messageSubjects = messageSubjectDTOs.map { it.toMessageSubject() },
         newAlertCount = newAlertCount,
         newMessageCount = newMessageCount,
         categories = categoryDTOs.map { it.toCategory() },
-        managedAccountProfiles = managedAccountProfileDTOS.map { it.toProfile() }
+        managedAccountProfiles = managedAccountProfileDTOS.map { it.toUserProfile() }
     )
 }

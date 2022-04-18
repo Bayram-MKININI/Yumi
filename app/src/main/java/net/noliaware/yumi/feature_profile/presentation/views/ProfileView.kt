@@ -10,7 +10,6 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
-import net.noliaware.yumi.feature_categories.presentation.views.DashboardLayout
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileDataView.ProfileDataViewAdapter
 
 class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {

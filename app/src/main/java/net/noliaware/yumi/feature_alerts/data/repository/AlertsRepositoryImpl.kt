@@ -1,15 +1,14 @@
 package net.noliaware.yumi.feature_alerts.data.repository
 
-import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import net.noliaware.yumi.BuildConfig
-import net.noliaware.yumi.commun.*
+import net.noliaware.yumi.commun.GET_ALERT_LIST
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.DataError
 import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.generateToken
+import net.noliaware.yumi.commun.util.getCommunWSParams
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
 import okio.IOException
 import retrofit2.HttpException
@@ -29,18 +28,16 @@ class AlertsRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            Log.e("parameters", generateAlertListParams().toString())
-
             val remoteData =
                 api.fetchAlertList(
                     timestamp = timestamp,
                     saltString = randomString,
                     token = generateToken(
                         timestamp,
-                        "getAlertList",
+                        GET_ALERT_LIST,
                         randomString
                     ),
-                    params = generateAlertListParams()
+                    params = getCommunWSParams(sessionData)
                 )
 
             remoteData.error?.let { errorDTO ->
@@ -75,12 +72,4 @@ class AlertsRepositoryImpl(
             emit(Resource.Error(dataError = DataError.NETWORK_ERROR))
         }
     }
-
-    private fun generateAlertListParams() = mapOf(
-        LOGIN to sessionData.login,
-        APP_VERSION to BuildConfig.VERSION_NAME,
-        DEVICE_ID to sessionData.deviceId,
-        SESSION_ID to sessionData.sessionId,
-        SESSION_TOKEN to sessionData.sessionToken,
-    )
 }

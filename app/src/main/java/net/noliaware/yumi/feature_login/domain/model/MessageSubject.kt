@@ -1,4 +1,4 @@
-package net.noliaware.yumi.feature_message.domain.model
+package net.noliaware.yumi.feature_login.domain.model
 
 import java.io.Serializable
 

@@ -8,7 +8,7 @@ import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.DataError
 import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommunWSParams
+import net.noliaware.yumi.commun.util.getCommonWSParams
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import okio.IOException
 import retrofit2.HttpException
@@ -44,7 +44,7 @@ class CategoryRepositoryImpl(
                 emit(
                     Resource.Error(
                         dataError = DataError.SYSTEM_ERROR,
-                        errorCode = errorDTO.errorCode
+                        errorMessage = errorDTO.errorMessage
                     )
                 )
 
@@ -74,7 +74,7 @@ class CategoryRepositoryImpl(
 
     private fun generateVoucherListParams(categoryId: String) = mutableMapOf(
         CATEGORY_ID to categoryId
-    ).also { it.plusAssign(getCommunWSParams(sessionData)) }
+    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
 
     override fun getVoucherById(voucherId: String): Flow<Resource<Voucher>> = flow {
 
@@ -101,7 +101,7 @@ class CategoryRepositoryImpl(
                 emit(
                     Resource.Error(
                         dataError = DataError.SYSTEM_ERROR,
-                        errorCode = errorDTO.errorCode
+                        errorMessage = errorDTO.errorMessage
                     )
                 )
 
@@ -131,5 +131,5 @@ class CategoryRepositoryImpl(
 
     private fun generateVoucherByIdParams(voucherId: String) = mutableMapOf(
         VOUCHER_ID to voucherId
-    ).also { it.plusAssign(getCommunWSParams(sessionData)) }
+    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
 }

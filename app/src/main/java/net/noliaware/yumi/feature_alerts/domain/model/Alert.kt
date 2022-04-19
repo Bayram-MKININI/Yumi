@@ -4,7 +4,7 @@ data class Alert(
     val alertId: Int,
     val alertDate: String,
     val alertTime: String,
-    val alertType: String,
+    val alertType: Int,
     val alertRank: Int,
     val alertText: String,
     val alertTotal: Int

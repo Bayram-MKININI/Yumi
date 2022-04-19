@@ -10,7 +10,7 @@ import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.DataError
 import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommunWSParams
+import net.noliaware.yumi.commun.util.getCommonWSParams
 import net.noliaware.yumi.feature_login.domain.model.AccountData
 import net.noliaware.yumi.feature_login.domain.model.InitData
 import okio.IOException
@@ -49,7 +49,7 @@ class LoginRepositoryImpl @Inject constructor(
                 emit(
                     Resource.Error(
                         dataError = DataError.SYSTEM_ERROR,
-                        errorCode = errorDTO.errorCode
+                        errorMessage = errorDTO.errorMessage
                     )
                 )
 
@@ -122,7 +122,7 @@ class LoginRepositoryImpl @Inject constructor(
                 emit(
                     Resource.Error(
                         dataError = DataError.SYSTEM_ERROR,
-                        errorCode = errorDTO.errorCode
+                        errorMessage = errorDTO.errorMessage
                     )
                 )
 
@@ -152,7 +152,7 @@ class LoginRepositoryImpl @Inject constructor(
 
     private fun generateGetAccountParams(password: String) = mutableMapOf(
         "password" to password
-    ).also { it.plusAssign(getCommunWSParams(sessionData)) }
+    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
 
     override fun selectAccountForId(accountId: String): Flow<Resource<AccountData>> = flow {
 
@@ -176,7 +176,7 @@ class LoginRepositoryImpl @Inject constructor(
                 emit(
                     Resource.Error(
                         dataError = DataError.SYSTEM_ERROR,
-                        errorCode = errorDTO.errorCode
+                        errorMessage = errorDTO.errorMessage
                     )
                 )
 
@@ -206,5 +206,5 @@ class LoginRepositoryImpl @Inject constructor(
 
     private fun generateSelectAccountParams(accountId: String) = mutableMapOf(
         "managedAccount" to accountId
-    ).also { it.plusAssign(getCommunWSParams(sessionData)) }
+    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
 }

@@ -7,7 +7,6 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -16,8 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.*
-import net.noliaware.yumi.commun.util.DataError
-import net.noliaware.yumi.commun.util.UIEvent
+import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.controllers.MainActivity
@@ -81,25 +79,9 @@ class LoginFragment : Fragment() {
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-
             viewModel.eventFlow.collectLatest { sharedEvent ->
-
                 loginParentView?.setLoginViewProgressVisible(false)
-
-                when (sharedEvent) {
-
-                    is UIEvent.ShowSnackBar -> {
-
-                        val message =
-                            when (sharedEvent.dataError) {
-                                DataError.NETWORK_ERROR -> getString(R.string.error_no_network)
-                                DataError.SYSTEM_ERROR -> getString(R.string.error_contact_support)
-                                DataError.NONE -> ""
-                            }
-
-                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-                    }
-                }
+                handleSharedEvent(sharedEvent)
             }
         }
 

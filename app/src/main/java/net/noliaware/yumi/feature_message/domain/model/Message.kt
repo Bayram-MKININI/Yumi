@@ -1,11 +1,11 @@
 package net.noliaware.yumi.feature_message.domain.model
 
 data class Message(
-    val messageId: Int,
+    val messageId: String,
     val messageType: String,
     val messageReadStatus: Int,
     val messageDate: String,
-    val messageTime: Int,
+    val messageTime: String,
     val messageFrom: String,
     val messageSubject: String,
     val messageBody: String?,

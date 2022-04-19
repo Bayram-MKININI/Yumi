@@ -8,7 +8,7 @@ import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.DataError
 import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommunWSParams
+import net.noliaware.yumi.commun.util.getCommonWSParams
 import net.noliaware.yumi.feature_message.domain.model.Message
 import okio.IOException
 import retrofit2.HttpException
@@ -44,7 +44,7 @@ class MessageRepositoryImpl(
                 emit(
                     Resource.Error(
                         dataError = DataError.SYSTEM_ERROR,
-                        errorCode = errorDTO.errorCode
+                        errorMessage = errorDTO.errorMessage
                     )
                 )
 
@@ -84,7 +84,7 @@ class MessageRepositoryImpl(
     private fun generateGetMessagesListParams() = mutableMapOf(
         LIMIT to "0",
         OFFSET to "0"
-    ).also { it.plusAssign(getCommunWSParams(sessionData)) }
+    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
 
     private suspend fun getOutboxMessages(): Resource<List<Message>> {
 
@@ -142,7 +142,7 @@ class MessageRepositoryImpl(
                 emit(
                     Resource.Error(
                         dataError = DataError.SYSTEM_ERROR,
-                        errorCode = errorDTO.errorCode
+                        errorMessage = errorDTO.errorMessage
                     )
                 )
 
@@ -172,7 +172,7 @@ class MessageRepositoryImpl(
 
     private fun generateGetMessageParams(messageId: String) = mutableMapOf(
         MESSAGE_ID to messageId
-    ).also { it.plusAssign(getCommunWSParams(sessionData)) }
+    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
 
     override fun getOutboxMessageForId(messageId: String): Flow<Resource<Message>> = flow {
 
@@ -199,7 +199,7 @@ class MessageRepositoryImpl(
                 emit(
                     Resource.Error(
                         dataError = DataError.SYSTEM_ERROR,
-                        errorCode = errorDTO.errorCode
+                        errorMessage = errorDTO.errorMessage
                     )
                 )
 
@@ -253,7 +253,7 @@ class MessageRepositoryImpl(
                     emit(
                         Resource.Error(
                             dataError = DataError.SYSTEM_ERROR,
-                            errorCode = errorDTO.errorCode
+                            errorMessage = errorDTO.errorMessage
                         )
                     )
 
@@ -283,5 +283,5 @@ class MessageRepositoryImpl(
         mutableMapOf(
             MESSAGE_SUBJECT to messageSubject,
             MESSAGE_BODY to messageBody
-        ).also { it.plusAssign(getCommunWSParams(sessionData)) }
+        ).also { it.plusAssign(getCommonWSParams(sessionData)) }
 }

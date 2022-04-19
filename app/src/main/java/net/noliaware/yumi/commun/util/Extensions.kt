@@ -3,12 +3,12 @@ package net.noliaware.yumi.commun.util
 import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
-import android.se.omapi.Session
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.MeasureSpec
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -16,7 +16,10 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import net.noliaware.yumi.BuildConfig
+import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.domain.model.SessionData
 import java.math.BigInteger
@@ -27,13 +30,60 @@ fun generateToken(timestamp: String, methodName: String, randomString: String): 
     return "noliaware|$timestamp|${methodName}|${timestamp.reversed()}|$randomString".sha256()
 }
 
-fun getCommunWSParams(sessionData: SessionData) = mapOf(
+fun getCommonWSParams(sessionData: SessionData) = mapOf(
     LOGIN to sessionData.login,
     APP_VERSION to BuildConfig.VERSION_NAME,
     DEVICE_ID to sessionData.deviceId,
     SESSION_ID to sessionData.sessionId,
     SESSION_TOKEN to sessionData.sessionToken
 )
+
+fun Fragment.handleSharedEvent(sharedEvent: UIEvent) {
+
+    when (sharedEvent) {
+
+        is UIEvent.ShowSnackBar -> {
+
+            val message =
+                if (!sharedEvent.errorMessage.isNullOrEmpty()) {
+
+                    sharedEvent.errorMessage
+
+                } else {
+
+                    when (sharedEvent.dataError) {
+                        DataError.NETWORK_ERROR -> getString(R.string.error_no_network)
+                        DataError.SYSTEM_ERROR -> getString(R.string.error_contact_support)
+                        DataError.NONE -> ""
+                    }
+                }
+
+            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        }
+    }
+}
+
+suspend inline fun <T> handleWSResult(
+    result: Resource<T>,
+    stateFlow: MutableStateFlow<ViewModelState<T>>,
+    eventFlow: MutableSharedFlow<UIEvent>
+) {
+
+    when (result) {
+        is Resource.Success -> {
+            result.data?.let {
+                stateFlow.value = ViewModelState()
+            }
+        }
+        is Resource.Loading -> {
+            stateFlow.value = ViewModelState()
+        }
+        is Resource.Error -> {
+            stateFlow.value = ViewModelState()
+            eventFlow.emit(UIEvent.ShowSnackBar(result.dataError))
+        }
+    }
+}
 
 fun Fragment.withArgs(vararg pairs: Pair<String, Any?>) = apply { arguments = bundleOf(*pairs) }
 
@@ -95,7 +145,6 @@ fun RecyclerView.onItemClicked(
 ) {
     this.addOnChildAttachStateChangeListener(RecyclerItemClickListener(this, onClick, onLongClick))
 }
-
 
 fun Context.showKeyboard() {
     (this as? Activity)?.let {

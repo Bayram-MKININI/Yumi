@@ -13,7 +13,7 @@ data class AlertDTO(
     @Json(name = "alertTime")
     val alertTime: String,
     @Json(name = "alertType")
-    val alertType: String,
+    val alertType: Int,
     @Json(name = "alertRank")
     val alertRank: Int,
     @Json(name = "alertText")

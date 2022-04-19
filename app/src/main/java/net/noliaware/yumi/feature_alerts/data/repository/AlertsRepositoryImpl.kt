@@ -8,7 +8,7 @@ import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.DataError
 import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommunWSParams
+import net.noliaware.yumi.commun.util.getCommonWSParams
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
 import okio.IOException
 import retrofit2.HttpException
@@ -37,7 +37,7 @@ class AlertsRepositoryImpl(
                         GET_ALERT_LIST,
                         randomString
                     ),
-                    params = getCommunWSParams(sessionData)
+                    params = getCommonWSParams(sessionData)
                 )
 
             remoteData.error?.let { errorDTO ->
@@ -45,7 +45,7 @@ class AlertsRepositoryImpl(
                 emit(
                     Resource.Error(
                         dataError = DataError.SYSTEM_ERROR,
-                        errorCode = errorDTO.errorCode
+                        errorMessage = errorDTO.errorMessage
                     )
                 )
 

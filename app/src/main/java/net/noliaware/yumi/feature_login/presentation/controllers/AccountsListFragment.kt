@@ -2,11 +2,9 @@ package net.noliaware.yumi.feature_login.presentation.controllers
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -15,8 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
-import net.noliaware.yumi.commun.util.DataError
-import net.noliaware.yumi.commun.util.UIEvent
+import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.feature_categories.presentation.controllers.MainActivity
 import net.noliaware.yumi.feature_login.presentation.views.AccountCategoryView
 import net.noliaware.yumi.feature_login.presentation.views.AccountItemView.AccountItemViewAdapter
@@ -79,25 +76,8 @@ class AccountsListFragment : AppCompatDialogFragment() {
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-
             viewModel.eventFlow.collectLatest { sharedEvent ->
-
-                //loginParentView?.setLoginViewProgressVisible(false)
-
-                when (sharedEvent) {
-
-                    is UIEvent.ShowSnackBar -> {
-
-                        val message =
-                            when (sharedEvent.dataError) {
-                                DataError.NETWORK_ERROR -> getString(R.string.error_no_network)
-                                DataError.SYSTEM_ERROR -> getString(R.string.error_contact_support)
-                                DataError.NONE -> ""
-                            }
-
-                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-                    }
-                }
+                handleSharedEvent(sharedEvent)
             }
         }
 

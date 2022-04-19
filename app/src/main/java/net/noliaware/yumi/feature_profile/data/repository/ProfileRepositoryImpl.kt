@@ -8,7 +8,7 @@ import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.DataError
 import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommunWSParams
+import net.noliaware.yumi.commun.util.getCommonWSParams
 import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
@@ -38,7 +38,7 @@ class ProfileRepositoryImpl(
                     GET_ACCOUNT,
                     randomString
                 ),
-                params = getCommunWSParams(sessionData)
+                params = getCommonWSParams(sessionData)
             )
 
             remoteData.error?.let { errorDTO ->
@@ -46,7 +46,7 @@ class ProfileRepositoryImpl(
                 emit(
                     Resource.Error(
                         dataError = DataError.SYSTEM_ERROR,
-                        errorCode = errorDTO.errorCode
+                        errorMessage = errorDTO.errorMessage
                     )
                 )
 
@@ -94,7 +94,7 @@ class ProfileRepositoryImpl(
                 GET_USED_VOUCHER_COUNT_PER_CATEGORY,
                 randomString
             ),
-            params = getCommunWSParams(sessionData)
+            params = getCommonWSParams(sessionData)
         )
 
         remoteCategoriesData.data?.let { usedVoucherCategoriesDTO ->
@@ -139,7 +139,7 @@ class ProfileRepositoryImpl(
                 emit(
                     Resource.Error(
                         dataError = DataError.SYSTEM_ERROR,
-                        errorCode = errorDTO.errorCode
+                        errorMessage = errorDTO.errorMessage
                     )
                 )
 
@@ -169,5 +169,5 @@ class ProfileRepositoryImpl(
 
     private fun generateUsedVoucherListParams(categoryId: String) = mutableMapOf(
         CATEGORY_ID to categoryId
-    ).also { it.plusAssign(getCommunWSParams(sessionData)) }
+    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
 }

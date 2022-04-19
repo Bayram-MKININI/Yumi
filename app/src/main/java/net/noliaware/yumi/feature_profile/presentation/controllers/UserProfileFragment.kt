@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -13,8 +12,7 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.CATEGORY_ID
 import net.noliaware.yumi.commun.USED_VOUCHERS_LIST_FRAGMENT_TAG
-import net.noliaware.yumi.commun.util.DataError
-import net.noliaware.yumi.commun.util.UIEvent
+import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.controllers.VouchersListFragment
@@ -50,23 +48,8 @@ class UserProfileFragment : Fragment() {
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-
             viewModel.eventFlow.collectLatest { sharedEvent ->
-
-                when (sharedEvent) {
-
-                    is UIEvent.ShowSnackBar -> {
-
-                        val message =
-                            when (sharedEvent.dataError) {
-                                DataError.NETWORK_ERROR -> getString(R.string.error_no_network)
-                                DataError.SYSTEM_ERROR -> getString(R.string.error_contact_support)
-                                DataError.NONE -> ""
-                            }
-
-                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-                    }
-                }
+                handleSharedEvent(sharedEvent)
             }
         }
 

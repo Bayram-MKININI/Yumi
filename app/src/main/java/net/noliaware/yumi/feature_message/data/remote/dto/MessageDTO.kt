@@ -7,7 +7,7 @@ import net.noliaware.yumi.feature_message.domain.model.Message
 @JsonClass(generateAdapter = true)
 data class MessageDTO(
     @Json(name = "messageId")
-    val messageId: Int,
+    val messageId: String,
     @Json(name = "messageType")
     val messageType: String,
     @Json(name = "messageReadStatus")
@@ -15,7 +15,7 @@ data class MessageDTO(
     @Json(name = "messageDate")
     val messageDate: String,
     @Json(name = "messageTime")
-    val messageTime: Int,
+    val messageTime: String,
     @Json(name = "messageFrom")
     val messageFrom: String,
     @Json(name = "messageSubject")

@@ -9,29 +9,24 @@ import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.UIEvent
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.feature_message.data.repository.MessageRepository
-import net.noliaware.yumi.feature_message.domain.model.Message
 import javax.inject.Inject
 
 @HiltViewModel
-class MailFragmentViewModel @Inject constructor(
+class SendMailFragmentViewModel @Inject constructor(
     private val repository: MessageRepository
 ) : ViewModel() {
 
-    private val _stateFlow = MutableStateFlow(ViewModelState<List<Message>>())
+    private val _stateFlow = MutableStateFlow(ViewModelState<Boolean>())
     val stateFlow = _stateFlow.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    init {
-        callGetInboxMessageList()
-    }
-
-    private fun callGetInboxMessageList() {
+    fun callSendMessage(messageSubject: String, messageBody: String) {
 
         viewModelScope.launch {
 
-            repository.getMessageList().onEach { result ->
+            repository.sendMessage(messageSubject, messageBody).onEach { result ->
 
                 when (result) {
                     is Resource.Success -> {

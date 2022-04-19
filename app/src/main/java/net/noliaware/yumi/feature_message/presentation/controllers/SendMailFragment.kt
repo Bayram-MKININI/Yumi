@@ -4,18 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.util.DataError
+import net.noliaware.yumi.commun.util.UIEvent
 import net.noliaware.yumi.feature_message.presentation.views.SendMailView
+import net.noliaware.yumi.feature_message.presentation.views.SendMailView.SendMailViewCallback
 
 @AndroidEntryPoint
 class SendMailFragment : AppCompatDialogFragment() {
 
     private var sendMailView: SendMailView? = null
-    private lateinit var mailFragmentViewModel: MailFragmentViewModel
+    private val viewModel by viewModels<SendMailFragmentViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,27 +41,51 @@ class SendMailFragment : AppCompatDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        mailFragmentViewModel =
-            ViewModelProvider(requireActivity())[MailFragmentViewModel::class.java]
         setUpEvents()
     }
 
     private fun setUpEvents() {
-        /*mailFragmentViewModel.messageSent.observe(viewLifecycleOwner) {
-            dismissAllowingStateLoss()
-            Toast.makeText(context, getString(R.string.mail_sent), Toast.LENGTH_SHORT).show()
-        }
-        mailFragmentViewModel.errorSentResponseLiveData.observe(viewLifecycleOwner) { errorResponse ->
-            dismissAllowingStateLoss()
-            activity?.handleErrorResponse(errorResponse)
-        }
-
-         */
+        collectFlows()
     }
 
-    private val sendMailViewCallback: SendMailView.SendMailViewCallback by lazy {
-        object : SendMailView.SendMailViewCallback {
+    private fun collectFlows() {
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+
+            viewModel.eventFlow.collectLatest { sharedEvent ->
+
+                when (sharedEvent) {
+
+                    is UIEvent.ShowSnackBar -> {
+
+                        val message = when (sharedEvent.dataError) {
+                            DataError.NETWORK_ERROR -> getString(R.string.error_no_network)
+                            DataError.SYSTEM_ERROR -> getString(R.string.error_contact_support)
+                            DataError.NONE -> ""
+                        }
+
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.stateFlow.collect { vmState ->
+                vmState.data?.let { status ->
+                    if (status)
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.mail_sent),
+                            Toast.LENGTH_LONG
+                        ).show()
+                }
+            }
+        }
+    }
+
+    private val sendMailViewCallback: SendMailViewCallback by lazy {
+        object : SendMailViewCallback {
             override fun onBackButtonClicked() {
                 dismissAllowingStateLoss()
             }
@@ -65,7 +95,7 @@ class SendMailFragment : AppCompatDialogFragment() {
             }
 
             override fun onSendMailClicked(subject: String, text: String) {
-                //mailFragmentViewModel.sendMessageWebservice(subject, text)
+                viewModel.callSendMessage(subject, text)
             }
         }
     }

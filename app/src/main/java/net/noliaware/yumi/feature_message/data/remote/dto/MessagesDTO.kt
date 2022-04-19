@@ -7,5 +7,5 @@ import net.noliaware.yumi.feature_message.domain.model.Message
 @JsonClass(generateAdapter = true)
 data class MessagesDTO(
     @Json(name = "messages")
-    val messageList: List<Message>
+    val messageList: List<MessageDTO>
 )

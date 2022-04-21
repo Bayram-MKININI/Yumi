@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
 import net.noliaware.yumi.commun.util.handleSharedEvent
+import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.feature_categories.presentation.controllers.MainActivity
 import net.noliaware.yumi.feature_login.presentation.views.AccountCategoryView
 import net.noliaware.yumi.feature_login.presentation.views.AccountItemView.AccountItemViewAdapter
@@ -78,6 +79,7 @@ class AccountsListFragment : AppCompatDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
+                redirectToLoginScreen(sharedEvent)
             }
         }
 

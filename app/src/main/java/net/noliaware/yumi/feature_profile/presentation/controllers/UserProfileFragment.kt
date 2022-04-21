@@ -14,6 +14,7 @@ import net.noliaware.yumi.commun.CATEGORY_ID
 import net.noliaware.yumi.commun.USED_VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
+import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.controllers.VouchersListFragment
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
@@ -50,6 +51,7 @@ class UserProfileFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
+                redirectToLoginScreen(sharedEvent)
             }
         }
 

@@ -29,7 +29,7 @@ abstract class BaseViewModel<T> : ViewModel() {
             }
             is Resource.Error -> {
                 _stateFlow.value = ViewModelState()
-                _eventFlow.emit(UIEvent.ShowSnackBar(result.dataError, result.errorMessage))
+                _eventFlow.emit(UIEvent.ShowSnackBar(result.errorType, result.errorMessage))
             }
         }
     }

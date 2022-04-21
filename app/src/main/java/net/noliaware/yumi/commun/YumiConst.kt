@@ -36,8 +36,10 @@ const val MESSAGE_BODY = "messageBody"
 const val MESSAGE = "message"
 const val MESSAGES = "messages"
 const val ALERTS = "alerts"
+
 const val ACCOUNT_DATA = "account_data"
 const val CATEGORIES_DATA = "categories_data"
+const val MESSAGE_SUBJECTS_DATA = "message_subjects_data"
 const val MANAGED_PROFILES_DATA = "managed_profiles_data"
 const val CATEGORY_ID = "categoryId"
 

@@ -9,13 +9,14 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.CATEGORIES_DATA
+import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.withArgs
-import net.noliaware.yumi.feature_message.presentation.controllers.MailFragment
 import net.noliaware.yumi.feature_alerts.presentation.controllers.AlertsFragment
-import net.noliaware.yumi.feature_profile.presentation.controllers.UserProfileFragment
 import net.noliaware.yumi.feature_categories.presentation.views.HomeMenuView
 import net.noliaware.yumi.feature_categories.presentation.views.HomeView
+import net.noliaware.yumi.feature_message.presentation.controllers.MailFragment
+import net.noliaware.yumi.feature_profile.presentation.controllers.UserProfileFragment
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -49,7 +50,10 @@ class HomeFragment : Fragment() {
 
             override fun onMailButtonClicked() {
                 childFragmentManager.beginTransaction().run {
-                    replace(R.id.main_fragment_container, MailFragment())
+                    replace(
+                        R.id.main_fragment_container,
+                        MailFragment().withArgs(MESSAGE_SUBJECTS_DATA to viewModel.accountData?.messageSubjects)
+                    )
                     commitAllowingStateLoss()
                 }
             }

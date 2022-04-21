@@ -2,13 +2,13 @@ package net.noliaware.yumi.feature_categories.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import net.noliaware.yumi.commun.*
+import net.noliaware.yumi.commun.CATEGORY_ID
+import net.noliaware.yumi.commun.GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY
+import net.noliaware.yumi.commun.GET_VOUCHER
+import net.noliaware.yumi.commun.VOUCHER_ID
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.DataError
-import net.noliaware.yumi.commun.util.Resource
-import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import okio.IOException
 import retrofit2.HttpException
@@ -39,24 +39,10 @@ class CategoryRepositoryImpl(
                 params = generateVoucherListParams(categoryId)
             )
 
-            remoteData.error?.let { errorDTO ->
+            val sessionNoFailure =
+                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
 
-                emit(
-                    Resource.Error(
-                        dataError = DataError.SYSTEM_ERROR,
-                        errorMessage = errorDTO.errorMessage
-                    )
-                )
-
-            } ?: run {
-
-                remoteData.session?.let { sessionDTO ->
-                    sessionData.apply {
-                        sessionId = sessionDTO.sessionId
-                        sessionToken = sessionDTO.sessionToken
-                    }
-                }
-
+            if (sessionNoFailure) {
                 remoteData.data?.let { vouchersDTO ->
                     emit(Resource.Success(data = vouchersDTO.voucherDTOList.map { it.toVoucher() }))
                 }
@@ -64,11 +50,11 @@ class CategoryRepositoryImpl(
 
         } catch (ex: HttpException) {
 
-            emit(Resource.Error(dataError = DataError.SYSTEM_ERROR))
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
 
         } catch (ex: IOException) {
 
-            emit(Resource.Error(dataError = DataError.NETWORK_ERROR))
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
 
@@ -96,24 +82,10 @@ class CategoryRepositoryImpl(
                 params = generateVoucherByIdParams(voucherId)
             )
 
-            remoteData.error?.let { errorDTO ->
+            val sessionNoFailure =
+                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
 
-                emit(
-                    Resource.Error(
-                        dataError = DataError.SYSTEM_ERROR,
-                        errorMessage = errorDTO.errorMessage
-                    )
-                )
-
-            } ?: run {
-
-                remoteData.session?.let { sessionDTO ->
-                    sessionData.apply {
-                        sessionId = sessionDTO.sessionId
-                        sessionToken = sessionDTO.sessionToken
-                    }
-                }
-
+            if (sessionNoFailure) {
                 remoteData.data?.let { getVoucherDTO ->
                     emit(Resource.Success(data = getVoucherDTO.voucherDTO.toVoucher()))
                 }
@@ -121,11 +93,11 @@ class CategoryRepositoryImpl(
 
         } catch (ex: HttpException) {
 
-            emit(Resource.Error(dataError = DataError.SYSTEM_ERROR))
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
 
         } catch (ex: IOException) {
 
-            emit(Resource.Error(dataError = DataError.NETWORK_ERROR))
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
 

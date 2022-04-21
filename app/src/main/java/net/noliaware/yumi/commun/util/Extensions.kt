@@ -2,6 +2,7 @@ package net.noliaware.yumi.commun.util
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -16,12 +17,16 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.*
+import net.noliaware.yumi.commun.data.remote.dto.ErrorDTO
+import net.noliaware.yumi.commun.data.remote.dto.SessionDTO
 import net.noliaware.yumi.commun.domain.model.SessionData
+import net.noliaware.yumi.feature_login.presentation.controllers.LoginActivity
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -38,27 +43,66 @@ fun getCommonWSParams(sessionData: SessionData) = mapOf(
     SESSION_TOKEN to sessionData.sessionToken
 )
 
+suspend fun <T> FlowCollector<Resource<T>>.handleSessionFailure(
+    session: SessionDTO?,
+    sessionData: SessionData,
+    error: ErrorDTO?
+): Boolean {
+
+    var errorType: ErrorType = ErrorType.SYSTEM_ERROR
+
+    session?.let { sessionDTO ->
+        sessionData.apply {
+            sessionId = sessionDTO.sessionId
+            sessionToken = sessionDTO.sessionToken
+        }
+        errorType = ErrorType.RECOVERABLE_ERROR
+    }
+
+    error?.let { errorDTO ->
+        emit(
+            Resource.Error(
+                errorType = errorType,
+                errorMessage = errorDTO.errorMessage
+            )
+        )
+
+        return true
+    }
+
+    return false
+}
+
 fun Fragment.handleSharedEvent(sharedEvent: UIEvent) {
 
     when (sharedEvent) {
 
         is UIEvent.ShowSnackBar -> {
 
-            val message =
-                if (!sharedEvent.errorMessage.isNullOrEmpty()) {
+            val message = if (!sharedEvent.errorMessage.isNullOrEmpty()) {
 
-                    sharedEvent.errorMessage
+                sharedEvent.errorMessage
 
-                } else {
+            } else {
 
-                    when (sharedEvent.dataError) {
-                        DataError.NETWORK_ERROR -> getString(R.string.error_no_network)
-                        DataError.SYSTEM_ERROR -> getString(R.string.error_contact_support)
-                        DataError.NONE -> ""
-                    }
+                when (sharedEvent.errorType) {
+                    ErrorType.NETWORK_ERROR -> getString(R.string.error_no_network)
+                    ErrorType.SYSTEM_ERROR -> getString(R.string.error_contact_support)
+                    ErrorType.RECOVERABLE_ERROR -> getString(R.string.error_contact_support)
+                    ErrorType.NONE -> ""
                 }
+            }
 
             Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        }
+    }
+}
+
+fun Fragment.redirectToLoginScreen(sharedEvent: UIEvent) {
+    if (sharedEvent is UIEvent.ShowSnackBar) {
+        if (sharedEvent.errorType == ErrorType.SYSTEM_ERROR) {
+            activity?.finish()
+            startActivity(Intent(requireActivity(), LoginActivity::class.java))
         }
     }
 }
@@ -80,7 +124,7 @@ suspend inline fun <T> handleWSResult(
         }
         is Resource.Error -> {
             stateFlow.value = ViewModelState()
-            eventFlow.emit(UIEvent.ShowSnackBar(result.dataError))
+            eventFlow.emit(UIEvent.ShowSnackBar(result.errorType))
         }
     }
 }

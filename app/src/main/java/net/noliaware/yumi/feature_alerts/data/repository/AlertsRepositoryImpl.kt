@@ -5,10 +5,7 @@ import kotlinx.coroutines.flow.flow
 import net.noliaware.yumi.commun.GET_ALERT_LIST
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.DataError
-import net.noliaware.yumi.commun.util.Resource
-import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
 import okio.IOException
 import retrofit2.HttpException
@@ -28,36 +25,21 @@ class AlertsRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            val remoteData =
-                api.fetchAlertList(
-                    timestamp = timestamp,
-                    saltString = randomString,
-                    token = generateToken(
-                        timestamp,
-                        GET_ALERT_LIST,
-                        randomString
-                    ),
-                    params = getCommonWSParams(sessionData)
-                )
+            val remoteData = api.fetchAlertList(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(
+                    timestamp,
+                    GET_ALERT_LIST,
+                    randomString
+                ),
+                params = getCommonWSParams(sessionData)
+            )
 
-            remoteData.error?.let { errorDTO ->
+            val sessionNoFailure =
+                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
 
-                emit(
-                    Resource.Error(
-                        dataError = DataError.SYSTEM_ERROR,
-                        errorMessage = errorDTO.errorMessage
-                    )
-                )
-
-            } ?: run {
-
-                remoteData.session?.let { sessionDTO ->
-                    sessionData.apply {
-                        sessionId = sessionDTO.sessionId
-                        sessionToken = sessionDTO.sessionToken
-                    }
-                }
-
+            if (sessionNoFailure) {
                 remoteData.data?.let { alertsDTO ->
                     emit(Resource.Success(data = alertsDTO.alertDTOList.map { it.toAlert() }))
                 }
@@ -65,11 +47,11 @@ class AlertsRepositoryImpl(
 
         } catch (ex: HttpException) {
 
-            emit(Resource.Error(dataError = DataError.SYSTEM_ERROR))
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
 
         } catch (ex: IOException) {
 
-            emit(Resource.Error(dataError = DataError.NETWORK_ERROR))
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
 }

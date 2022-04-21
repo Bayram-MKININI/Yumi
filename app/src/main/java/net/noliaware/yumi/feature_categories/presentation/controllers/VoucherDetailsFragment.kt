@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.handleSharedEvent
+import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView.VouchersDetailsViewAdapter
@@ -50,6 +51,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
             viewModel.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
+                redirectToLoginScreen(sharedEvent)
             }
         }
 

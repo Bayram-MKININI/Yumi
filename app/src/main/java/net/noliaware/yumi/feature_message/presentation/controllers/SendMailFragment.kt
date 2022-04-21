@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.handleSharedEvent
+import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.feature_message.presentation.views.SendMailView
 import net.noliaware.yumi.feature_message.presentation.views.SendMailView.SendMailViewCallback
 
@@ -52,6 +53,7 @@ class SendMailFragment : AppCompatDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
+                redirectToLoginScreen(sharedEvent)
             }
         }
 

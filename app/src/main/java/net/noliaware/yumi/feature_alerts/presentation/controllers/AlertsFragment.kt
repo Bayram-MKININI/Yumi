@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.handleSharedEvent
+import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
 import net.noliaware.yumi.feature_alerts.domain.model.AlertPriority
 import net.noliaware.yumi.feature_alerts.presentation.views.AlertItemView.AlertItemViewAdapter
@@ -44,6 +45,7 @@ class AlertsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
+                redirectToLoginScreen(sharedEvent)
             }
         }
 

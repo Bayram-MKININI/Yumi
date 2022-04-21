@@ -1,14 +1,12 @@
 package net.noliaware.yumi.feature_message.data.repository
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.DataError
-import net.noliaware.yumi.commun.util.Resource
-import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_message.domain.model.Message
 import okio.IOException
 import retrofit2.HttpException
@@ -39,24 +37,10 @@ class MessageRepositoryImpl(
                 params = generateGetMessagesListParams()
             )
 
-            remoteData.error?.let { errorDTO ->
+            val sessionNoFailure =
+                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
 
-                emit(
-                    Resource.Error(
-                        dataError = DataError.SYSTEM_ERROR,
-                        errorMessage = errorDTO.errorMessage
-                    )
-                )
-
-            } ?: run {
-
-                remoteData.session?.let { sessionDTO ->
-                    sessionData.apply {
-                        sessionId = sessionDTO.sessionId
-                        sessionToken = sessionDTO.sessionToken
-                    }
-                }
-
+            if (sessionNoFailure) {
                 remoteData.data?.let { inboxMessagesDTO ->
 
                     val mutableList: MutableList<Message> = mutableListOf()
@@ -73,11 +57,11 @@ class MessageRepositoryImpl(
 
         } catch (ex: HttpException) {
 
-            emit(Resource.Error(dataError = DataError.SYSTEM_ERROR))
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
 
         } catch (ex: IOException) {
 
-            emit(Resource.Error(dataError = DataError.NETWORK_ERROR))
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
 
@@ -114,7 +98,7 @@ class MessageRepositoryImpl(
             return Resource.Success(data = messagesDTO.messageList.map { it.toMessage() })
         }
 
-        return Resource.Error(dataError = DataError.SYSTEM_ERROR)
+        return Resource.Error(errorType = ErrorType.SYSTEM_ERROR)
     }
 
     override fun getInboxMessageForId(messageId: String): Flow<Resource<Message>> = flow {
@@ -126,35 +110,23 @@ class MessageRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
+            Log.e("params", generateGetMessageParams(messageId).toString())
+
             val remoteData = api.fetchInboxMessageForId(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
                     timestamp,
-                    SEND_MESSAGE,
+                    GET_INBOX_MESSAGE,
                     randomString
                 ),
                 params = generateGetMessageParams(messageId)
             )
 
-            remoteData.error?.let { errorDTO ->
+            val sessionNoFailure =
+                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
 
-                emit(
-                    Resource.Error(
-                        dataError = DataError.SYSTEM_ERROR,
-                        errorMessage = errorDTO.errorMessage
-                    )
-                )
-
-            } ?: run {
-
-                remoteData.session?.let { sessionDTO ->
-                    sessionData.apply {
-                        sessionId = sessionDTO.sessionId
-                        sessionToken = sessionDTO.sessionToken
-                    }
-                }
-
+            if (sessionNoFailure) {
                 remoteData.data?.let { singleMessageDTO ->
                     emit(Resource.Success(data = singleMessageDTO.message.toMessage()))
                 }
@@ -162,11 +134,11 @@ class MessageRepositoryImpl(
 
         } catch (ex: HttpException) {
 
-            emit(Resource.Error(dataError = DataError.SYSTEM_ERROR))
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
 
         } catch (ex: IOException) {
 
-            emit(Resource.Error(dataError = DataError.NETWORK_ERROR))
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
 
@@ -188,30 +160,16 @@ class MessageRepositoryImpl(
                 saltString = randomString,
                 token = generateToken(
                     timestamp,
-                    SEND_MESSAGE,
+                    GET_OUTBOX_MESSAGE,
                     randomString
                 ),
                 params = generateGetMessageParams(messageId)
             )
 
-            remoteData.error?.let { errorDTO ->
+            val sessionNoFailure =
+                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
 
-                emit(
-                    Resource.Error(
-                        dataError = DataError.SYSTEM_ERROR,
-                        errorMessage = errorDTO.errorMessage
-                    )
-                )
-
-            } ?: run {
-
-                remoteData.session?.let { sessionDTO ->
-                    sessionData.apply {
-                        sessionId = sessionDTO.sessionId
-                        sessionToken = sessionDTO.sessionToken
-                    }
-                }
-
+            if (sessionNoFailure) {
                 remoteData.data?.let { singleMessageDTO ->
                     emit(Resource.Success(data = singleMessageDTO.message.toMessage()))
                 }
@@ -219,11 +177,11 @@ class MessageRepositoryImpl(
 
         } catch (ex: HttpException) {
 
-            emit(Resource.Error(dataError = DataError.SYSTEM_ERROR))
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
 
         } catch (ex: IOException) {
 
-            emit(Resource.Error(dataError = DataError.NETWORK_ERROR))
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
 
@@ -248,34 +206,20 @@ class MessageRepositoryImpl(
                     params = generateSendMessageParams(messageSubject, messageBody)
                 )
 
-                remoteData.error?.let { errorDTO ->
+                val sessionNoFailure =
+                    !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
 
-                    emit(
-                        Resource.Error(
-                            dataError = DataError.SYSTEM_ERROR,
-                            errorMessage = errorDTO.errorMessage
-                        )
-                    )
-
-                } ?: run {
-
-                    remoteData.session?.let { sessionDTO ->
-                        sessionData.apply {
-                            sessionId = sessionDTO.sessionId
-                            sessionToken = sessionDTO.sessionToken
-                        }
-
-                        emit(Resource.Success(data = true))
-                    }
+                if (sessionNoFailure) {
+                    emit(Resource.Success(data = true))
                 }
 
             } catch (ex: HttpException) {
 
-                emit(Resource.Error(dataError = DataError.SYSTEM_ERROR))
+                emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
 
             } catch (ex: IOException) {
 
-                emit(Resource.Error(dataError = DataError.NETWORK_ERROR))
+                emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
             }
         }
 

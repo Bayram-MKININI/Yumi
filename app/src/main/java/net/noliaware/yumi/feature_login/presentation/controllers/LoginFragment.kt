@@ -80,7 +80,11 @@ class LoginFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventFlow.collectLatest { sharedEvent ->
-                loginParentView?.setLoginViewProgressVisible(false)
+                loginParentView?.let {
+                    it.setLoginViewProgressVisible(false)
+                    it.clearSecretDigits()
+                    passwordIndexes.clear()
+                }
                 handleSharedEvent(sharedEvent)
             }
         }

@@ -44,14 +44,15 @@ class MailItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
 
         timeTextView.measureWrapContent()
 
+        val bodyTextMaxWidth = viewWidth - convertDpToPx(48)
         bodyTextView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth - convertDpToPx(48), MeasureSpec.AT_MOST),
+            MeasureSpec.makeMeasureSpec(bodyTextMaxWidth, MeasureSpec.AT_MOST),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
         subjectTextView.measure(
             MeasureSpec.makeMeasureSpec(
-                bodyTextView.measuredWidth - timeTextView.measuredWidth,
+                bodyTextMaxWidth - timeTextView.measuredWidth,
                 MeasureSpec.AT_MOST
             ),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
@@ -70,7 +71,8 @@ class MailItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         val viewWidth = right - left
         val viewHeight = bottom - top
 
-        val marginLeft = (viewWidth - bodyTextView.measuredWidth) / 2
+        val bodyTextMaxWidth = viewWidth - convertDpToPx(48)
+        val marginLeft = (viewWidth - bodyTextMaxWidth) / 2
 
         subjectTextView.layoutToTopLeft(
             marginLeft,

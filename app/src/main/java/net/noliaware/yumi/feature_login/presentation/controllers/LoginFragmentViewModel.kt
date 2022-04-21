@@ -59,7 +59,7 @@ class LoginFragmentViewModel @Inject constructor(
             }
             is Resource.Error -> {
                 stateFlow.value = ViewModelState()
-                _eventFlow.emit(UIEvent.ShowSnackBar(result.dataError, result.errorMessage))
+                _eventFlow.emit(UIEvent.ShowSnackBar(result.errorType, result.errorMessage))
             }
         }
     }

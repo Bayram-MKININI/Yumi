@@ -7,10 +7,7 @@ import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.DataError
-import net.noliaware.yumi.commun.util.Resource
-import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_login.domain.model.AccountData
 import net.noliaware.yumi.feature_login.domain.model.InitData
 import okio.IOException
@@ -36,19 +33,18 @@ class LoginRepositoryImpl @Inject constructor(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            val remoteData =
-                api.fetchInitData(
-                    timestamp = timestamp,
-                    saltString = randomString,
-                    token = generateToken(timestamp, INIT, randomString),
-                    params = generateInitParams(androidId, deviceId, login)
-                )
+            val remoteData = api.fetchInitData(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(timestamp, INIT, randomString),
+                params = generateInitParams(androidId, deviceId, login)
+            )
 
             remoteData.error?.let { errorDTO ->
 
                 emit(
                     Resource.Error(
-                        dataError = DataError.SYSTEM_ERROR,
+                        errorType = ErrorType.SYSTEM_ERROR,
                         errorMessage = errorDTO.errorMessage
                     )
                 )
@@ -71,9 +67,9 @@ class LoginRepositoryImpl @Inject constructor(
             }
 
         } catch (ex: HttpException) {
-            emit(Resource.Error(dataError = DataError.SYSTEM_ERROR))
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
         } catch (ex: IOException) {
-            emit(Resource.Error(dataError = DataError.NETWORK_ERROR))
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
 
@@ -109,32 +105,17 @@ class LoginRepositoryImpl @Inject constructor(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            val remoteData =
-                api.fetchAccountDataForPassword(
-                    timestamp = timestamp,
-                    saltString = randomString,
-                    token = generateToken(timestamp, CONNECT, randomString),
-                    params = generateGetAccountParams(password)
-                )
+            val remoteData = api.fetchAccountDataForPassword(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(timestamp, CONNECT, randomString),
+                params = generateGetAccountParams(password)
+            )
 
-            remoteData.error?.let { errorDTO ->
+            val sessionNoFailure =
+                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
 
-                emit(
-                    Resource.Error(
-                        dataError = DataError.SYSTEM_ERROR,
-                        errorMessage = errorDTO.errorMessage
-                    )
-                )
-
-            } ?: run {
-
-                remoteData.session?.let { sessionDTO ->
-                    sessionData.apply {
-                        sessionId = sessionDTO.sessionId
-                        sessionToken = sessionDTO.sessionToken
-                    }
-                }
-
+            if (sessionNoFailure) {
                 remoteData.data?.let { accountDataDTO ->
                     emit(Resource.Success(data = accountDataDTO.toAccountData()))
                 }
@@ -142,11 +123,11 @@ class LoginRepositoryImpl @Inject constructor(
 
         } catch (ex: HttpException) {
 
-            emit(Resource.Error(dataError = DataError.SYSTEM_ERROR))
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
 
         } catch (ex: IOException) {
 
-            emit(Resource.Error(dataError = DataError.NETWORK_ERROR))
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
 
@@ -163,32 +144,17 @@ class LoginRepositoryImpl @Inject constructor(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            val remoteData =
-                api.fetchSelectAccountForId(
-                    timestamp = timestamp,
-                    saltString = randomString,
-                    token = generateToken(timestamp, SELECT_ACCOUNT, randomString),
-                    params = generateSelectAccountParams(accountId)
-                )
+            val remoteData = api.fetchSelectAccountForId(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(timestamp, SELECT_ACCOUNT, randomString),
+                params = generateSelectAccountParams(accountId)
+            )
 
-            remoteData.error?.let { errorDTO ->
+            val sessionNoFailure =
+                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
 
-                emit(
-                    Resource.Error(
-                        dataError = DataError.SYSTEM_ERROR,
-                        errorMessage = errorDTO.errorMessage
-                    )
-                )
-
-            } ?: run {
-
-                remoteData.session?.let { sessionDTO ->
-                    sessionData.apply {
-                        sessionId = sessionDTO.sessionId
-                        sessionToken = sessionDTO.sessionToken
-                    }
-                }
-
+            if (sessionNoFailure) {
                 remoteData.data?.let { accountDataDTO ->
                     emit(Resource.Success(data = accountDataDTO.toAccountData()))
                 }
@@ -196,11 +162,11 @@ class LoginRepositoryImpl @Inject constructor(
 
         } catch (ex: HttpException) {
 
-            emit(Resource.Error(dataError = DataError.SYSTEM_ERROR))
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
 
         } catch (ex: IOException) {
 
-            emit(Resource.Error(dataError = DataError.NETWORK_ERROR))
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
 

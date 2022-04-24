@@ -90,9 +90,9 @@ class VouchersListFragment : AppCompatDialogFragment() {
             override fun onItemClickedAtIndex(index: Int) {
 
                 viewModel.stateFlow.value.data?.get(index)?.voucherId?.let { voucherId ->
-                    VoucherDetailsFragment().withArgs(
-                        VOUCHER_ID to voucherId
-                    ).show(childFragmentManager.beginTransaction(), VOUCHER_DETAILS_FRAGMENT_TAG)
+                    VoucherDetailsFragment()
+                        .withArgs(VOUCHER_ID to voucherId)
+                        .show(childFragmentManager.beginTransaction(), VOUCHER_DETAILS_FRAGMENT_TAG)
                 }
             }
         }

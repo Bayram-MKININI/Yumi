@@ -46,12 +46,12 @@ class MailFragment : Fragment() {
                 val messageId = viewModel.stateFlow.value.data?.get(index)?.messageId
 
                 messageId?.let {
-                    ReadInboxMailFragment().withArgs(
-                        MESSAGE_ID to it
-                    ).show(
-                        requireActivity().supportFragmentManager.beginTransaction(),
-                        READ_MESSAGE_FRAGMENT_TAG
-                    )
+                    ReadInboxMailFragment()
+                        .withArgs(MESSAGE_ID to it)
+                        .show(
+                            requireActivity().supportFragmentManager.beginTransaction(),
+                            READ_MESSAGE_FRAGMENT_TAG
+                        )
                 }
             }
 

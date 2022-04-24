@@ -81,21 +81,6 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         }
     }
 
-
-    /*viewModel.generatedBitmapLiveData.observe(
-    viewLifecycleOwner
-    ) { bitmap ->
-        vouchersDetailsView?.setVoucherBitmap(bitmap)
-    }
-
-     */
-    /*voucherDetailsFragmentViewModel.generateQrCode(
-    it.url,
-    resources.displayMetrics.widthPixels
-    )
-
-     */
-
     private val vouchersDetailsViewCallback: VouchersDetailsView.VouchersDetailsViewCallback by lazy {
         object : VouchersDetailsView.VouchersDetailsViewCallback {
             override fun onBackButtonClicked() {

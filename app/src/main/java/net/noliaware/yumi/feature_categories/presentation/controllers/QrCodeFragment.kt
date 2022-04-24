@@ -5,20 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDialogFragment
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
-import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.presentation.views.QrCodeView
 import net.noliaware.yumi.feature_categories.presentation.views.QrCodeView.QrCodeViewCallback
-import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView
-import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView.VouchersDetailsViewAdapter
 
 @AndroidEntryPoint
 class QrCodeFragment : AppCompatDialogFragment() {

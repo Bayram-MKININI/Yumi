@@ -9,6 +9,6 @@ data class Message(
     val messageFrom: String,
     val messageSubject: String,
     val messageBody: String?,
-    val messageRank: Int,
-    val messageTotal: Int
+    val messageRank: Int?,
+    val messageTotal: Int?
 )

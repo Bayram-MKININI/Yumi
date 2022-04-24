@@ -13,6 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/sf_pro_display_semibold"
+        android:gravity="center"
         android:textColor="@color/black_font"
         android:textSize="24sp" />
 

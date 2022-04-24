@@ -28,10 +28,10 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:ems="12"
+        android:focusable="false"
         android:fontFamily="@font/sf_pro_text_regular"
         android:hint="@string/mail_object"
-        android:inputType="text"
-        android:maxLines="1"
+        android:inputType="textMultiLine"
         android:textColor="@color/black_font"
         android:textCursorDrawable="@null" />
 

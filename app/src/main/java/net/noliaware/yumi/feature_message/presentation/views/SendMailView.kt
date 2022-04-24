@@ -2,11 +2,16 @@ package net.noliaware.yumi.feature_message.presentation.views
 
 import android.content.Context
 import android.graphics.Rect
+import android.text.InputType
 import android.util.AttributeSet
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.view.GestureDetectorCompat
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.*
 
@@ -26,8 +31,9 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
 
     interface SendMailViewCallback {
         fun onBackButtonClicked()
+        fun onSubjectEditTextClicked()
         fun onClearButtonClicked()
-        fun onSendMailClicked(subject: String, text: String)
+        fun onSendMailClicked(text: String)
     }
 
     override fun onFinishInflate() {
@@ -43,7 +49,22 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         titleTextView = findViewById(R.id.title_text_view)
 
         backgroundView = findViewById(R.id.background_view)
+
         subjectEditText = findViewById(R.id.subject_edit_text)
+        subjectEditText.setRawInputType(InputType.TYPE_NULL)
+        subjectEditText.setOnConsistentClickListener {
+            callback?.onSubjectEditTextClicked()
+        }
+
+        /*subjectEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus)
+                subjectEditText.callOnClick()
+        }
+        subjectEditText.keyListener = null
+        subjectEditText.setOnClickListener(buttonClickListener)
+
+         */
+
         separatorLineView = findViewById(R.id.separator_line_view)
 
         nestedScrollView = findViewById(R.id.nested_scroll_view)
@@ -61,12 +82,28 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
                 }
                 R.id.send_fab -> {
                     callback?.onSendMailClicked(
-                        mailEditText.text.toString(),
                         mailEditText.text.toString()
                     )
                 }
             }
         }
+    }
+
+    fun EditText.setOnConsistentClickListener(doOnClick: (View) -> Unit) {
+        val gestureDetector =
+            GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onSingleTapUp(event: MotionEvent?): Boolean {
+                    doOnClick(this@setOnConsistentClickListener)
+                    return false
+                }
+            })
+
+        this.setOnTouchListener { _, motionEvent -> gestureDetector.onTouchEvent(motionEvent) }
+    }
+
+    fun setSubject(subject: String) {
+        subjectEditText.text.clear()
+        subjectEditText.setText(subject)
     }
 
     fun computeMailView() {
@@ -80,7 +117,7 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val viewWidth = MeasureSpec.getSize(widthMeasureSpec)
+        val viewWidth = View.MeasureSpec.getSize(widthMeasureSpec)
         val viewHeight = MeasureSpec.getSize(heightMeasureSpec)
 
         backView.measureWrapContent()

@@ -1,38 +1,30 @@
 package net.noliaware.yumi.commun.util
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import com.google.zxing.BarcodeFormat
-import com.google.zxing.MultiFormatWriter
-import com.google.zxing.common.BitMatrix
+import com.google.zxing.qrcode.QRCodeWriter
 
-class QRCodeGenerator {
+object QRCodeGenerator {
 
-    fun encodeAsBitmap(content: String, width: Int, height: Int): Bitmap? {
+    fun encodeAsBitmap(content: String, size: Int): Bitmap? {
 
-        val result: BitMatrix
-
+        val qrCodeWriter = QRCodeWriter()
         try {
-            result = MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, width, height, null)
-        } catch (iae: IllegalArgumentException) {
-            return null
-        }
-
-        val resultWidth = result.width
-        val resultHeight = result.height
-        val pixels = IntArray(resultWidth * resultHeight)
-
-        for (y in 0 until resultHeight) {
-
-            val offset = y * resultWidth
-
-            for (x in 0 until resultWidth) {
-                pixels[offset + x] = if (result.get(x, y)) -0x1000000 else -0x1
+            val bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, size, size)
+            val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565)
+            for (x in 0 until size) {
+                for (y in 0 until size) {
+                    bitmap.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                }
             }
+
+            return bitmap
+
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
-        val bitmap = Bitmap.createBitmap(resultWidth, resultHeight, Bitmap.Config.ARGB_8888)
-        bitmap.setPixels(pixels, 0, resultWidth, 0, 0, resultWidth, resultHeight)
-        //createImageFile(bitmap)
-        return bitmap
+        return null
     }
 }

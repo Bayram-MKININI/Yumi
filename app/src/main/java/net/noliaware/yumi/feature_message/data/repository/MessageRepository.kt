@@ -12,5 +12,5 @@ interface MessageRepository {
 
     fun getOutboxMessageForId(messageId: String): Flow<Resource<Message>>
 
-    fun sendMessage(messageSubject: String, messageBody: String): Flow<Resource<Boolean>>
+    fun sendMessage(messageSubjectId: String, messageBody: String): Flow<Resource<Boolean>>
 }

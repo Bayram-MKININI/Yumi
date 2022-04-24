@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<net.noliaware.yumi.feature_categories.presentation.views.QrCodeView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/back_layout" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/qr_code_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true" />
+
+</net.noliaware.yumi.feature_categories.presentation.views.QrCodeView>

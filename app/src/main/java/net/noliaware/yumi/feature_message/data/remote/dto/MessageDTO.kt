@@ -23,9 +23,9 @@ data class MessageDTO(
     @Json(name = "messageBody")
     val messageBody: String?,
     @Json(name = "messageRank")
-    val messageRank: Int,
+    val messageRank: Int?,
     @Json(name = "messageTotal")
-    val messageTotal: Int
+    val messageTotal: Int?
 ) {
     fun toMessage() = Message(
         messageId = messageId,

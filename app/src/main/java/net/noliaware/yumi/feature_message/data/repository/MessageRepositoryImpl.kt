@@ -185,7 +185,7 @@ class MessageRepositoryImpl(
         }
     }
 
-    override fun sendMessage(messageSubject: String, messageBody: String): Flow<Resource<Boolean>> =
+    override fun sendMessage(messageSubjectId: String, messageBody: String): Flow<Resource<Boolean>> =
         flow {
 
             emit(Resource.Loading())
@@ -195,6 +195,8 @@ class MessageRepositoryImpl(
                 val timestamp = System.currentTimeMillis().toString()
                 val randomString = UUID.randomUUID().toString()
 
+                Log.e("params", generateSendMessageParams(messageSubjectId, messageBody).toString())
+
                 val remoteData = api.sendMessage(
                     timestamp = timestamp,
                     saltString = randomString,
@@ -203,7 +205,7 @@ class MessageRepositoryImpl(
                         SEND_MESSAGE,
                         randomString
                     ),
-                    params = generateSendMessageParams(messageSubject, messageBody)
+                    params = generateSendMessageParams(messageSubjectId, messageBody)
                 )
 
                 val sessionNoFailure =
@@ -223,9 +225,9 @@ class MessageRepositoryImpl(
             }
         }
 
-    private fun generateSendMessageParams(messageSubject: String, messageBody: String) =
+    private fun generateSendMessageParams(messageSubjectId: String, messageBody: String) =
         mutableMapOf(
-            MESSAGE_SUBJECT to messageSubject,
+            MESSAGE_SUBJECT to messageSubjectId,
             MESSAGE_BODY to messageBody
         ).also { it.plusAssign(getCommonWSParams(sessionData)) }
 }

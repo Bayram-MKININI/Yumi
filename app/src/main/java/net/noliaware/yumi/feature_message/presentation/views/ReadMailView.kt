@@ -63,7 +63,10 @@ class ReadMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
 
         backView.measureWrapContent()
 
-        titleTextView.measureWrapContent()
+        titleTextView.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth - convertDpToPx(40), MeasureSpec.AT_MOST),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        )
 
         val readMailContentViewHeight =
             viewHeight - (backView.measuredHeight + titleTextView.measuredHeight + getStatusBarHeight() + convertDpToPx(

@@ -46,6 +46,10 @@ class LoginView(context: Context, attrs: AttributeSet?) : ViewGroup(context, att
         progressBar = findViewById(R.id.progress_bar)
     }
 
+    fun setLogin(login: String) {
+        inputLogin.setText(login)
+    }
+
     fun setProgressVisible(visible: Boolean) {
         if (visible) {
             progressBar.visibility = VISIBLE

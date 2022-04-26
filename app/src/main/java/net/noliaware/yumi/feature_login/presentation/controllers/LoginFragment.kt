@@ -1,36 +1,55 @@
 package net.noliaware.yumi.feature_login.presentation.controllers
 
+import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.*
+import net.noliaware.yumi.commun.ACCOUNTS_LIST_FRAGMENT_TAG
+import net.noliaware.yumi.commun.ACCOUNT_DATA
+import net.noliaware.yumi.commun.MANAGED_PROFILES_DATA
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.controllers.MainActivity
+import net.noliaware.yumi.feature_login.data.repository.DataStoreRepository
 import net.noliaware.yumi.feature_login.presentation.views.LoginParentView
 import net.noliaware.yumi.feature_login.presentation.views.LoginView
 import net.noliaware.yumi.feature_login.presentation.views.PasswordView
 import java.net.NetworkInterface
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-    private lateinit var userPrefs: SharedPreferences
-    private lateinit var preferencesEditor: SharedPreferences.Editor
+    companion object {
+        private const val USER_PREFERENCES_NAME = "user_preferences"
+    }
+
+    private val Context.dataStore by preferencesDataStore(
+        name = USER_PREFERENCES_NAME
+    )
+
+    @Inject
+    lateinit var viewModelAssistedFactory: LoginFragmentViewModel.Factory
+
+    private val viewModel: LoginFragmentViewModel by viewModels {
+        LoginFragmentViewModel.provideFactory(
+            viewModelAssistedFactory,
+            DataStoreRepository(requireContext().dataStore)
+        )
+    }
+
     private var loginParentView: LoginParentView? = null
-    private val viewModel by viewModels<LoginFragmentViewModel>()
     private val passwordIndexes = mutableListOf<Int>()
 
     override fun onCreateView(
@@ -47,10 +66,6 @@ class LoginFragment : Fragment() {
         loginParentView = view as LoginParentView
         loginParentView?.loginView?.callback = loginViewCallback
         loginParentView?.passwordView?.callback = passwordViewCallback
-
-        userPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        preferencesEditor = userPrefs.edit()
-
         collectFlows()
     }
 
@@ -79,6 +94,14 @@ class LoginFragment : Fragment() {
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.prefsStateFlow.collectLatest { vmState ->
+                vmState.data?.let { userPrefs ->
+                    loginParentView?.setLogin(userPrefs.login)
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventFlow.collectLatest { sharedEvent ->
                 loginParentView?.let {
                     it.setLoginViewProgressVisible(false)
@@ -94,8 +117,7 @@ class LoginFragment : Fragment() {
             viewModel.initStateFlow.collect { vmState ->
                 vmState.data?.let { initData ->
 
-                    preferencesEditor.putString(DEVICE_ID, initData.deviceId)
-                    preferencesEditor.apply()
+                    viewModel.saveDeviceIdPreferences(initData.deviceId)
 
                     loginParentView?.setLoginViewProgressVisible(false)
 
@@ -132,13 +154,12 @@ class LoginFragment : Fragment() {
         object : LoginView.LoginViewCallback {
             override fun onLoginEntered(login: String) {
 
-                preferencesEditor.putString(LOGIN, login)
-                preferencesEditor.apply()
+                viewModel.saveLoginPreferences(login)
 
                 loginParentView?.setLoginViewProgressVisible(true)
                 viewModel.callInitWebservice(
                     getAndroidId(),
-                    userPrefs.getString(DEVICE_ID, null),
+                    viewModel.prefsStateFlow.value.data?.deviceId,
                     login
                 )
             }

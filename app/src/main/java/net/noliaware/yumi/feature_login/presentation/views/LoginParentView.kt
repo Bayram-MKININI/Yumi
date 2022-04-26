@@ -10,8 +10,6 @@ import android.widget.ViewAnimator
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.layoutToBottomLeft
 import net.noliaware.yumi.commun.util.layoutToTopLeft
-import net.noliaware.yumi.feature_login.presentation.views.LoginView
-import net.noliaware.yumi.feature_login.presentation.views.PasswordView
 
 class LoginParentView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
@@ -40,6 +38,10 @@ class LoginParentView(context: Context, attrs: AttributeSet?) : ViewGroup(contex
 
         rightViewIn = AnimationUtils.loadAnimation(context, R.anim.slide_in_right)
         rightViewOut = AnimationUtils.loadAnimation(context, R.anim.slide_out_left)
+    }
+
+    fun setLogin(login: String) {
+        loginView.setLogin(login)
     }
 
     fun setLoginViewProgressVisible(visible: Boolean) {

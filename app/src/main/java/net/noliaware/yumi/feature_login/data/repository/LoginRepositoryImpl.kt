@@ -84,13 +84,13 @@ class LoginRepositoryImpl @Inject constructor(
             APP_VERSION to BuildConfig.VERSION_NAME
         )
 
-        deviceId?.let {
-            parameters[DEVICE_ID] = it
-        } ?: run {
+        if (deviceId.isNullOrEmpty()) {
             parameters["deviceType"] = "S"
             parameters["deviceOS"] = "ANDROID"
             parameters["deviceUUID"] = androidId
             parameters["deviceLabel"] = Build.MODEL
+        } else {
+            parameters[DEVICE_ID] = deviceId
         }
 
         return parameters

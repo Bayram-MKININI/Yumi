@@ -1,23 +1,31 @@
 package net.noliaware.yumi.feature_login.presentation.controllers
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.UIEvent
 import net.noliaware.yumi.commun.util.ViewModelState
+import net.noliaware.yumi.feature_login.data.repository.DataStoreRepository
 import net.noliaware.yumi.feature_login.data.repository.LoginRepository
 import net.noliaware.yumi.feature_login.domain.model.AccountData
 import net.noliaware.yumi.feature_login.domain.model.InitData
+import net.noliaware.yumi.feature_login.domain.model.UserPreferences
 import org.json.JSONArray
-import javax.inject.Inject
 
-@HiltViewModel
-class LoginFragmentViewModel @Inject constructor(
-    private val repository: LoginRepository
+class LoginFragmentViewModel @AssistedInject constructor(
+    private val repository: LoginRepository,
+    @Assisted private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
+
+    private val _prefsStateFlow = MutableStateFlow(ViewModelState<UserPreferences>())
+    val prefsStateFlow = _prefsStateFlow.asStateFlow()
 
     private val _initStateFlow = MutableStateFlow(ViewModelState<InitData>())
     val initStateFlow = _initStateFlow.asStateFlow()
@@ -27,6 +35,36 @@ class LoginFragmentViewModel @Inject constructor(
 
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
+
+    init {
+        callReadPreferences()
+    }
+
+    private fun callReadPreferences() {
+        viewModelScope.launch {
+            dataStoreRepository.readFromDataStore.onEach { userPreferences ->
+                _prefsStateFlow.value = ViewModelState(userPreferences)
+            }.launchIn(this)
+        }
+    }
+
+    fun saveLoginPreferences(login: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.saveLogin(login)
+        }
+    }
+
+    fun saveDeviceIdPreferences(deviceId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.saveDeviceId(deviceId)
+        }
+    }
+
+    fun clearUserPreferences() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.clearDataStore()
+        }
+    }
 
     fun callInitWebservice(androidId: String, deviceId: String?, login: String) {
         viewModelScope.launch {
@@ -60,6 +98,23 @@ class LoginFragmentViewModel @Inject constructor(
             is Resource.Error -> {
                 stateFlow.value = ViewModelState()
                 _eventFlow.emit(UIEvent.ShowSnackBar(result.errorType, result.errorMessage))
+            }
+        }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(dataStoreRepository: DataStoreRepository): LoginFragmentViewModel
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    companion object {
+        fun provideFactory(
+            assistedFactory: Factory,
+            dataStoreRepository: DataStoreRepository
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return assistedFactory.create(dataStoreRepository) as T
             }
         }
     }

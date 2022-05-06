@@ -8,35 +8,38 @@ import net.noliaware.yumi.feature_message.domain.model.Message
 data class MessageDTO(
     @Json(name = "messageId")
     val messageId: String,
-    @Json(name = "messageType")
-    val messageType: String,
-    @Json(name = "messageReadStatus")
-    val messageReadStatus: Int,
     @Json(name = "messageDate")
     val messageDate: String,
     @Json(name = "messageTime")
     val messageTime: String,
-    @Json(name = "messageFrom")
-    val messageFrom: String,
     @Json(name = "messageSubject")
     val messageSubject: String,
-    @Json(name = "messageBody")
-    val messageBody: String?,
+    @Json(name = "messageToRecipients")
+    val messageToRecipients: String?,
     @Json(name = "messageRank")
     val messageRank: Int?,
     @Json(name = "messageTotal")
-    val messageTotal: Int?
+    val messageTotal: Int?,
+    @Json(name = "messageType")
+    val messageType: String?,
+    @Json(name = "messageReadStatus")
+    val messageReadStatus: Int?,
+    @Json(name = "messageFrom")
+    val messageFrom: String?,
+    @Json(name = "messageBody")
+    val messageBody: String?
 ) {
     fun toMessage() = Message(
         messageId = messageId,
-        messageType = messageType,
-        messageReadStatus = messageReadStatus,
         messageDate = messageDate,
         messageTime = messageTime,
-        messageFrom = messageFrom,
         messageSubject = messageSubject,
-        messageBody = messageBody,
         messageRank = messageRank,
-        messageTotal = messageTotal
+        messageTotal = messageTotal,
+        messageToRecipients = messageToRecipients,
+        messageType = messageType,
+        messageReadStatus = messageReadStatus,
+        messageFrom = messageFrom,
+        messageBody = messageBody
     )
 }

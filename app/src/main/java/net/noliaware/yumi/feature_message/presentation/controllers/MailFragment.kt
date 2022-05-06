@@ -19,6 +19,7 @@ import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_message.domain.model.Message
+import net.noliaware.yumi.feature_message.domain.model.MessageOrigin
 import net.noliaware.yumi.feature_message.presentation.views.MailItemView.MailItemViewAdapter
 import net.noliaware.yumi.feature_message.presentation.views.MailView
 
@@ -43,15 +44,31 @@ class MailFragment : Fragment() {
         object : MailView.MailViewCallback {
             override fun onItemClickedAtIndex(index: Int) {
 
-                val messageId = viewModel.stateFlow.value.data?.get(index)?.messageId
+                val message = viewModel.stateFlow.value.data?.get(index)
 
-                messageId?.let {
-                    ReadInboxMailFragment()
-                        .withArgs(MESSAGE_ID to it)
-                        .show(
-                            requireActivity().supportFragmentManager.beginTransaction(),
-                            READ_MESSAGE_FRAGMENT_TAG
-                        )
+                message?.let {
+
+                    when (message.messageOrigin) {
+
+                        MessageOrigin.INBOX -> {
+                            ReadInboxMailFragment()
+                                .withArgs(MESSAGE_ID to message.messageId)
+                                .show(
+                                    requireActivity().supportFragmentManager.beginTransaction(),
+                                    READ_MESSAGE_FRAGMENT_TAG
+                                )
+                        }
+
+                        MessageOrigin.OUTBOX -> {
+                            ReadOutboxMailFragment()
+                                .withArgs(MESSAGE_ID to message.messageId)
+                                .show(
+                                    requireActivity().supportFragmentManager.beginTransaction(),
+                                    READ_MESSAGE_FRAGMENT_TAG
+                                )
+                        }
+                        else -> {}
+                    }
                 }
             }
 
@@ -92,7 +109,7 @@ class MailFragment : Fragment() {
     private fun bindViewToData(messageList: List<Message>) {
         messageList.map { message ->
             MailItemViewAdapter(
-                subject = message.messageFrom,
+                subject = message.messageFrom ?: "",
                 time = message.messageDate,
                 body = message.messageSubject
             )

@@ -8,6 +8,7 @@ import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_message.domain.model.Message
+import net.noliaware.yumi.feature_message.domain.model.MessageOrigin
 import okio.IOException
 import retrofit2.HttpException
 import java.util.*
@@ -45,7 +46,11 @@ class MessageRepositoryImpl(
 
                     val mutableList: MutableList<Message> = mutableListOf()
 
-                    mutableList.addAll(inboxMessagesDTO.messageList.map { it.toMessage() })
+                    mutableList.addAll(inboxMessagesDTO.messageList.map {
+                        it.toMessage().apply {
+                            messageOrigin = MessageOrigin.INBOX
+                        }
+                    })
 
                     getOutboxMessages().data?.let { outboxMessageList ->
                         mutableList.addAll(outboxMessageList)
@@ -95,7 +100,11 @@ class MessageRepositoryImpl(
                 }
             }
 
-            return Resource.Success(data = messagesDTO.messageList.map { it.toMessage() })
+            return Resource.Success(data = messagesDTO.messageList.map {
+                it.toMessage().apply {
+                    messageOrigin = MessageOrigin.OUTBOX
+                }
+            })
         }
 
         return Resource.Error(errorType = ErrorType.SYSTEM_ERROR)
@@ -185,45 +194,47 @@ class MessageRepositoryImpl(
         }
     }
 
-    override fun sendMessage(messageSubjectId: String, messageBody: String): Flow<Resource<Boolean>> =
-        flow {
+    override fun sendMessage(
+        messageSubjectId: String,
+        messageBody: String
+    ): Flow<Resource<Boolean>> = flow {
 
-            emit(Resource.Loading())
+        emit(Resource.Loading())
 
-            try {
+        try {
 
-                val timestamp = System.currentTimeMillis().toString()
-                val randomString = UUID.randomUUID().toString()
+            val timestamp = System.currentTimeMillis().toString()
+            val randomString = UUID.randomUUID().toString()
 
-                Log.e("params", generateSendMessageParams(messageSubjectId, messageBody).toString())
+            Log.e("params", generateSendMessageParams(messageSubjectId, messageBody).toString())
 
-                val remoteData = api.sendMessage(
-                    timestamp = timestamp,
-                    saltString = randomString,
-                    token = generateToken(
-                        timestamp,
-                        SEND_MESSAGE,
-                        randomString
-                    ),
-                    params = generateSendMessageParams(messageSubjectId, messageBody)
-                )
+            val remoteData = api.sendMessage(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(
+                    timestamp,
+                    SEND_MESSAGE,
+                    randomString
+                ),
+                params = generateSendMessageParams(messageSubjectId, messageBody)
+            )
 
-                val sessionNoFailure =
-                    !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure =
+                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
 
-                if (sessionNoFailure) {
-                    emit(Resource.Success(data = true))
-                }
-
-            } catch (ex: HttpException) {
-
-                emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
-            } catch (ex: IOException) {
-
-                emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+            if (sessionNoFailure) {
+                emit(Resource.Success(data = true))
             }
+
+        } catch (ex: HttpException) {
+
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
+
+        } catch (ex: IOException) {
+
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
+    }
 
     private fun generateSendMessageParams(messageSubjectId: String, messageBody: String) =
         mutableMapOf(

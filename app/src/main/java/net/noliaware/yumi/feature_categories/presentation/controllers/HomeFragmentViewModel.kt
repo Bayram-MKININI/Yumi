@@ -11,6 +11,5 @@ import javax.inject.Inject
 class HomeFragmentViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
     val accountData get() = savedStateHandle.get<AccountData>(ACCOUNT_DATA)
 }

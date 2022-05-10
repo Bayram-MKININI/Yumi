@@ -1,10 +1,12 @@
 package net.noliaware.yumi.commun.di
 
+import android.content.Context
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.commun.BASE_URL
@@ -14,6 +16,8 @@ import net.noliaware.yumi.feature_alerts.data.repository.AlertsRepository
 import net.noliaware.yumi.feature_alerts.data.repository.AlertsRepositoryImpl
 import net.noliaware.yumi.feature_categories.data.repository.CategoryRepository
 import net.noliaware.yumi.feature_categories.data.repository.CategoryRepositoryImpl
+import net.noliaware.yumi.feature_login.data.repository.DataStoreRepository
+import net.noliaware.yumi.feature_login.data.repository.DataStoreRepositoryImpl
 import net.noliaware.yumi.feature_login.data.repository.LoginRepository
 import net.noliaware.yumi.feature_login.data.repository.LoginRepositoryImpl
 import net.noliaware.yumi.feature_message.data.repository.MessageRepository
@@ -63,6 +67,11 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun provideDataStoreRepository(@ApplicationContext context: Context): DataStoreRepository {
+        return DataStoreRepositoryImpl(context)
+    }
+
+    @Provides
     fun provideApiService(retrofit: Retrofit): RemoteApi = retrofit.create(RemoteApi::class.java)
 
     @Provides

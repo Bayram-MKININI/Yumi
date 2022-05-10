@@ -43,7 +43,7 @@ fun getCommonWSParams(sessionData: SessionData) = mapOf(
     SESSION_TOKEN to sessionData.sessionToken
 )
 
-suspend fun <T> FlowCollector<Resource<T>>.handleSessionFailure(
+suspend fun <T> FlowCollector<Resource<T>>.handleSessionAndFailureIfAny(
     session: SessionDTO?,
     sessionData: SessionData,
     error: ErrorDTO?

@@ -113,7 +113,7 @@ class LoginRepositoryImpl @Inject constructor(
             )
 
             val sessionNoFailure =
-                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
+                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { accountDataDTO ->
@@ -152,7 +152,7 @@ class LoginRepositoryImpl @Inject constructor(
             )
 
             val sessionNoFailure =
-                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
+                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { accountDataDTO ->

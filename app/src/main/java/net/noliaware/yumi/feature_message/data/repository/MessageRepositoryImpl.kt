@@ -39,7 +39,7 @@ class MessageRepositoryImpl(
             )
 
             val sessionNoFailure =
-                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
+                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { inboxMessagesDTO ->
@@ -133,7 +133,7 @@ class MessageRepositoryImpl(
             )
 
             val sessionNoFailure =
-                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
+                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { singleMessageDTO ->
@@ -176,7 +176,7 @@ class MessageRepositoryImpl(
             )
 
             val sessionNoFailure =
-                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
+                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { singleMessageDTO ->
@@ -220,7 +220,7 @@ class MessageRepositoryImpl(
             )
 
             val sessionNoFailure =
-                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
+                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 emit(Resource.Success(data = true))

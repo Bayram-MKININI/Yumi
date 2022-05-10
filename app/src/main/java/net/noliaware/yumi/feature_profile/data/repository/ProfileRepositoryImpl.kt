@@ -135,7 +135,7 @@ class ProfileRepositoryImpl(
             )
 
             val sessionNoFailure =
-                !handleSessionFailure(remoteData.session, sessionData, remoteData.error)
+                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { vouchersDTO ->

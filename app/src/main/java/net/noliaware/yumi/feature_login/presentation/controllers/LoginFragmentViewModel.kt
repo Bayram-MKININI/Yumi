@@ -1,11 +1,8 @@
 package net.noliaware.yumi.feature_login.presentation.controllers
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -18,10 +15,12 @@ import net.noliaware.yumi.feature_login.domain.model.AccountData
 import net.noliaware.yumi.feature_login.domain.model.InitData
 import net.noliaware.yumi.feature_login.domain.model.UserPreferences
 import org.json.JSONArray
+import javax.inject.Inject
 
-class LoginFragmentViewModel @AssistedInject constructor(
+@HiltViewModel
+class LoginFragmentViewModel @Inject constructor(
     private val repository: LoginRepository,
-    @Assisted private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
     private val _prefsStateFlow = MutableStateFlow(ViewModelState<UserPreferences>())
@@ -42,7 +41,7 @@ class LoginFragmentViewModel @AssistedInject constructor(
 
     private fun callReadPreferences() {
         viewModelScope.launch {
-            dataStoreRepository.readFromDataStore.onEach { userPreferences ->
+            dataStoreRepository.readUserPreferences().onEach { userPreferences ->
                 _prefsStateFlow.value = ViewModelState(userPreferences)
             }.launchIn(this)
         }
@@ -98,23 +97,6 @@ class LoginFragmentViewModel @AssistedInject constructor(
             is Resource.Error -> {
                 stateFlow.value = ViewModelState()
                 _eventFlow.emit(UIEvent.ShowSnackBar(result.errorType, result.errorMessage))
-            }
-        }
-    }
-
-    @AssistedFactory
-    interface Factory {
-        fun create(dataStoreRepository: DataStoreRepository): LoginFragmentViewModel
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    companion object {
-        fun provideFactory(
-            assistedFactory: Factory,
-            dataStoreRepository: DataStoreRepository
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(dataStoreRepository) as T
             }
         }
     }

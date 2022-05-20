@@ -8,10 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.CATEGORY_ID
+import net.noliaware.yumi.commun.CATEGORIES_DATA
 import net.noliaware.yumi.commun.VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.withArgs
+import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewAdapter
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewCallback
@@ -19,6 +20,11 @@ import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView
 
 @AndroidEntryPoint
 class CategoriesFragment : Fragment() {
+
+    companion object {
+        fun newInstance(categories: List<Category>?): CategoriesFragment =
+            CategoriesFragment().withArgs(CATEGORIES_DATA to categories)
+    }
 
     private var categoriesView: CategoriesView? = null
     private val viewModel by viewModels<CategoriesFragmentViewModel>()
@@ -41,12 +47,10 @@ class CategoriesFragment : Fragment() {
                 val categoryId = viewModel.categories?.get(index)?.categoryId
 
                 categoryId?.let {
-                    VouchersListFragment()
-                        .withArgs(CATEGORY_ID to it)
-                        .show(
-                            childFragmentManager.beginTransaction(),
-                            VOUCHERS_LIST_FRAGMENT_TAG
-                        )
+                    VouchersListFragment.newInstance(it).show(
+                        childFragmentManager.beginTransaction(),
+                        VOUCHERS_LIST_FRAGMENT_TAG
+                    )
                 }
             }
         }

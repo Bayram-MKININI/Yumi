@@ -14,10 +14,8 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNTS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.ACCOUNT_DATA
-import net.noliaware.yumi.commun.MANAGED_PROFILES_DATA
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
-import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.controllers.MainActivity
 import net.noliaware.yumi.feature_login.presentation.views.LoginParentView
 import net.noliaware.yumi.feature_login.presentation.views.LoginView
@@ -112,8 +110,7 @@ class LoginFragment : Fragment() {
                 vmState.data?.let { accountData ->
 
                     if (accountData.managedAccountProfiles.isNotEmpty()) {
-                        AccountsListFragment()
-                            .withArgs(MANAGED_PROFILES_DATA to accountData.managedAccountProfiles)
+                        AccountsListFragment.newInstance(accountData.managedAccountProfiles)
                             .show(
                                 childFragmentManager.beginTransaction(),
                                 ACCOUNTS_LIST_FRAGMENT_TAG

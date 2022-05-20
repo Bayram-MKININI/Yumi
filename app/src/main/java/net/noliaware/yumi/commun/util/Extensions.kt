@@ -4,17 +4,24 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
+import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.MeasureSpec
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.CheckResult
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.FlowCollector
@@ -129,10 +136,7 @@ suspend inline fun <T> handleWSResult(
     }
 }
 
-fun Fragment.withArgs(vararg pairs: Pair<String, Any?>) = apply { arguments = bundleOf(*pairs) }
-
-fun DialogFragment.withArgs(vararg pairs: Pair<String, Any?>) =
-    apply { arguments = bundleOf(*pairs) }
+fun <T : Fragment> T.withArgs(vararg pairs: Pair<String, Any?>) = apply { arguments = bundleOf(*pairs) }
 
 fun ViewGroup.inflate(layoutRes: Int, attachToRoot: Boolean): View =
     LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
@@ -239,3 +243,26 @@ fun String.sha256(): String {
         throw RuntimeException(e)
     }
 }
+
+@ColorInt
+fun Context.getColorCompat(@ColorRes colorRes: Int): Int {
+    return ContextCompat.getColor(this, colorRes)
+}
+
+fun Context.getDrawableCompat(@DrawableRes drawableRes: Int): Drawable {
+    return AppCompatResources.getDrawable(this, drawableRes)!!
+}
+
+@CheckResult
+fun Drawable.tint(@ColorInt color: Int): Drawable {
+    val tintedDrawable = DrawableCompat.wrap(this).mutate()
+    DrawableCompat.setTint(tintedDrawable, color)
+    return tintedDrawable
+}
+
+@CheckResult
+fun Drawable.tint(context: Context, @ColorRes color: Int): Drawable {
+    return tint(context.getColorCompat(color))
+}
+
+fun <T> unsafeLazy(initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)

@@ -11,8 +11,10 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.MESSAGE_ID
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
+import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_message.domain.model.Message
 import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
 import java.text.SimpleDateFormat
@@ -20,6 +22,10 @@ import java.util.*
 
 @AndroidEntryPoint
 class ReadInboxMailFragment : AppCompatDialogFragment() {
+
+    companion object {
+        fun newInstance(messageId: String): ReadInboxMailFragment = ReadInboxMailFragment().withArgs(MESSAGE_ID to messageId)
+    }
 
     private var readMailView: ReadMailView? = null
     private val viewModel by viewModels<ReadInboxMailFragmentViewModel>()

@@ -13,15 +13,23 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
+import net.noliaware.yumi.commun.MANAGED_PROFILES_DATA
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
+import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.controllers.MainActivity
 import net.noliaware.yumi.feature_login.presentation.views.AccountCategoryView
 import net.noliaware.yumi.feature_login.presentation.views.AccountItemView.AccountItemViewAdapter
 import net.noliaware.yumi.feature_login.presentation.views.AccountsListView
+import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 
 @AndroidEntryPoint
 class AccountsListFragment : AppCompatDialogFragment() {
+
+    companion object {
+        fun newInstance(userProfiles: List<UserProfile>): AccountsListFragment =
+            AccountsListFragment().withArgs(MANAGED_PROFILES_DATA to userProfiles)
+    }
 
     private var accountsListView: AccountsListView? = null
     private val viewModel: AccountsListFragmentViewModel by viewModels()

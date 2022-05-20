@@ -12,9 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.QR_CODE
 import net.noliaware.yumi.commun.QR_CODE_FRAGMENT_TAG
-import net.noliaware.yumi.commun.QR_CODE_SIZE
+import net.noliaware.yumi.commun.VOUCHER_ID
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
@@ -24,6 +23,11 @@ import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsV
 
 @AndroidEntryPoint
 class VoucherDetailsFragment : AppCompatDialogFragment() {
+
+    companion object {
+        fun newInstance(voucherId: String): VoucherDetailsFragment =
+            VoucherDetailsFragment().withArgs(VOUCHER_ID to voucherId)
+    }
 
     private var vouchersDetailsView: VouchersDetailsView? = null
     private val viewModel by viewModels<VoucherDetailsFragmentViewModel>()
@@ -89,11 +93,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
             override fun onUseVoucherButtonClicked() {
                 viewModel.stateFlow.value.data?.voucherCode?.let { voucherCode ->
-                    QrCodeFragment()
-                        .withArgs(
-                            QR_CODE to voucherCode,
-                            QR_CODE_SIZE to resources.displayMetrics.widthPixels
-                        )
+                    QrCodeFragment.newInstance(voucherCode, resources.displayMetrics.widthPixels)
                         .show(childFragmentManager.beginTransaction(), QR_CODE_FRAGMENT_TAG)
                 }
             }

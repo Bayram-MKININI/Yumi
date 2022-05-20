@@ -14,13 +14,21 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
+import net.noliaware.yumi.commun.util.withArgs
+import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.presentation.views.SendMailView
 import net.noliaware.yumi.feature_message.presentation.views.SendMailView.SendMailViewCallback
 
 @AndroidEntryPoint
 class SendMailFragment : AppCompatDialogFragment() {
+
+    companion object {
+        fun newInstance(messageSubjects: List<MessageSubject>?): SendMailFragment =
+            SendMailFragment().withArgs(MESSAGE_SUBJECTS_DATA to messageSubjects)
+    }
 
     private var sendMailView: SendMailView? = null
     private val viewModel by viewModels<SendMailFragmentViewModel>()

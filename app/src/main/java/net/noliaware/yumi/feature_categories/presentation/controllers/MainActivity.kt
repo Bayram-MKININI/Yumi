@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
-import net.noliaware.yumi.commun.util.withArgs
+import net.noliaware.yumi.feature_login.domain.model.AccountData
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().run {
             replace(
                 R.id.main_fragment_container,
-                HomeFragment().withArgs(ACCOUNT_DATA to intent.getSerializableExtra(ACCOUNT_DATA))
+                HomeFragment.newInstance(intent.getSerializableExtra(ACCOUNT_DATA) as AccountData)
             )
             commit()
         }

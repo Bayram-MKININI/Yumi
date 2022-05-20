@@ -10,7 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.MESSAGE_ID
 import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
 import net.noliaware.yumi.commun.READ_MESSAGE_FRAGMENT_TAG
 import net.noliaware.yumi.commun.SEND_MESSAGES_FRAGMENT_TAG
@@ -18,6 +17,7 @@ import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
+import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.domain.model.Message
 import net.noliaware.yumi.feature_message.domain.model.MessageOrigin
 import net.noliaware.yumi.feature_message.presentation.views.MailItemView.MailItemViewAdapter
@@ -25,6 +25,11 @@ import net.noliaware.yumi.feature_message.presentation.views.MailView
 
 @AndroidEntryPoint
 class MailFragment : Fragment() {
+
+    companion object {
+        fun newInstance(messageSubjects: List<MessageSubject>?): MailFragment =
+            MailFragment().withArgs(MESSAGE_SUBJECTS_DATA to messageSubjects)
+    }
 
     private var mailView: MailView? = null
     private val viewModel by viewModels<MailFragmentViewModel>()
@@ -51,8 +56,7 @@ class MailFragment : Fragment() {
                     when (message.messageOrigin) {
 
                         MessageOrigin.INBOX -> {
-                            ReadInboxMailFragment()
-                                .withArgs(MESSAGE_ID to message.messageId)
+                            ReadInboxMailFragment.newInstance(message.messageId)
                                 .show(
                                     requireActivity().supportFragmentManager.beginTransaction(),
                                     READ_MESSAGE_FRAGMENT_TAG
@@ -60,8 +64,7 @@ class MailFragment : Fragment() {
                         }
 
                         MessageOrigin.OUTBOX -> {
-                            ReadOutboxMailFragment()
-                                .withArgs(MESSAGE_ID to message.messageId)
+                            ReadOutboxMailFragment.newInstance(message.messageId)
                                 .show(
                                     requireActivity().supportFragmentManager.beginTransaction(),
                                     READ_MESSAGE_FRAGMENT_TAG
@@ -73,8 +76,7 @@ class MailFragment : Fragment() {
             }
 
             override fun onComposeButtonClicked() {
-                SendMailFragment()
-                    .withArgs(MESSAGE_SUBJECTS_DATA to viewModel.messageSubjects)
+                SendMailFragment.newInstance(viewModel.messageSubjects)
                     .show(
                         requireActivity().supportFragmentManager.beginTransaction(),
                         SEND_MESSAGES_FRAGMENT_TAG

@@ -10,12 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.CATEGORY_ID
 import net.noliaware.yumi.commun.USED_VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
-import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.controllers.VouchersListFragment
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
@@ -151,8 +149,7 @@ class UserProfileFragment : Fragment() {
                 val categoryId = viewModel.stateFlow.value.data?.categories?.get(index)?.categoryId
 
                 categoryId?.let {
-                    VouchersListFragment()
-                        .withArgs(CATEGORY_ID to it)
+                    VouchersListFragment.newInstance(it)
                         .show(
                             childFragmentManager.beginTransaction(),
                             USED_VOUCHERS_LIST_FRAGMENT_TAG

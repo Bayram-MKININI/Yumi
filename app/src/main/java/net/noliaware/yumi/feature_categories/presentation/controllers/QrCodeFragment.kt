@@ -10,11 +10,22 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.QR_CODE
+import net.noliaware.yumi.commun.QR_CODE_SIZE
+import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.views.QrCodeView
 import net.noliaware.yumi.feature_categories.presentation.views.QrCodeView.QrCodeViewCallback
 
 @AndroidEntryPoint
 class QrCodeFragment : AppCompatDialogFragment() {
+
+    companion object {
+        fun newInstance(qrCode: String, qrCodeSize: Int): QrCodeFragment =
+            QrCodeFragment().withArgs(
+                QR_CODE to qrCode,
+                QR_CODE_SIZE to qrCodeSize
+            )
+    }
 
     private var qrCodeView: QrCodeView? = null
     private val viewModel by viewModels<QrCodeFragmentViewModel>()

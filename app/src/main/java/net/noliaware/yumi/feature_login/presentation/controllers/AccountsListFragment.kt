@@ -85,7 +85,7 @@ class AccountsListFragment : AppCompatDialogFragment() {
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventFlow.collectLatest { sharedEvent ->
+            viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreen(sharedEvent)
             }
@@ -93,7 +93,7 @@ class AccountsListFragment : AppCompatDialogFragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
 
-            viewModel.stateFlow.collect { vmState ->
+            viewModel.eventsHelper.stateFlow.collect { vmState ->
                 vmState.data?.let { accountData ->
 
                     activity?.finish()

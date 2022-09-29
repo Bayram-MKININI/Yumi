@@ -1,6 +1,5 @@
 package net.noliaware.yumi.commun.presentation
 
-import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -9,15 +8,15 @@ import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.UIEvent
 import net.noliaware.yumi.commun.util.ViewModelState
 
-abstract class BaseViewModel<T> : ViewModel() {
+class EventsHelper<S> {
 
-    private val _stateFlow = MutableStateFlow(ViewModelState<T>())
+    private val _stateFlow = MutableStateFlow(ViewModelState<S>())
     val stateFlow = _stateFlow.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    internal suspend fun handleResponse(result: Resource<T>) {
+    suspend fun handleResponse(result: Resource<S>) {
         when (result) {
             is Resource.Success -> {
                 result.data?.let {

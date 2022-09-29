@@ -92,7 +92,7 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
     fun EditText.setOnConsistentClickListener(doOnClick: (View) -> Unit) {
         val gestureDetector =
             GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onSingleTapUp(event: MotionEvent?): Boolean {
+                override fun onSingleTapUp(event: MotionEvent): Boolean {
                     doOnClick(this@setOnConsistentClickListener)
                     return false
                 }

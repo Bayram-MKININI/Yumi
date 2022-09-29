@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDialogFragment
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -51,14 +50,14 @@ class UsedVouchersListFragment : AppCompatDialogFragment() {
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventFlow.collectLatest { sharedEvent ->
+            viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreen(sharedEvent)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.stateFlow.collect { vmState ->
+            viewModel.eventsHelper.stateFlow.collect { vmState ->
                 vmState.data?.let { voucherList ->
                     bindViewToData(voucherList)
                 }
@@ -71,12 +70,11 @@ class UsedVouchersListFragment : AppCompatDialogFragment() {
         voucherList.map { voucher ->
             VoucherItemViewAdapter(
                 title = voucher.productLabel ?: "",
-                status = "Vérification en cours",
-                statusColor = ContextCompat.getColor(requireContext(), R.color.orange),
-                description = voucher.productLabel + " " + voucher.retailerLabel
+                expiryDate = getString(R.string.expiry_date, voucher.voucherExpiryDate),
+                description = getString(R.string.retailer, voucher.retailerLabel)
             )
         }.also {
-            vouchersListView?.fillViewWithData(it)
+            vouchersListView?.fillViewWithData(viewModel.categoryLabel, it)
         }
     }
 
@@ -88,7 +86,7 @@ class UsedVouchersListFragment : AppCompatDialogFragment() {
 
             override fun onItemClickedAtIndex(index: Int) {
 
-                viewModel.stateFlow.value.data?.get(index)?.voucherId?.let { voucherId ->
+                viewModel.eventsHelper.stateFlow.value.data?.get(index)?.voucherId?.let { voucherId ->
                     VoucherDetailsFragment.newInstance(voucherId)
                         .show(childFragmentManager.beginTransaction(), VOUCHER_DETAILS_FRAGMENT_TAG)
                 }

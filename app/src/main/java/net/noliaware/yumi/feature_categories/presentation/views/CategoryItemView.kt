@@ -6,7 +6,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.drawableIdByName
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.layoutToTopRight
 
 class CategoryItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
@@ -51,7 +54,10 @@ class CategoryItemView(context: Context, attrs: AttributeSet?) : ViewGroup(conte
             MeasureSpec.makeMeasureSpec(viewWidth / 3, MeasureSpec.EXACTLY)
         )
 
-        titleTextView.measureWrapContent()
+        titleTextView.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth * 9 / 10, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        )
 
         setMeasuredDimension(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),

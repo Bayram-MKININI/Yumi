@@ -80,6 +80,26 @@ suspend fun <T> FlowCollector<Resource<T>>.handleSessionAndFailureIfAny(
     return false
 }
 
+fun handleSessionAndFailureIfAny(
+    session: SessionDTO?,
+    sessionData: SessionData,
+    error: ErrorDTO?
+): String? {
+
+    session?.let { sessionDTO ->
+        sessionData.apply {
+            sessionId = sessionDTO.sessionId
+            sessionToken = sessionDTO.sessionToken
+        }
+    }
+
+    error?.let { errorDTO ->
+        return errorDTO.errorMessage
+    }
+
+    return null
+}
+
 fun Fragment.handleSharedEvent(sharedEvent: UIEvent) {
 
     when (sharedEvent) {
@@ -136,7 +156,8 @@ suspend inline fun <T> handleWSResult(
     }
 }
 
-fun <T : Fragment> T.withArgs(vararg pairs: Pair<String, Any?>) = apply { arguments = bundleOf(*pairs) }
+fun <T : Fragment> T.withArgs(vararg pairs: Pair<String, Any?>) =
+    apply { arguments = bundleOf(*pairs) }
 
 fun ViewGroup.inflate(layoutRes: Int, attachToRoot: Boolean): View =
     LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)

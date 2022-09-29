@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -17,6 +17,7 @@ import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
+import net.noliaware.yumi.feature_categories.presentation.controllers.HomeFragmentViewModel
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.domain.model.Message
 import net.noliaware.yumi.feature_message.domain.model.MessageOrigin
@@ -32,7 +33,7 @@ class MailFragment : Fragment() {
     }
 
     private var mailView: MailView? = null
-    private val viewModel by viewModels<MailFragmentViewModel>()
+    private val viewModel by activityViewModels<HomeFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +50,7 @@ class MailFragment : Fragment() {
         object : MailView.MailViewCallback {
             override fun onItemClickedAtIndex(index: Int) {
 
-                val message = viewModel.stateFlow.value.data?.get(index)
+                val message = viewModel.messageListEventsHelper.stateFlow.value.data?.get(index)
 
                 message?.let {
 
@@ -88,19 +89,20 @@ class MailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         collectFlows()
+        viewModel.callGetInboxMessageList()
     }
 
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventFlow.collectLatest { sharedEvent ->
+            viewModel.messageListEventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreen(sharedEvent)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.stateFlow.collect { vmState ->
+            viewModel.messageListEventsHelper.stateFlow.collect { vmState ->
                 vmState.data?.let { messageList ->
                     bindViewToData(messageList)
                 }

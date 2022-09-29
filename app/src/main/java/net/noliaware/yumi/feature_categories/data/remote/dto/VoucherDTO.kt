@@ -28,18 +28,20 @@ data class VoucherDTO(
     val retailerAddress: String?,
     @Json(name = "retailerAddressComplement")
     val retailerAddressComplement: String?,
-    @Json(name = "retailerZipcode")
-    val retailerZipcode: String?,
+    @Json(name = "retailerPostcode")
+    val retailerPostcode: String?,
     @Json(name = "retailerCity")
     val retailerCity: String?,
+    @Json(name = "retailerCountry")
+    val retailerCountry: String?,
     @Json(name = "retailerAddressLatitude")
     val retailerAddressAltitude: String?,
     @Json(name = "retailerAddressLongitude")
     val retailerAddressLongitude: String?,
-    @Json(name = "retailerPhone")
-    val retailerPhone: String?,
-    @Json(name = "retailerMobile")
-    val retailerMobile: String?,
+    @Json(name = "retailerPhoneNumber")
+    val retailerPhoneNumber: String?,
+    @Json(name = "retailerCellPhoneNumber")
+    val retailerCellPhoneNumber: String?,
     @Json(name = "retailerEmail")
     val retailerEmail: String?,
     @Json(name = "retailerWebsite")
@@ -63,12 +65,13 @@ data class VoucherDTO(
         retailerLabel = retailerLabel,
         retailerAddress = retailerAddress,
         retailerAddressComplement = retailerAddressComplement,
-        retailerZipcode = retailerZipcode,
+        retailerPostcode = retailerPostcode,
         retailerCity = retailerCity,
+        retailerCountry = retailerCountry,
         retailerAddressAltitude = retailerAddressAltitude,
         retailerAddressLongitude = retailerAddressLongitude,
-        retailerPhone = retailerPhone,
-        retailerMobile = retailerMobile,
+        retailerPhoneNumber = retailerPhoneNumber,
+        retailerCellPhoneNumber = retailerCellPhoneNumber,
         retailerEmail = retailerEmail,
         retailerWebsite = retailerWebsite,
         partnerDisplayText = partnerDisplayText,

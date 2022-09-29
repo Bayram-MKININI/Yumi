@@ -58,8 +58,12 @@ class LoginParentView(context: Context, attrs: AttributeSet?) : ViewGroup(contex
         passwordView.fillPadViewWithData(padDigits)
     }
 
-    fun fillSecretDigitAtIndex(index: Int) {
-        passwordView.fillSecretDigitAtIndex(index)
+    fun addSecretDigit() {
+        passwordView.addSecretDigit()
+    }
+
+    fun removeOneSecretDigit() {
+        passwordView.removeOneSecretDigit()
     }
 
     fun clearSecretDigits() {

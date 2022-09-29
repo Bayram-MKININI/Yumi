@@ -5,7 +5,7 @@ import java.io.Serializable
 
 data class UserProfile(
     val login: String?,
-    val userRef: String?,
+    val userReferent: String?,
     val issuedVoucherCount: Int,
     val usedVoucherCount: Int,
     val availableVoucherCount: Int,
@@ -17,10 +17,12 @@ data class UserProfile(
     val lastName: String?,
     val birthDate: String?,
     val birthCity: String?,
+    val birthCountry: String?,
     val address: String?,
     val addressComplement: String?,
-    val zipcode: String?,
+    val postCode: String?,
     val city: String?,
+    val country: String?,
     val phoneNumber: String?,
     val cellPhoneNumber: String?,
     val email: String?

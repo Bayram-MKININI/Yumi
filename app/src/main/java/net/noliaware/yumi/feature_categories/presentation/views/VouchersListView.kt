@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.adapters.BaseAdapter
-import net.noliaware.yumi.commun.util.MarginItemDecoration
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.presentation.views.VoucherItemView.VoucherItemViewAdapter
 
@@ -61,7 +60,9 @@ class VouchersListView(context: Context, attrs: AttributeSet?) : ViewGroup(conte
         }
     }
 
-    fun fillViewWithData(adaptersList: List<VoucherItemViewAdapter>) {
+    fun fillViewWithData(title: String, adaptersList: List<VoucherItemViewAdapter>) {
+
+        titleTextView.text = title
 
         if (voucherItemViewAdaptersList.isNotEmpty())
             voucherItemViewAdaptersList.clear()
@@ -76,7 +77,10 @@ class VouchersListView(context: Context, attrs: AttributeSet?) : ViewGroup(conte
 
         backView.measureWrapContent()
 
-        titleTextView.measureWrapContent()
+        titleTextView.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth * 9 / 10, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        )
 
         val recyclerViewHeight =
             viewHeight - (backView.measuredHeight + titleTextView.measuredHeight + getStatusBarHeight() + convertDpToPx(

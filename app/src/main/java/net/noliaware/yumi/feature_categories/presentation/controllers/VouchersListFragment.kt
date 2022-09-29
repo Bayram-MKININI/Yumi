@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDialogFragment
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.CATEGORY_ID
+import net.noliaware.yumi.commun.CATEGORY_LABEL
 import net.noliaware.yumi.commun.VOUCHER_DETAILS_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
@@ -26,8 +26,11 @@ import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
 class VouchersListFragment : AppCompatDialogFragment() {
 
     companion object {
-        fun newInstance(categoryId: String): VouchersListFragment =
-            VouchersListFragment().withArgs(CATEGORY_ID to categoryId)
+        fun newInstance(categoryId: String, categoryLabel: String): VouchersListFragment =
+            VouchersListFragment().withArgs(
+                CATEGORY_ID to categoryId,
+                CATEGORY_LABEL to categoryLabel
+            )
     }
 
     private var vouchersListView: VouchersListView? = null
@@ -39,9 +42,7 @@ class VouchersListFragment : AppCompatDialogFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.vouchers_list_layout, container, false).apply {
             vouchersListView = this as VouchersListView
@@ -57,14 +58,14 @@ class VouchersListFragment : AppCompatDialogFragment() {
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventFlow.collectLatest { sharedEvent ->
+            viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreen(sharedEvent)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.stateFlow.collect { vmState ->
+            viewModel.eventsHelper.stateFlow.collect { vmState ->
                 vmState.data?.let { voucherList ->
                     bindViewToData(voucherList)
                 }
@@ -77,12 +78,11 @@ class VouchersListFragment : AppCompatDialogFragment() {
         voucherList.map { voucher ->
             VoucherItemViewAdapter(
                 title = voucher.productLabel ?: "",
-                status = "Vérification en cours",
-                statusColor = ContextCompat.getColor(requireContext(), R.color.orange),
-                description = voucher.productLabel + " " + voucher.retailerLabel
+                expiryDate = getString(R.string.expiry_date, voucher.voucherExpiryDate),
+                description = getString(R.string.retailer, voucher.retailerLabel)
             )
         }.also {
-            vouchersListView?.fillViewWithData(it)
+            vouchersListView?.fillViewWithData(viewModel.categoryLabel, it)
         }
     }
 
@@ -94,7 +94,7 @@ class VouchersListFragment : AppCompatDialogFragment() {
 
             override fun onItemClickedAtIndex(index: Int) {
 
-                viewModel.stateFlow.value.data?.get(index)?.voucherId?.let { voucherId ->
+                viewModel.eventsHelper.stateFlow.value.data?.get(index)?.voucherId?.let { voucherId ->
                     VoucherDetailsFragment.newInstance(voucherId)
                         .show(childFragmentManager.beginTransaction(), VOUCHER_DETAILS_FRAGMENT_TAG)
                 }

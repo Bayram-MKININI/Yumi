@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
-import net.noliaware.yumi.feature_profile.presentation.views.ProfileDataView.ProfileDataViewAdapter
 
 class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
@@ -23,8 +23,8 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
     var callback: ProfileViewCallback? by weak()
 
     data class ProfileViewAdapter(
-        val myDataAdapters: MutableList<ProfileDataViewAdapter> = mutableListOf(),
-        val complementaryDataAdapters: MutableList<ProfileDataViewAdapter> = mutableListOf(),
+        val myDataAdapters: MutableList<DataValueView.DataValueViewAdapter> = mutableListOf(),
+        val complementaryDataAdapters: MutableList<DataValueView.DataValueViewAdapter> = mutableListOf(),
         val categoryItemViewAdapters: MutableList<CategoryItemViewAdapter> = mutableListOf()
     )
 
@@ -49,14 +49,14 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
     fun fillViewWithData(profileViewAdapter: ProfileViewAdapter) {
 
         profileViewAdapter.myDataAdapters.forEach { profileDataViewAdapter ->
-            ProfileDataView(context).also {
+            DataValueView(context).also {
                 it.fillViewWithData(profileDataViewAdapter)
                 myDataLinearLayout.addView(it)
             }
         }
 
         profileViewAdapter.complementaryDataAdapters.forEach { profileDataViewAdapter ->
-            ProfileDataView(context).also {
+            DataValueView(context).also {
                 it.fillViewWithData(profileDataViewAdapter)
                 complementaryDataLinearLayout.addView(it)
             }

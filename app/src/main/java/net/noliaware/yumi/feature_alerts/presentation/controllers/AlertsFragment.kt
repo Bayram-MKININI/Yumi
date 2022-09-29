@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -16,6 +16,7 @@ import net.noliaware.yumi.feature_alerts.domain.model.Alert
 import net.noliaware.yumi.feature_alerts.domain.model.AlertPriority
 import net.noliaware.yumi.feature_alerts.presentation.views.AlertItemView.AlertItemViewAdapter
 import net.noliaware.yumi.feature_alerts.presentation.views.AlertsView
+import net.noliaware.yumi.feature_categories.presentation.controllers.HomeFragmentViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -23,7 +24,7 @@ import java.util.*
 class AlertsFragment : Fragment() {
 
     private var alertsView: AlertsView? = null
-    private val viewModel by viewModels<AlertsFragmentViewModel>()
+    private val viewModel by activityViewModels<HomeFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,19 +39,20 @@ class AlertsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         collectFlows()
+        viewModel.callGetAlertList()
     }
 
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventFlow.collectLatest { sharedEvent ->
+            viewModel.alertListEventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreen(sharedEvent)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.stateFlow.collect { vmState ->
+            viewModel.alertListEventsHelper.stateFlow.collect { vmState ->
                 vmState.data?.let { alertList ->
                     bindViewToData(alertList)
                 }

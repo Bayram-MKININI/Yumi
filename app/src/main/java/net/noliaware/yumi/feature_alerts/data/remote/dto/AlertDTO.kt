@@ -7,13 +7,13 @@ import net.noliaware.yumi.feature_alerts.domain.model.Alert
 @JsonClass(generateAdapter = true)
 data class AlertDTO(
     @Json(name = "alertId")
-    val alertId: Int,
+    val alertId: String,
     @Json(name = "alertDate")
     val alertDate: String,
     @Json(name = "alertTime")
     val alertTime: String,
-    @Json(name = "alertType")
-    val alertType: Int,
+    @Json(name = "alertLevel")
+    val alertLevel: Int,
     @Json(name = "alertRank")
     val alertRank: Int,
     @Json(name = "alertText")
@@ -25,7 +25,7 @@ data class AlertDTO(
         alertId = alertId,
         alertDate = alertDate,
         alertTime = alertTime,
-        alertType = alertType,
+        alertLevel = alertLevel,
         alertRank = alertRank,
         alertText = alertText,
         alertTotal = alertTotal

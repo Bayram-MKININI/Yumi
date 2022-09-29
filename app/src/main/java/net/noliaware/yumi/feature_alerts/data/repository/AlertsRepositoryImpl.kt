@@ -1,7 +1,6 @@
 package net.noliaware.yumi.feature_alerts.data.repository
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import android.util.Log
 import net.noliaware.yumi.commun.GET_ALERT_LIST
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
@@ -16,9 +15,9 @@ class AlertsRepositoryImpl(
     private val sessionData: SessionData
 ) : AlertsRepository {
 
-    override fun getAlertList(): Flow<Resource<List<Alert>>> = flow {
+    override suspend fun getAlertList(): Resource<List<Alert>> {
 
-        emit(Resource.Loading())
+        var errorType: ErrorType = ErrorType.SYSTEM_ERROR
 
         try {
 
@@ -36,22 +35,25 @@ class AlertsRepositoryImpl(
                 params = getCommonWSParams(sessionData)
             )
 
-            val sessionNoFailure =
-                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
+            handleSessionAndFailureIfAny(
+                remoteData.session,
+                sessionData,
+                remoteData.error
+            )?.let { errorMessage ->
+                return Resource.Error(ErrorType.RECOVERABLE_ERROR, errorMessage = errorMessage)
+            }
 
-            if (sessionNoFailure) {
-                remoteData.data?.let { alertsDTO ->
-                    emit(Resource.Success(data = alertsDTO.alertDTOList.map { it.toAlert() }))
-                }
+            remoteData.data?.let { alertsDTO ->
+                Log.e("getAlerts", "Terminated")
+                return Resource.Success(data = alertsDTO.alertDTOList.map { it.toAlert() })
             }
 
         } catch (ex: HttpException) {
-
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
+            errorType = ErrorType.SYSTEM_ERROR
         } catch (ex: IOException) {
-
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+            errorType = ErrorType.NETWORK_ERROR
         }
+
+        return Resource.Error(errorType = errorType)
     }
 }

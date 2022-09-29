@@ -18,9 +18,9 @@ class MessageRepositoryImpl(
     private val sessionData: SessionData
 ) : MessageRepository {
 
-    override fun getMessageList(): Flow<Resource<List<Message>>> = flow {
+    override suspend fun getMessageList(): Resource<List<Message>> {
 
-        emit(Resource.Loading())
+        var errorType: ErrorType = ErrorType.SYSTEM_ERROR
 
         try {
 
@@ -38,36 +38,38 @@ class MessageRepositoryImpl(
                 params = generateGetMessagesListParams()
             )
 
-            val sessionNoFailure =
-                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
+            handleSessionAndFailureIfAny(
+                remoteData.session,
+                sessionData,
+                remoteData.error
+            )?.let { errorMessage ->
+                return Resource.Error(ErrorType.RECOVERABLE_ERROR, errorMessage = errorMessage)
+            }
 
-            if (sessionNoFailure) {
-                remoteData.data?.let { inboxMessagesDTO ->
+            remoteData.data?.let { inboxMessagesDTO ->
 
-                    val mutableList: MutableList<Message> = mutableListOf()
+                val mutableList: MutableList<Message> = mutableListOf()
 
-                    mutableList.addAll(inboxMessagesDTO.messageList.map {
-                        it.toMessage().apply {
-                            messageOrigin = MessageOrigin.INBOX
-                        }
-                    })
-
-                    getOutboxMessages().data?.let { outboxMessageList ->
-                        mutableList.addAll(outboxMessageList)
+                mutableList.addAll(inboxMessagesDTO.messageList.map {
+                    it.toMessage().apply {
+                        messageOrigin = MessageOrigin.INBOX
                     }
+                })
 
-                    emit(Resource.Success(data = mutableList))
+                getOutboxMessages().data?.let { outboxMessageList ->
+                    mutableList.addAll(outboxMessageList)
                 }
+
+                return Resource.Success(data = mutableList)
             }
 
         } catch (ex: HttpException) {
-
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
+            errorType = ErrorType.SYSTEM_ERROR
         } catch (ex: IOException) {
-
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+            errorType = ErrorType.NETWORK_ERROR
         }
+
+        return Resource.Error(errorType = errorType)
     }
 
     private fun generateGetMessagesListParams() = mutableMapOf(

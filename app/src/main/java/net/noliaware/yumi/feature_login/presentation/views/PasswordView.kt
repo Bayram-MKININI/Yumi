@@ -5,10 +5,12 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isEmpty
 import com.google.android.material.textview.MaterialTextView
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.GOLDEN_RATIO
@@ -34,12 +36,14 @@ class PasswordView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
     private lateinit var padNinthDigit: TextView
     private lateinit var padTenthDigit: TextView
 
+    private lateinit var deleteImageView: ImageView
     private lateinit var confirmTextView: TextView
 
     var callback: PasswordViewCallback? by weak()
 
     interface PasswordViewCallback {
         fun onPadClickedAtIndex(index: Int)
+        fun onDeleteButtonPressed()
         fun onConfirmButtonPressed()
     }
 
@@ -85,6 +89,9 @@ class PasswordView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         padTenthDigit = findViewById(R.id.pad_tenth_digit)
         padTenthDigit.setOnClickListener(onPadButtonClickListener)
 
+        deleteImageView = findViewById(R.id.delete_image_view)
+        deleteImageView.setOnClickListener(onActionButtonClickListener)
+
         confirmTextView = findViewById(R.id.confirm_text_view)
         confirmTextView.setOnClickListener(onActionButtonClickListener)
     }
@@ -109,6 +116,7 @@ class PasswordView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
     private val onActionButtonClickListener: OnClickListener by lazy {
         OnClickListener {
             when (it.id) {
+                R.id.delete_image_view -> callback?.onDeleteButtonPressed()
                 R.id.confirm_text_view -> callback?.onConfirmButtonPressed()
             }
         }
@@ -135,7 +143,7 @@ class PasswordView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         }
     }
 
-    fun fillSecretDigitAtIndex(index: Int) {
+    fun addSecretDigit() {
 
         val star = MaterialTextView(context).also {
             it.text = "*"
@@ -145,6 +153,11 @@ class PasswordView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         }
 
         codeLinearLayout.addView(star)
+    }
+
+    fun removeOneSecretDigit() {
+        if (!codeLinearLayout.isEmpty())
+            codeLinearLayout.removeViewAt(codeLinearLayout.childCount - 1)
     }
 
     fun clearSecretDigits() {
@@ -185,6 +198,11 @@ class PasswordView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         measurePadView(padEighthDigit)
         measurePadView(padNinthDigit)
         measurePadView(padTenthDigit)
+
+        deleteImageView.measure(
+            MeasureSpec.makeMeasureSpec(convertDpToPx(47), MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(35), MeasureSpec.EXACTLY)
+        )
 
         confirmTextView.measure(
             MeasureSpec.makeMeasureSpec(viewWidth * 7 / 10, MeasureSpec.EXACTLY),
@@ -280,6 +298,11 @@ class PasswordView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         padTenthDigit.layoutToTopLeft(
             padNinthDigit.right + spaceBetweenPads,
             padSixthDigit.top
+        )
+
+        deleteImageView.layoutToTopRight(
+            padTenthDigit.right,
+            padTenthDigit.bottom + spaceBetweenPads
         )
 
         confirmTextView.layoutToBottomLeft(

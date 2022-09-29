@@ -5,19 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.USED_VOUCHERS_LIST_FRAGMENT_TAG
+import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
+import net.noliaware.yumi.feature_categories.presentation.controllers.HomeFragmentViewModel
 import net.noliaware.yumi.feature_categories.presentation.controllers.VouchersListFragment
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
-import net.noliaware.yumi.feature_profile.presentation.views.ProfileDataView.ProfileDataViewAdapter
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileView
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileView.ProfileViewAdapter
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileView.ProfileViewCallback
@@ -26,7 +27,7 @@ import net.noliaware.yumi.feature_profile.presentation.views.ProfileView.Profile
 class UserProfileFragment : Fragment() {
 
     private var profileView: ProfileView? = null
-    private val viewModel by viewModels<UserProfileFragmentViewModel>()
+    private val viewModel by activityViewModels<HomeFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,19 +43,20 @@ class UserProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         collectFlows()
+        viewModel.callGetUserProfile()
     }
 
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventFlow.collectLatest { sharedEvent ->
+            viewModel.userProfileEventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreen(sharedEvent)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.stateFlow.collect { vmState ->
+            viewModel.userProfileEventsHelper.stateFlow.collect { vmState ->
                 vmState.data?.let { userProfile ->
                     bindViewToData(userProfile)
                 }
@@ -76,50 +78,81 @@ class UserProfileFragment : Fragment() {
         userProfile: UserProfile
     ) {
 
-        ProfileDataViewAdapter(
+        DataValueView.DataValueViewAdapter(
+            title = getString(R.string.login),
+            value = userProfile.login ?: ""
+        ).also {
+            profileViewAdapter.myDataAdapters.add(it)
+        }
+
+        DataValueView.DataValueViewAdapter(
             title = getString(R.string.surname),
             value = userProfile.lastName ?: ""
         ).also {
             profileViewAdapter.myDataAdapters.add(it)
         }
 
-        ProfileDataViewAdapter(
+        DataValueView.DataValueViewAdapter(
             title = getString(R.string.name),
             value = userProfile.firstName ?: ""
         ).also {
             profileViewAdapter.myDataAdapters.add(it)
         }
 
-        ProfileDataViewAdapter(
+        DataValueView.DataValueViewAdapter(
             title = getString(R.string.birth),
-            value = getString(R.string.birth_data, userProfile.birthDate, userProfile.birthCity)
+            value = getString(
+                R.string.birth_data,
+                userProfile.birthDate,
+                userProfile.birthCity,
+                userProfile.birthCountry
+            )
         ).also {
             profileViewAdapter.myDataAdapters.add(it)
         }
 
-        ProfileDataViewAdapter(
-            title = getString(R.string.occupation),
-            value = userProfile.userJob ?: ""
-        ).also {
-            profileViewAdapter.myDataAdapters.add(it)
+        userProfile.userJob?.let { userJob ->
+            DataValueView.DataValueViewAdapter(
+                title = getString(R.string.occupation),
+                value = userJob
+            ).also {
+                profileViewAdapter.myDataAdapters.add(it)
+            }
         }
 
-        ProfileDataViewAdapter(
+        userProfile.userReferent?.let { userReferent ->
+            DataValueView.DataValueViewAdapter(
+                title = getString(R.string.referent),
+                value = userReferent
+            ).also {
+                profileViewAdapter.myDataAdapters.add(it)
+            }
+        }
+
+        DataValueView.DataValueViewAdapter(
             title = getString(R.string.phone_numbers),
             value = userProfile.cellPhoneNumber ?: ""
         ).also {
             profileViewAdapter.complementaryDataAdapters.add(it)
         }
 
-        ProfileDataViewAdapter(
+        val address = StringBuilder().apply {
+            append(userProfile.address)
+            append(getString(R.string.new_line))
+            if (userProfile.addressComplement?.isNotBlank() == true) {
+                append(userProfile.addressComplement)
+                append(getString(R.string.new_line))
+            }
+            append(userProfile.city)
+            append(getString(R.string.new_line))
+            append(userProfile.postCode)
+            append(getString(R.string.new_line))
+            append(userProfile.country)
+        }.toString()
+
+        DataValueView.DataValueViewAdapter(
             title = getString(R.string.address),
-            value = getString(
-                R.string.address_data,
-                userProfile.address,
-                userProfile.addressComplement,
-                userProfile.zipcode,
-                userProfile.city
-            )
+            value = address
         ).also {
             profileViewAdapter.complementaryDataAdapters.add(it)
         }
@@ -146,10 +179,11 @@ class UserProfileFragment : Fragment() {
 
             override fun onCategoryClickedAtIndex(index: Int) {
 
-                val categoryId = viewModel.stateFlow.value.data?.categories?.get(index)?.categoryId
+                val category =
+                    viewModel.userProfileEventsHelper.stateFlow.value.data?.categories?.get(index)
 
-                categoryId?.let {
-                    VouchersListFragment.newInstance(it)
+                category?.let { category ->
+                    VouchersListFragment.newInstance(category.categoryId, category.categoryLabel)
                         .show(
                             childFragmentManager.beginTransaction(),
                             USED_VOUCHERS_LIST_FRAGMENT_TAG

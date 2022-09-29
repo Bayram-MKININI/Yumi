@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
@@ -27,7 +27,7 @@ class HomeFragment : Fragment() {
     }
 
     private var homeView: HomeView? = null
-    private val viewModel by viewModels<HomeFragmentViewModel>()
+    private val viewModel by activityViewModels<HomeFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,7 +76,7 @@ class HomeFragment : Fragment() {
         childFragmentManager.beginTransaction().run {
             replace(
                 R.id.main_fragment_container,
-                CategoriesFragment.newInstance(viewModel.accountData?.categories)
+                CategoriesFragment.newInstance()
             )
             commitAllowingStateLoss()
             homeView?.selectHomeButton()

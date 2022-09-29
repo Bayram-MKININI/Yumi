@@ -150,7 +150,12 @@ class LoginFragment : Fragment() {
                     return
 
                 passwordIndexes.add(index)
-                loginParentView?.fillSecretDigitAtIndex(passwordIndexes.size - 1)
+                loginParentView?.addSecretDigit()
+            }
+
+            override fun onDeleteButtonPressed() {
+                passwordIndexes.removeLastOrNull()
+                loginParentView?.removeOneSecretDigit()
             }
 
             override fun onConfirmButtonPressed() {

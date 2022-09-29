@@ -21,9 +21,9 @@ class ProfileRepositoryImpl(
     private val sessionData: SessionData
 ) : ProfileRepository {
 
-    override fun getUserProfile(): Flow<Resource<UserProfile>> = flow {
+    override suspend fun getUserProfile(): Resource<UserProfile> {
 
-        emit(Resource.Loading())
+        var errorType: ErrorType = ErrorType.SYSTEM_ERROR
 
         try {
 
@@ -43,11 +43,9 @@ class ProfileRepositoryImpl(
 
             remoteData.error?.let { errorDTO ->
 
-                emit(
-                    Resource.Error(
-                        errorType = ErrorType.SYSTEM_ERROR,
-                        errorMessage = errorDTO.errorMessage
-                    )
+                return Resource.Error(
+                    errorType = ErrorType.SYSTEM_ERROR,
+                    errorMessage = errorDTO.errorMessage
                 )
 
             } ?: run {
@@ -67,18 +65,17 @@ class ProfileRepositoryImpl(
                         }
                     }
 
-                    emit(Resource.Success(data = userProfile))
+                    return Resource.Success(data = userProfile)
                 }
             }
 
         } catch (ex: HttpException) {
-
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
+            errorType = ErrorType.SYSTEM_ERROR
         } catch (ex: IOException) {
-
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+            errorType = ErrorType.NETWORK_ERROR
         }
+
+        return Resource.Error(errorType = errorType)
     }
 
     private suspend fun getUsedCategories(): Resource<List<Category>> {

@@ -12,13 +12,12 @@ import net.noliaware.yumi.commun.util.measureWrapContent
 class VoucherItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
     private lateinit var titleTextView: TextView
-    private lateinit var statusTextView: TextView
+    private lateinit var expiryDateTextView: TextView
     private lateinit var descriptionTextView: TextView
 
     data class VoucherItemViewAdapter(
         val title: String = "",
-        val status: String = "",
-        val statusColor: Int = -1,
+        val expiryDate: String = "",
         val description: String = ""
     )
 
@@ -29,14 +28,13 @@ class VoucherItemView(context: Context, attrs: AttributeSet?) : ViewGroup(contex
 
     private fun initView() {
         titleTextView = findViewById(R.id.title_text_view)
-        statusTextView = findViewById(R.id.status_text_view)
+        expiryDateTextView = findViewById(R.id.expiry_date_text_view)
         descriptionTextView = findViewById(R.id.description_text_view)
     }
 
     fun fillViewWithData(voucherItemViewAdapter: VoucherItemViewAdapter) {
         titleTextView.text = voucherItemViewAdapter.title
-        statusTextView.text = voucherItemViewAdapter.status
-        statusTextView.setTextColor(voucherItemViewAdapter.statusColor)
+        expiryDateTextView.text = voucherItemViewAdapter.expiryDate
         descriptionTextView.text = voucherItemViewAdapter.description
     }
 
@@ -46,7 +44,7 @@ class VoucherItemView(context: Context, attrs: AttributeSet?) : ViewGroup(contex
 
         titleTextView.measureWrapContent()
 
-        statusTextView.measureWrapContent()
+        expiryDateTextView.measureWrapContent()
 
         descriptionTextView.measure(
             MeasureSpec.makeMeasureSpec(viewWidth * 9 / 10, MeasureSpec.AT_MOST),
@@ -54,7 +52,7 @@ class VoucherItemView(context: Context, attrs: AttributeSet?) : ViewGroup(contex
         )
 
         viewHeight =
-            titleTextView.measuredHeight + statusTextView.measuredHeight + descriptionTextView.measuredHeight + convertDpToPx(
+            titleTextView.measuredHeight + expiryDateTextView.measuredHeight + descriptionTextView.measuredHeight + convertDpToPx(
                 40
             )
 
@@ -73,14 +71,14 @@ class VoucherItemView(context: Context, attrs: AttributeSet?) : ViewGroup(contex
             convertDpToPx(15)
         )
 
-        statusTextView.layoutToTopLeft(
+        expiryDateTextView.layoutToTopLeft(
             convertDpToPx(15),
             titleTextView.bottom + convertDpToPx(5)
         )
 
         descriptionTextView.layoutToTopLeft(
             convertDpToPx(15),
-            statusTextView.bottom + convertDpToPx(5)
+            expiryDateTextView.bottom + convertDpToPx(5)
         )
     }
 }

@@ -5,14 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.CATEGORIES_DATA
 import net.noliaware.yumi.commun.VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.inflate
-import net.noliaware.yumi.commun.util.withArgs
-import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewAdapter
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewCallback
@@ -22,12 +19,11 @@ import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView
 class CategoriesFragment : Fragment() {
 
     companion object {
-        fun newInstance(categories: List<Category>?): CategoriesFragment =
-            CategoriesFragment().withArgs(CATEGORIES_DATA to categories)
+        fun newInstance(): CategoriesFragment = CategoriesFragment()
     }
 
     private var categoriesView: CategoriesView? = null
-    private val viewModel by viewModels<CategoriesFragmentViewModel>()
+    private val viewModel by activityViewModels<HomeFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,13 +40,12 @@ class CategoriesFragment : Fragment() {
         object : CategoriesViewCallback {
             override fun onItemClickedAtIndex(index: Int) {
 
-                val categoryId = viewModel.categories?.get(index)?.categoryId
-
-                categoryId?.let {
-                    VouchersListFragment.newInstance(it).show(
-                        childFragmentManager.beginTransaction(),
-                        VOUCHERS_LIST_FRAGMENT_TAG
-                    )
+                viewModel.accountData?.categories?.get(index)?.let { category ->
+                    VouchersListFragment.newInstance(category.categoryId, category.categoryLabel)
+                        .show(
+                            childFragmentManager.beginTransaction(),
+                            VOUCHERS_LIST_FRAGMENT_TAG
+                        )
                 }
             }
         }
@@ -63,7 +58,7 @@ class CategoriesFragment : Fragment() {
 
     private fun bindViewToData() {
 
-        val itemViewAdapters = viewModel.categories?.map { category ->
+        val itemViewAdapters = viewModel.accountData?.categories?.map { category ->
             CategoryItemViewAdapter(
                 count = category.voucherCount,
                 iconName = category.categoryIcon ?: "ic_food",

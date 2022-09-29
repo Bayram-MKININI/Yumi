@@ -1,25 +1,30 @@
 package net.noliaware.yumi.feature_categories.presentation.views
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.Space
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.GOLDEN_RATIO
+import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.*
 import kotlin.math.roundToInt
+
 
 class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
     private lateinit var backView: View
-    private lateinit var voucherImageView: ImageView
-    private lateinit var titleTextView: TextView
-    private lateinit var statusTextView: TextView
-    private lateinit var descriptionTextView: TextView
+    private lateinit var parentContentView: View
+    private lateinit var contentView: LinearLayoutCompat
     private lateinit var useVoucherTextView: TextView
 
     var callback: VouchersDetailsViewCallback? by weak()
@@ -28,14 +33,6 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
         fun onBackButtonClicked()
         fun onUseVoucherButtonClicked()
     }
-
-    data class VouchersDetailsViewAdapter(
-        val iconName: String = "",
-        val title: String = "",
-        val status: String = "",
-        val statusColor: Int = -1,
-        val description: String = ""
-    )
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -47,10 +44,8 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
         backView = findViewById(R.id.back_view)
         backView.setOnClickListener(onButtonClickListener)
 
-        voucherImageView = findViewById(R.id.voucher_image_view)
-        titleTextView = findViewById(R.id.title_text_view)
-        statusTextView = findViewById(R.id.status_text_view)
-        descriptionTextView = findViewById(R.id.description_text_view)
+        parentContentView = findViewById(R.id.parent_content_layout)
+        contentView = parentContentView.findViewById(R.id.content_layout)
 
         useVoucherTextView = findViewById(R.id.use_vouchers_text_view)
         useVoucherTextView.setOnClickListener(onButtonClickListener)
@@ -65,16 +60,72 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
         }
     }
 
-    fun fillViewWithData(vouchersDetailsViewAdapter: VouchersDetailsViewAdapter) {
-        voucherImageView.setImageResource(context.drawableIdByName(vouchersDetailsViewAdapter.iconName))
-        titleTextView.text = vouchersDetailsViewAdapter.title
-        statusTextView.text = vouchersDetailsViewAdapter.status
-        statusTextView.setTextColor(vouchersDetailsViewAdapter.statusColor)
-        descriptionTextView.text = vouchersDetailsViewAdapter.description
+    private fun addSpace(spaceHeight: Int) {
+        val space = Space(context)
+        space.minimumHeight = convertDpToPx(spaceHeight)
+        contentView.addView(space)
     }
 
-    fun setVoucherBitmap(bitmap: Bitmap) {
-        voucherImageView.setImageBitmap(bitmap)
+    fun addImageByDrawableName(drawableName: String) {
+        post {
+            AppCompatImageView(context).apply {
+                val imageViewSize = (measuredWidth * (1 - 1 / GOLDEN_RATIO)).roundToInt()
+                val params = LinearLayout.LayoutParams(imageViewSize, imageViewSize)
+                setImageResource(context.drawableIdByName(drawableName))
+                layoutParams = params
+            }.also {
+                contentView.addView(it)
+            }
+
+            addSpace(20)
+        }
+    }
+
+    fun addTitle(title: String) {
+        post {
+            AppCompatTextView(context).apply {
+                val params =
+                    LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+                text = title
+                textSize = 24f
+                typeface = ResourcesCompat.getFont(context, R.font.sf_pro_display_semibold)
+                setTextColor(ContextCompat.getColor(context, R.color.black_font))
+                layoutParams = params
+            }.also {
+                contentView.addView(it)
+            }
+
+            addSpace(20)
+        }
+    }
+
+    fun addText(textStr: String) {
+        post {
+            AppCompatTextView(context).apply {
+                val params =
+                    LinearLayout.LayoutParams(measuredWidth * 9 / 10, LayoutParams.WRAP_CONTENT)
+                text = textStr
+                typeface = ResourcesCompat.getFont(context, R.font.sf_pro_text_regular)
+                setTextColor(ContextCompat.getColor(context, R.color.black_font))
+                layoutParams = params
+            }.also {
+                contentView.addView(it)
+            }
+
+            addSpace(10)
+        }
+    }
+
+    fun addDataValue(dataValueViewAdapter: DataValueView.DataValueViewAdapter) {
+        post {
+            DataValueView(context).also {
+                val params = LayoutParams(measuredWidth * 9 / 10, LayoutParams.WRAP_CONTENT)
+                it.fillViewWithData(dataValueViewAdapter)
+                //layoutParams = params
+                contentView.addView(it)
+            }
+            addSpace(10)
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -86,25 +137,19 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
-        val voucherImageViewSize = (viewWidth * (1 - 1 / GOLDEN_RATIO)).roundToInt()
-
-        voucherImageView.measure(
-            MeasureSpec.makeMeasureSpec(voucherImageViewSize, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(voucherImageViewSize, MeasureSpec.EXACTLY)
-        )
-
-        titleTextView.measureWrapContent()
-
-        statusTextView.measureWrapContent()
-
-        descriptionTextView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth * 9 / 10, MeasureSpec.AT_MOST),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        )
-
         useVoucherTextView.measure(
             MeasureSpec.makeMeasureSpec(viewWidth * 7 / 10, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY)
+        )
+
+        val parentContentViewHeight =
+            viewHeight - (backView.measuredHeight + useVoucherTextView.measuredHeight + convertDpToPx(
+                100
+            ))
+
+        parentContentView.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(parentContentViewHeight, MeasureSpec.EXACTLY)
         )
 
         setMeasuredDimension(
@@ -120,24 +165,9 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
 
         backView.layoutToTopLeft(convertDpToPx(10), getStatusBarHeight() + convertDpToPx(10))
 
-        voucherImageView.layoutToTopLeft(
-            (viewWidth - voucherImageView.measuredWidth) / 2,
-            voucherImageView.measuredHeight * 75 / 100
-        )
-
-        titleTextView.layoutToTopLeft(
-            (viewWidth - titleTextView.measuredWidth) / 2,
-            voucherImageView.bottom + convertDpToPx(10)
-        )
-
-        statusTextView.layoutToTopLeft(
-            (viewWidth - statusTextView.measuredWidth) / 2,
-            titleTextView.bottom + convertDpToPx(10)
-        )
-
-        descriptionTextView.layoutToTopLeft(
-            (viewWidth - descriptionTextView.measuredWidth) / 2,
-            statusTextView.bottom + convertDpToPx(20)
+        parentContentView.layoutToTopLeft(
+            0,
+            backView.bottom + convertDpToPx(20)
         )
 
         useVoucherTextView.layoutToBottomLeft(

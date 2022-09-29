@@ -1,4 +1,4 @@
-package net.noliaware.yumi.feature_profile.presentation.views
+package net.noliaware.yumi.commun.presentation.views
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -12,12 +12,12 @@ import net.noliaware.yumi.commun.util.layoutToTopRight
 import net.noliaware.yumi.commun.util.measureWrapContent
 import kotlin.math.roundToInt
 
-class ProfileDataView(context: Context) : ViewGroup(context) {
+class DataValueView(context: Context) : ViewGroup(context) {
 
     private lateinit var titleTextView: TextView
     private lateinit var valueTextView: TextView
 
-    data class ProfileDataViewAdapter(
+    data class DataValueViewAdapter(
         val title: String = "",
         val value: String = ""
     )
@@ -34,14 +34,14 @@ class ProfileDataView(context: Context) : ViewGroup(context) {
     private fun initView() {
 
         LayoutInflater.from(context).also {
-            it.inflate(R.layout.profile_data_layout, this, true)
+            it.inflate(R.layout.data_value_layout, this, true)
         }
 
         titleTextView = findViewById(R.id.title_text_view)
         valueTextView = findViewById(R.id.value_text_view)
     }
 
-    fun fillViewWithData(profileDataViewAdapter: ProfileDataViewAdapter) {
+    fun fillViewWithData(profileDataViewAdapter: DataValueViewAdapter) {
         titleTextView.text = profileDataViewAdapter.title
         valueTextView.text = profileDataViewAdapter.value
     }
@@ -74,6 +74,6 @@ class ProfileDataView(context: Context) : ViewGroup(context) {
         val viewHeight = bottom - top
 
         titleTextView.layoutToTopLeft(0, convertDpToPx(10))
-        valueTextView.layoutToTopRight(viewWidth, titleTextView.top)
+        valueTextView.layoutToTopRight(viewWidth, titleTextView.top + convertDpToPx(2))
     }
 }

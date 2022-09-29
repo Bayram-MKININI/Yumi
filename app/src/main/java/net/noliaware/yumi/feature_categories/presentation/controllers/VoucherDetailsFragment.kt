@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDialogFragment
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -14,12 +13,12 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.QR_CODE_FRAGMENT_TAG
 import net.noliaware.yumi.commun.VOUCHER_ID
+import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView
-import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView.VouchersDetailsViewAdapter
 
 @AndroidEntryPoint
 class VoucherDetailsFragment : AppCompatDialogFragment() {
@@ -57,14 +56,14 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
 
-            viewModel.eventFlow.collectLatest { sharedEvent ->
+            viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreen(sharedEvent)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.stateFlow.collect { vmState ->
+            viewModel.eventsHelper.stateFlow.collect { vmState ->
                 vmState.data?.let { voucher ->
                     bindViewToData(voucher)
                 }
@@ -73,15 +72,90 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
     }
 
     private fun bindViewToData(voucher: Voucher) {
+        vouchersDetailsView?.addImageByDrawableName("ic_fruit_basket")
+        vouchersDetailsView?.addTitle(voucher.productLabel ?: "")
 
-        VouchersDetailsViewAdapter(
-            iconName = "ic_fruit_basket",
-            title = voucher.productLabel ?: "",
-            status = "Vérification en cours",
-            statusColor = ContextCompat.getColor(requireContext(), R.color.orange),
-            description = voucher.productDescription ?: ""
+        DataValueView.DataValueViewAdapter(
+            title = getString(R.string.creation_date),
+            value = voucher.voucherDate ?: ""
         ).also {
-            vouchersDetailsView?.fillViewWithData(it)
+            vouchersDetailsView?.addDataValue(it)
+        }
+
+        DataValueView.DataValueViewAdapter(
+            title = getString(R.string.expiry_date_title),
+            value = voucher.voucherExpiryDate ?: ""
+        ).also {
+            vouchersDetailsView?.addDataValue(it)
+        }
+
+        if (!voucher.productDescription.isNullOrBlank()) {
+            vouchersDetailsView?.addText(voucher.productDescription)
+        }
+
+        if (!voucher.productWebpage.isNullOrBlank()) {
+            DataValueView.DataValueViewAdapter(
+                title = getString(R.string.web_page),
+                value = voucher.productWebpage
+            ).also {
+                vouchersDetailsView?.addDataValue(it)
+            }
+        }
+
+        DataValueView.DataValueViewAdapter(
+            title = getString(R.string.retailer_title),
+            value = voucher.retailerLabel ?: ""
+        ).also {
+            vouchersDetailsView?.addDataValue(it)
+        }
+
+        val retailerAddress = StringBuilder().apply {
+            append(voucher.retailerAddress)
+            append(getString(R.string.new_line))
+            if (voucher.retailerAddressComplement?.isNotBlank() == true) {
+                append(voucher.retailerAddressComplement)
+                append(getString(R.string.new_line))
+            }
+            append(voucher.retailerCity)
+            append(getString(R.string.new_line))
+            append(voucher.retailerPostcode)
+            append(getString(R.string.new_line))
+            append(voucher.retailerCountry)
+        }.toString()
+
+        DataValueView.DataValueViewAdapter(
+            title = getString(R.string.address_title),
+            value = retailerAddress
+        ).also {
+            vouchersDetailsView?.addDataValue(it)
+        }
+
+        DataValueView.DataValueViewAdapter(
+            title = getString(R.string.mobile),
+            value = voucher.retailerCellPhoneNumber ?: ""
+        ).also {
+            vouchersDetailsView?.addDataValue(it)
+        }
+
+        DataValueView.DataValueViewAdapter(
+            title = getString(R.string.landline),
+            value = voucher.retailerPhoneNumber ?: ""
+        ).also {
+            vouchersDetailsView?.addDataValue(it)
+        }
+
+        DataValueView.DataValueViewAdapter(
+            title = getString(R.string.email),
+            value = voucher.retailerEmail ?: ""
+        ).also {
+            vouchersDetailsView?.addDataValue(it)
+        }
+
+        DataValueView.DataValueViewAdapter(
+            title = getString(R.string.web_page),
+            value = voucher.retailerWebsite ?: ""
+        ).also {
+            vouchersDetailsView?.addDataValue(it)
         }
     }
 
@@ -92,7 +166,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             }
 
             override fun onUseVoucherButtonClicked() {
-                viewModel.stateFlow.value.data?.voucherCode?.let { voucherCode ->
+                viewModel.eventsHelper.stateFlow.value.data?.voucherCode?.let { voucherCode ->
                     QrCodeFragment.newInstance(voucherCode, resources.displayMetrics.widthPixels)
                         .show(childFragmentManager.beginTransaction(), QR_CODE_FRAGMENT_TAG)
                 }

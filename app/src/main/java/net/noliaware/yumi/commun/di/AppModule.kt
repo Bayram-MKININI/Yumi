@@ -8,7 +8,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.commun.BASE_URL
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
@@ -38,6 +37,7 @@ class AppModule {
     @Singleton
     fun provideSessionData() = SessionData()
 
+/*
     @Provides
     @Singleton
     fun provideOkHttpClient() = if (BuildConfig.DEBUG) {
@@ -50,7 +50,18 @@ class AppModule {
     } else OkHttpClient
         .Builder()
         .followRedirects(true)
-        .build()
+        .build()*/
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient():OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .followRedirects(true)
+            .build()
+    }
 
     @Provides
     @Singleton

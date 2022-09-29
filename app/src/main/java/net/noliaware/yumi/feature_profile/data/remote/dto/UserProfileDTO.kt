@@ -33,14 +33,18 @@ data class UserProfileDTO(
     val birthDate: String?,
     @Json(name = "birthCity")
     val birthCity: String?,
+    @Json(name = "birthCountry")
+    val birthCountry: String?,
     @Json(name = "address")
     val address: String?,
     @Json(name = "addressComplement")
     val addressComplement: String?,
-    @Json(name = "zipcode")
-    val zipcode: String?,
+    @Json(name = "postcode")
+    val postCode: String?,
     @Json(name = "city")
     val city: String?,
+    @Json(name = "country")
+    val country: String?,
     @Json(name = "phoneNumber")
     val phoneNumber: String?,
     @Json(name = "cellPhoneNumber")
@@ -50,7 +54,7 @@ data class UserProfileDTO(
 ) {
     fun toUserProfile() = UserProfile(
         login = login,
-        userRef = userRef,
+        userReferent = userRef,
         issuedVoucherCount = issuedVoucherCount,
         usedVoucherCount = usedVoucherCount,
         availableVoucherCount = availableVoucherCount,
@@ -62,10 +66,12 @@ data class UserProfileDTO(
         lastName = lastName,
         birthDate = birthDate,
         birthCity = birthCity,
+        birthCountry = birthCountry,
         address = address,
         addressComplement = addressComplement,
-        zipcode = zipcode,
+        postCode = postCode,
         city = city,
+        country = country,
         phoneNumber = phoneNumber,
         cellPhoneNumber = cellPhoneNumber,
         email = email

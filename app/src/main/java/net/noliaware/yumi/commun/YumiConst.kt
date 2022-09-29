@@ -44,6 +44,7 @@ const val CATEGORIES_DATA = "categories_data"
 const val MESSAGE_SUBJECTS_DATA = "message_subjects_data"
 const val MANAGED_PROFILES_DATA = "managed_profiles_data"
 const val CATEGORY_ID = "categoryId"
+const val CATEGORY_LABEL = "categoryLabel"
 
 const val MESSAGE_INBOX_DAT = "message_inbox_dat"
 const val MESSAGE_OUTBOX_DAT = "message_outbox_dat"

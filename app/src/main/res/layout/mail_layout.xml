@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<net.noliaware.yumi.feature_message.presentation.views.MailView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<net.noliaware.yumi.feature_message.presentation.views.MailView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mail_layout"
     android:layout_width="match_parent"
@@ -20,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/sf_pro_text_regular"
-        android:text="Le centre de notifications est une fonction pour vous informer de toutes les mises à jour"
+        android:text="@string/mail_description"
         android:textColor="@color/grey_1"
         android:textSize="18sp" />
 

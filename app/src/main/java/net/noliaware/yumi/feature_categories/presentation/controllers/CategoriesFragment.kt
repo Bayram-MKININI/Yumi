@@ -11,7 +11,6 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
-import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewAdapter
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewCallback
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
 
@@ -66,13 +65,11 @@ class CategoriesFragment : Fragment() {
             )
         }
 
-        itemViewAdapters?.let {
-            CategoriesViewAdapter(
-                description = "Le Lorem est simplement du faux texte",
-                categoryItemViewAdapters = it
-            ).apply {
-                categoriesView?.fillViewWithData(this)
-            }
+        CategoriesView.CategoriesViewAdapter(
+            description = getString(R.string.categories_list),
+            categoryItemViewAdapters = itemViewAdapters ?: listOf()
+        ).apply {
+            categoriesView?.fillViewWithData(this)
         }
 
         /*CategoryItemViewAdapter(

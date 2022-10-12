@@ -15,6 +15,7 @@ import net.noliaware.yumi.commun.QR_CODE_FRAGMENT_TAG
 import net.noliaware.yumi.commun.VOUCHER_ID
 import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.handleSharedEvent
+import net.noliaware.yumi.commun.util.openMap
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
@@ -151,18 +152,31 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             vouchersDetailsView?.addDataValue(it)
         }
 
-        DataValueView.DataValueViewAdapter(
-            title = getString(R.string.web_page),
-            value = voucher.retailerWebsite ?: ""
-        ).also {
-            vouchersDetailsView?.addDataValue(it)
+        if (!voucher.retailerWebsite.isNullOrBlank()) {
+            DataValueView.DataValueViewAdapter(
+                title = getString(R.string.web_page),
+                value = voucher.retailerWebsite ?: ""
+            ).also {
+                vouchersDetailsView?.addDataValue(it)
+            }
         }
+
+        vouchersDetailsView?.addLocationView { vouchersDetailsViewCallback.onLocationClicked() }
     }
 
     private val vouchersDetailsViewCallback: VouchersDetailsView.VouchersDetailsViewCallback by lazy {
         object : VouchersDetailsView.VouchersDetailsViewCallback {
             override fun onBackButtonClicked() {
                 dismissAllowingStateLoss()
+            }
+
+            override fun onLocationClicked() {
+                viewModel.eventsHelper.stateFlow.value.data?.let { voucher ->
+                    val latitude = voucher.retailerAddressLatitude
+                    val longitude = voucher.retailerAddressLongitude
+                    val label = voucher.retailerLabel
+                    openMap(context, latitude, longitude, label)
+                }
             }
 
             override fun onUseVoucherButtonClicked() {

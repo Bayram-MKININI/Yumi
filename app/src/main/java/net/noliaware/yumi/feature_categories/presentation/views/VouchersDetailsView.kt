@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.Space
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
@@ -31,6 +30,7 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
 
     interface VouchersDetailsViewCallback {
         fun onBackButtonClicked()
+        fun onLocationClicked()
         fun onUseVoucherButtonClicked()
     }
 
@@ -69,10 +69,10 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
     fun addImageByDrawableName(drawableName: String) {
         post {
             AppCompatImageView(context).apply {
-                val imageViewSize = (measuredWidth * (1 - 1 / GOLDEN_RATIO)).roundToInt()
-                val params = LinearLayout.LayoutParams(imageViewSize, imageViewSize)
+                val imageViewSize = (width * (1 - 1 / GOLDEN_RATIO)).roundToInt()
+                val params = LayoutParams(imageViewSize, imageViewSize)
                 setImageResource(context.drawableIdByName(drawableName))
-                layoutParams = params
+                layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             }.also {
                 contentView.addView(it)
             }
@@ -84,13 +84,11 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
     fun addTitle(title: String) {
         post {
             AppCompatTextView(context).apply {
-                val params =
-                    LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
                 text = title
                 textSize = 24f
                 typeface = ResourcesCompat.getFont(context, R.font.sf_pro_display_semibold)
                 setTextColor(ContextCompat.getColor(context, R.color.black_font))
-                layoutParams = params
+                layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             }.also {
                 contentView.addView(it)
             }
@@ -102,12 +100,10 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
     fun addText(textStr: String) {
         post {
             AppCompatTextView(context).apply {
-                val params =
-                    LinearLayout.LayoutParams(measuredWidth * 9 / 10, LayoutParams.WRAP_CONTENT)
                 text = textStr
                 typeface = ResourcesCompat.getFont(context, R.font.sf_pro_text_regular)
                 setTextColor(ContextCompat.getColor(context, R.color.black_font))
-                layoutParams = params
+                layoutParams = LayoutParams(measuredWidth * 9 / 10, LayoutParams.WRAP_CONTENT)
             }.also {
                 contentView.addView(it)
             }
@@ -119,12 +115,23 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
     fun addDataValue(dataValueViewAdapter: DataValueView.DataValueViewAdapter) {
         post {
             DataValueView(context).also {
-                val params = LayoutParams(measuredWidth * 9 / 10, LayoutParams.WRAP_CONTENT)
-                it.fillViewWithData(dataValueViewAdapter)
-                //layoutParams = params
+                //layoutParams = LayoutParams(measuredWidth * 9 / 10, LayoutParams.WRAP_CONTENT)
                 contentView.addView(it)
+                it.fillViewWithData(dataValueViewAdapter)
             }
             addSpace(10)
+        }
+    }
+
+    fun addLocationView(onLocationClicked: () -> Unit) {
+        post {
+            LocationView(context).apply {
+                locationClickedAction = onLocationClicked
+            }.also {
+                contentView.addView(it)
+            }
+
+            addSpace(20)
         }
     }
 

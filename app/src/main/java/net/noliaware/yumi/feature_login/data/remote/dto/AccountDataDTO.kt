@@ -17,7 +17,7 @@ data class AccountDataDTO(
     @Json(name = "newMessageCount")
     val newMessageCount: Int = 0,
     @Json(name = "voucherCountPerCategory")
-    val categoryDTOs: List<CategoryDTO> = listOf(),
+    val categoryDTOs: List<CategoryDTO>? = listOf(),
     @Json(name = "managedAccounts")
     val managedAccountProfileDTOS: List<UserProfileDTO> = listOf()
 ) {
@@ -25,7 +25,7 @@ data class AccountDataDTO(
         messageSubjects = messageSubjectDTOs.map { it.toMessageSubject() },
         newAlertCount = newAlertCount,
         newMessageCount = newMessageCount,
-        categories = categoryDTOs.map { it.toCategory() },
+        categories = categoryDTOs?.map { it.toCategory() },
         managedAccountProfiles = managedAccountProfileDTOS.map { it.toUserProfile() }
     )
 }

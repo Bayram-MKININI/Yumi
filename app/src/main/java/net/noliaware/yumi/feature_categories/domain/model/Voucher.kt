@@ -15,7 +15,7 @@ data class Voucher(
     val retailerPostcode: String?,
     val retailerCity: String?,
     val retailerCountry: String?,
-    val retailerAddressAltitude: String?,
+    val retailerAddressLatitude: String?,
     val retailerAddressLongitude: String?,
     val retailerPhoneNumber: String?,
     val retailerCellPhoneNumber: String?,

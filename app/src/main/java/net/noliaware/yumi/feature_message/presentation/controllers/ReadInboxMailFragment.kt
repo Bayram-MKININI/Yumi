@@ -52,8 +52,7 @@ class ReadInboxMailFragment : AppCompatDialogFragment() {
                 dismissAllowingStateLoss()
             }
 
-            override fun onComposeButtonClicked() {
-            }
+            override fun onComposeButtonClicked() = Unit
         }
     }
 

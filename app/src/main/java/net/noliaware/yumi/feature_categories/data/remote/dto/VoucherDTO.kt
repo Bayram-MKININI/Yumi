@@ -35,7 +35,7 @@ data class VoucherDTO(
     @Json(name = "retailerCountry")
     val retailerCountry: String?,
     @Json(name = "retailerAddressLatitude")
-    val retailerAddressAltitude: String?,
+    val retailerAddressLatitude: String?,
     @Json(name = "retailerAddressLongitude")
     val retailerAddressLongitude: String?,
     @Json(name = "retailerPhoneNumber")
@@ -68,7 +68,7 @@ data class VoucherDTO(
         retailerPostcode = retailerPostcode,
         retailerCity = retailerCity,
         retailerCountry = retailerCountry,
-        retailerAddressAltitude = retailerAddressAltitude,
+        retailerAddressLatitude = retailerAddressLatitude,
         retailerAddressLongitude = retailerAddressLongitude,
         retailerPhoneNumber = retailerPhoneNumber,
         retailerCellPhoneNumber = retailerCellPhoneNumber,

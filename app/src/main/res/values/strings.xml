@@ -15,6 +15,7 @@
     <string name="correct">Corriger</string>
 
     <string name="categories">Catégories</string>
+    <string name="categories_list">Liste des familles de coupons</string>
     <string name="back">Retour</string>
     <string name="expiry_date">Date d\'expiration: %s</string>
     <string name="retailer">Fournisseur: %s</string>
@@ -28,6 +29,8 @@
     <string name="landline">Tél fixe:</string>
     <string name="mobile">Tél mobile:</string>
     <string name="email">Mail:</string>
+    <string name="location">Localisation:</string>
+    <string name="application_not_found">Application cartographique introuvable</string>
 
     <string name="my_profile">Mon Profil</string>
     <string name="my_data">Mes informations</string>
@@ -45,6 +48,7 @@
     <string name="occupation">Occupation</string>
 
     <string name="mail">Messagerie</string>
+    <string name="mail_description">Le centre de messagerie vous permet de communiquer avec votre agent</string>
     <string name="mail_date_short_format">EEE dd/MM</string>
     <string name="mail_date_long_format">EEE dd MMM yyyy HH:mm:ss</string>
     <string name="new_mail">Nouveau message</string>
@@ -54,5 +58,6 @@
     <string name="mail_sent">Message envoyé</string>
 
     <string name="notifications">Notifications</string>
+    <string name="notification_description">Le centre de notifications est une fonction pour vous informer de toutes les mises à jour</string>
 
 </resources>

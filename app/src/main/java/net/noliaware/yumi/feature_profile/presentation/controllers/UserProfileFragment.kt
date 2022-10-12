@@ -179,16 +179,16 @@ class UserProfileFragment : Fragment() {
 
             override fun onCategoryClickedAtIndex(index: Int) {
 
-                val category =
-                    viewModel.userProfileEventsHelper.stateFlow.value.data?.categories?.get(index)
-
-                category?.let { category ->
-                    VouchersListFragment.newInstance(category.categoryId, category.categoryLabel)
-                        .show(
+                viewModel.userProfileEventsHelper.stateFlow.value.data?.categories?.get(index)
+                    ?.let { category ->
+                        VouchersListFragment.newInstance(
+                            category.categoryId,
+                            category.categoryLabel
+                        ).show(
                             childFragmentManager.beginTransaction(),
                             USED_VOUCHERS_LIST_FRAGMENT_TAG
                         )
-                }
+                    }
             }
         }
     }

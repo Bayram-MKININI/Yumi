@@ -1,10 +1,12 @@
 package net.noliaware.yumi.commun.util
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -287,3 +289,25 @@ fun Drawable.tint(context: Context, @ColorRes color: Int): Drawable {
 }
 
 fun <T> unsafeLazy(initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)
+
+fun openMap(
+    context: Context?,
+    latitude: String?,
+    longitude: String?,
+    label: String?
+) {
+    val uriBuilder = Uri.Builder()
+        .scheme("geo")
+        .path("0,0")
+        .appendQueryParameter("q", "$latitude,$longitude($label)")
+    val mapIntent = Intent(Intent.ACTION_VIEW, uriBuilder.build())
+    try {
+        context?.startActivity(mapIntent)
+    } catch (ex: ActivityNotFoundException) {
+        Toast.makeText(
+            context?.applicationContext,
+            R.string.application_not_found,
+            Toast.LENGTH_LONG
+        ).show();
+    }
+}

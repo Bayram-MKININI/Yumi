@@ -8,6 +8,6 @@ data class AccountData(
     val messageSubjects: List<MessageSubject>,
     val newAlertCount: Int = 0,
     val newMessageCount: Int = 0,
-    val categories: List<Category>,
+    val categories: List<Category>?,
     val managedAccountProfiles: List<UserProfile>
 ) : Serializable

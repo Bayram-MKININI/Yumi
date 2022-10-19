@@ -95,15 +95,16 @@ class SendMailFragment : AppCompatDialogFragment() {
                     requireContext(),
                     R.style.ThemeOverlay_Material3_Dialog
                 )
-                builder.setTitle("Choose an animal")
 
-                val messageSubjects: Array<String> =
-                    viewModel.messageSubjects?.map { it.subjectLabel }?.toTypedArray()!!
+                builder.setTitle(R.string.select_subject)
 
-                builder.setItems(messageSubjects) { _, which ->
-                    selectedMessageIndex = which
-                    sendMailView?.setSubject(messageSubjects[which])
-                }
+                viewModel.messageSubjects?.map { it.subjectLabel }?.toTypedArray()
+                    ?.let { messageSubjects ->
+                        builder.setItems(messageSubjects) { _, which ->
+                            selectedMessageIndex = which
+                            sendMailView?.setSubject(messageSubjects[which])
+                        }
+                    }
 
                 dialog = builder.create()
                 dialog?.show()

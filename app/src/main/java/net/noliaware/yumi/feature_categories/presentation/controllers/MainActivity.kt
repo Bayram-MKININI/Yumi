@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
+import net.noliaware.yumi.commun.util.getSerializable
 import net.noliaware.yumi.feature_login.domain.model.AccountData
 
 @AndroidEntryPoint
@@ -14,12 +15,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        supportFragmentManager.beginTransaction().run {
-            replace(
-                R.id.main_fragment_container,
-                HomeFragment.newInstance(intent.getSerializableExtra(ACCOUNT_DATA) as AccountData)
-            )
-            commit()
+        intent.getSerializable<AccountData>(ACCOUNT_DATA)?.let { accountData ->
+            supportFragmentManager.beginTransaction().run {
+                replace(R.id.main_fragment_container, HomeFragment.newInstance(accountData))
+                commit()
+            }
         }
     }
 

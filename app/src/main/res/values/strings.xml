@@ -51,6 +51,7 @@
     <string name="mail_description">Le centre de messagerie vous permet de communiquer avec votre agent</string>
     <string name="mail_date_short_format">EEE dd/MM</string>
     <string name="mail_date_long_format">EEE dd MMM yyyy HH:mm:ss</string>
+    <string name="select_subject">Sélectionner un sujet</string>
     <string name="new_mail">Nouveau message</string>
     <string name="send">Envoyer</string>
     <string name="mail_object">Object</string>

@@ -74,8 +74,8 @@ interface RemoteApi {
     ): ResponseDTO<UserAccountDTO>
 
     @FormUrlEncoded
-    @POST("$GET_USED_VOUCHER_COUNT_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
-    suspend fun fetchUsedVouchersByCategory(
+    @POST("$GET_DATA_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchDataByCategory(
         @Path(TIMESTAMP) timestamp: String,
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,

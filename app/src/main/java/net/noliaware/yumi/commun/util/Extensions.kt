@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +37,7 @@ import net.noliaware.yumi.commun.data.remote.dto.ErrorDTO
 import net.noliaware.yumi.commun.data.remote.dto.SessionDTO
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.feature_login.presentation.controllers.LoginActivity
+import java.io.Serializable
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -311,3 +313,12 @@ fun openMap(
         ).show();
     }
 }
+
+inline fun <reified T : Serializable> Intent.getSerializable(key: String): T? =
+    when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializableExtra(
+            key,
+            T::class.java
+        )
+        else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
+    }

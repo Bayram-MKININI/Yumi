@@ -11,12 +11,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import net.noliaware.yumi.commun.ACCOUNT_DATA
-import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
 import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.feature_alerts.data.repository.AlertsRepository
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
 import net.noliaware.yumi.feature_login.domain.model.AccountData
-import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.data.repository.MessageRepository
 import net.noliaware.yumi.feature_message.domain.model.Message
 import net.noliaware.yumi.feature_profile.data.repository.ProfileRepository
@@ -32,7 +30,7 @@ class HomeFragmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     val accountData get() = savedStateHandle.get<AccountData>(ACCOUNT_DATA)
-    val messageSubjects get() = savedStateHandle.get<List<MessageSubject>>(MESSAGE_SUBJECTS_DATA)
+    val messageSubjects get() = accountData?.messageSubjects
 
     val userProfileEventsHelper = EventsHelper<UserProfile>()
     val messageListEventsHelper = EventsHelper<List<Message>>()

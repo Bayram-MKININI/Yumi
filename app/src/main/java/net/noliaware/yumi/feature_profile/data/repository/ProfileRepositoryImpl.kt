@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.noliaware.yumi.commun.CATEGORY_ID
 import net.noliaware.yumi.commun.GET_ACCOUNT
-import net.noliaware.yumi.commun.GET_USED_VOUCHER_COUNT_PER_CATEGORY
+import net.noliaware.yumi.commun.GET_DATA_PER_CATEGORY
 import net.noliaware.yumi.commun.GET_USED_VOUCHER_LIST_BY_CATEGORY
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
@@ -83,12 +83,12 @@ class ProfileRepositoryImpl(
         val timestamp = System.currentTimeMillis().toString()
         val randomString = UUID.randomUUID().toString()
 
-        val remoteCategoriesData = api.fetchUsedVouchersByCategory(
+        val remoteCategoriesData = api.fetchDataByCategory(
             timestamp = timestamp,
             saltString = randomString,
             token = generateToken(
                 timestamp,
-                GET_USED_VOUCHER_COUNT_PER_CATEGORY,
+                GET_DATA_PER_CATEGORY,
                 randomString
             ),
             params = getCommonWSParams(sessionData)

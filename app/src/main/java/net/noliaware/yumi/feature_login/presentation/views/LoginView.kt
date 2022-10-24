@@ -59,8 +59,8 @@ class LoginView(context: Context, attrs: AttributeSet?) : ViewGroup(context, att
     }
 
     private val textWatcher: TextWatcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-        override fun onTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+        override fun beforeTextChanged(s: CharSequence, start: Int, before: Int, count: Int) = Unit
+        override fun onTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
         override fun afterTextChanged(editable: Editable) {
             when {
                 !inputLogin.text.isNullOrEmpty() -> {

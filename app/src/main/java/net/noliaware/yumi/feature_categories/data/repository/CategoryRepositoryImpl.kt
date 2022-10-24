@@ -87,7 +87,7 @@ class CategoryRepositoryImpl(
 
             if (sessionNoFailure) {
                 remoteData.data?.let { getVoucherDTO ->
-                    emit(Resource.Success(data = getVoucherDTO.voucherDTO.toVoucher()))
+                    emit(Resource.Success(data = getVoucherDTO.voucherDTO.toVoucher(sessionData.sessionId)))
                 }
             }
 

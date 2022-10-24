@@ -44,7 +44,7 @@ class LocationView(context: Context) : ViewGroup(context) {
         titleTextView.measureWrapContent()
 
         iconImageView.measure(
-            MeasureSpec.makeMeasureSpec(convertDpToPx(50), MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 

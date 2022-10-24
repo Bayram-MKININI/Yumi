@@ -53,9 +53,9 @@ data class VoucherDTO(
     @Json(name = "partnerBannerAction")
     val partnerBannerAction: String?
 ) {
-    fun toVoucher() = Voucher(
+    fun toVoucher(sessionId: String? = null) = Voucher(
         voucherId = voucherId,
-        voucherCode = voucherCode,
+        voucherCode = voucherCode + if (!sessionId.isNullOrBlank()) sessionId else sessionId,
         voucherDate = voucherDate,
         voucherExpiryDate = voucherExpiryDate,
         productLabel = productLabel,

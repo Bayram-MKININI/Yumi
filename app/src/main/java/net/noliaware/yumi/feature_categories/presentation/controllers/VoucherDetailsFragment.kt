@@ -90,11 +90,16 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             vouchersDetailsView?.addDataValue(it)
         }
 
-        if (!voucher.productDescription.isNullOrBlank()) {
-            vouchersDetailsView?.addText(voucher.productDescription)
+        if (!voucher.productDescription.isNullOrEmpty()) {
+            DataValueView.DataValueViewAdapter(
+                title = getString(R.string.description),
+                value = voucher.productDescription
+            ).also {
+                vouchersDetailsView?.addDataValue(it)
+            }
         }
 
-        if (!voucher.productWebpage.isNullOrBlank()) {
+        if (!voucher.productWebpage.isNullOrEmpty()) {
             DataValueView.DataValueViewAdapter(
                 title = getString(R.string.web_page),
                 value = voucher.productWebpage
@@ -113,7 +118,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         val retailerAddress = StringBuilder().apply {
             append(voucher.retailerAddress)
             append(getString(R.string.new_line))
-            if (voucher.retailerAddressComplement?.isNotBlank() == true) {
+            if (voucher.retailerAddressComplement?.isNotEmpty() == true) {
                 append(voucher.retailerAddressComplement)
                 append(getString(R.string.new_line))
             }
@@ -152,7 +157,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             vouchersDetailsView?.addDataValue(it)
         }
 
-        if (!voucher.retailerWebsite.isNullOrBlank()) {
+        if (!voucher.retailerWebsite.isNullOrEmpty()) {
             DataValueView.DataValueViewAdapter(
                 title = getString(R.string.web_page),
                 value = voucher.retailerWebsite ?: ""

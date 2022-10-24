@@ -23,6 +23,7 @@
 
     <string name="creation_date">Date de création:</string>
     <string name="expiry_date_title">Date d\'expiration:</string>
+    <string name="description">Description:</string>
     <string name="web_page">Page web:</string>
     <string name="retailer_title">Fournisseur:</string>
     <string name="address_title">Adresse:</string>
@@ -35,17 +36,17 @@
     <string name="my_profile">Mon Profil</string>
     <string name="my_data">Mes informations</string>
     <string name="complementary_data">Informations complémentaires</string>
-    <string name="my_history">Mes historiques</string>
-    <string name="login">Login</string>
-    <string name="surname">Nom</string>
-    <string name="name">Prénom</string>
-    <string name="referent">Référent</string>
-    <string name="birth">Naissance</string>
+    <string name="my_used_vouchers">Mes coupons</string>
+    <string name="login">Login:</string>
+    <string name="surname">Nom:</string>
+    <string name="name">Prénom:</string>
+    <string name="referent">Référent:</string>
+    <string name="birth">Naissance:</string>
     <string name="birth_data">%s\nà %s\n%s</string>
-    <string name="address">Adresse</string>
+    <string name="address">Adresse:</string>
     <string name="new_line">\n</string>
-    <string name="phone_numbers">N° de tél</string>
-    <string name="occupation">Occupation</string>
+    <string name="phone_numbers">N° de tél:</string>
+    <string name="occupation">Occupation:</string>
 
     <string name="mail">Messagerie</string>
     <string name="mail_description">Le centre de messagerie vous permet de communiquer avec votre agent</string>

@@ -2,11 +2,14 @@ package net.noliaware.yumi.feature_profile.presentation.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.presentation.adapters.BaseAdapter
 import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView
@@ -19,7 +22,8 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
     private lateinit var complementaryDataTextView: TextView
     private lateinit var complementaryDataLinearLayout: LinearLayoutCompat
     private lateinit var myHistoryTextView: TextView
-    private lateinit var categoriesDashboardLayout: DashboardLayout
+    private lateinit var recyclerView: RecyclerView
+    private val categoryItemViewAdapters = mutableListOf<CategoryItemViewAdapter>()
     var callback: ProfileViewCallback? by weak()
 
     data class ProfileViewAdapter(
@@ -43,7 +47,39 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         complementaryDataTextView = findViewById(R.id.complementary_data_text_view)
         complementaryDataLinearLayout = findViewById(R.id.complementary_data_linear_layout)
         myHistoryTextView = findViewById(R.id.my_history_text_view)
-        categoriesDashboardLayout = findViewById(R.id.categories_view)
+
+        recyclerView = findViewById(R.id.recycler_view)
+
+        val adapter = BaseAdapter(categoryItemViewAdapters)
+
+        adapter.expressionViewHolderBinding = { eachItem, view ->
+            (view as CategoryItemView).fillViewWithData(eachItem)
+        }
+
+        adapter.expressionOnCreateViewHolder = { viewGroup ->
+            viewGroup.inflate(R.layout.category_item_layout, false)
+        }
+
+        recyclerView.also {
+
+            it.layoutManager = GridLayoutManager(
+                context,
+                context.resources.getInteger(R.integer.number_of_columns_for_categories)
+            )
+
+            val spacing = convertDpToPx(10)
+
+            it.setPadding(spacing, spacing, spacing, spacing)
+            it.clipToPadding = false
+            it.clipChildren = false
+            it.addItemDecoration(MarginItemDecoration(spacing, GRID))
+
+            it.adapter = adapter
+
+            it.onItemClicked(onClick = { position, _ ->
+                callback?.onCategoryClickedAtIndex(position)
+            })
+        }
     }
 
     fun fillViewWithData(profileViewAdapter: ProfileViewAdapter) {
@@ -62,21 +98,15 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             }
         }
 
-        profileViewAdapter.categoryItemViewAdapters.forEachIndexed { index, categoryItemViewAdapter ->
+        myHistoryTextView.isVisible = profileViewAdapter.categoryItemViewAdapters.isNotEmpty()
 
-            inflate(R.layout.category_item_layout, false).also {
-                val categoryItemView = it as CategoryItemView
-                categoryItemView.setTag(R.string.view_tag_key, index)
-                categoryItemView.fillViewWithData(categoryItemViewAdapter)
-                categoryItemView.setOnClickListener(onClickListener)
-                categoriesDashboardLayout.addView(it)
-            }
-        }
-    }
+        if (profileViewAdapter.categoryItemViewAdapters.isNotEmpty()) {
 
-    private val onClickListener: OnClickListener by lazy {
-        OnClickListener { view ->
-            callback?.onCategoryClickedAtIndex(view.getTag(R.string.view_tag_key).toString().toInt())
+            if (categoryItemViewAdapters.isNotEmpty())
+                categoryItemViewAdapters.clear()
+
+            categoryItemViewAdapters.addAll(profileViewAdapter.categoryItemViewAdapters)
+            recyclerView.adapter?.notifyDataSetChanged()
         }
     }
 
@@ -100,13 +130,13 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
 
         myHistoryTextView.measureWrapContent()
 
-        categoriesDashboardLayout.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth - convertDpToPx(40), MeasureSpec.EXACTLY),
+        recyclerView.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
         viewHeight =
-            myDataTextView.measuredHeight + myDataLinearLayout.measuredHeight + complementaryDataTextView.measuredHeight + complementaryDataLinearLayout.measuredHeight + myHistoryTextView.measuredHeight + categoriesDashboardLayout.measuredHeight + convertDpToPx(
+            myDataTextView.measuredHeight + myDataLinearLayout.measuredHeight + complementaryDataTextView.measuredHeight + complementaryDataLinearLayout.measuredHeight + myHistoryTextView.measuredHeight + recyclerView.measuredHeight + convertDpToPx(
                 80
             )
 
@@ -145,9 +175,9 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             complementaryDataLinearLayout.bottom + convertDpToPx(10)
         )
 
-        categoriesDashboardLayout.layoutToTopLeft(
-            convertDpToPx(20),
-            myHistoryTextView.bottom + convertDpToPx(20)
+        recyclerView.layoutToTopLeft(
+            0,
+            myHistoryTextView.bottom + convertDpToPx(10)
         )
     }
 }

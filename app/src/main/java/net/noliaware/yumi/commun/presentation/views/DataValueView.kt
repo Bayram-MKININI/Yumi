@@ -5,12 +5,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.GOLDEN_RATIO
 import net.noliaware.yumi.commun.util.convertDpToPx
 import net.noliaware.yumi.commun.util.layoutToTopLeft
-import net.noliaware.yumi.commun.util.layoutToTopRight
 import net.noliaware.yumi.commun.util.measureWrapContent
-import kotlin.math.roundToInt
 
 class DataValueView(context: Context) : ViewGroup(context) {
 
@@ -21,11 +18,6 @@ class DataValueView(context: Context) : ViewGroup(context) {
         val title: String = "",
         val value: String = ""
     )
-
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-        initView()
-    }
 
     init {
         initView()
@@ -51,7 +43,7 @@ class DataValueView(context: Context) : ViewGroup(context) {
 
         titleTextView.measureWrapContent()
 
-        val valueTextViewWidth = (viewWidth / GOLDEN_RATIO).roundToInt()
+        val valueTextViewWidth = viewWidth - (titleTextView.measuredWidth + convertDpToPx(10))
 
         valueTextView.measure(
             MeasureSpec.makeMeasureSpec(valueTextViewWidth, MeasureSpec.EXACTLY),
@@ -74,6 +66,9 @@ class DataValueView(context: Context) : ViewGroup(context) {
         val viewHeight = bottom - top
 
         titleTextView.layoutToTopLeft(0, convertDpToPx(10))
-        valueTextView.layoutToTopRight(viewWidth, titleTextView.top + convertDpToPx(2))
+        valueTextView.layoutToTopLeft(
+            titleTextView.measuredWidth + convertDpToPx(10),
+            titleTextView.top + convertDpToPx(2)
+        )
     }
 }

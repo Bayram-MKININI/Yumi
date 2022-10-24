@@ -18,7 +18,6 @@ import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.*
 import kotlin.math.roundToInt
 
-
 class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
     private lateinit var backView: View
@@ -67,72 +66,49 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
     }
 
     fun addImageByDrawableName(drawableName: String) {
-        post {
-            AppCompatImageView(context).apply {
-                val imageViewSize = (width * (1 - 1 / GOLDEN_RATIO)).roundToInt()
-                val params = LayoutParams(imageViewSize, imageViewSize)
-                setImageResource(context.drawableIdByName(drawableName))
-                layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-            }.also {
-                contentView.addView(it)
-            }
-
-            addSpace(20)
+        AppCompatImageView(context).apply {
+            val imageViewSize = (width * (1 - 1 / GOLDEN_RATIO)).roundToInt()
+            val params = LayoutParams(imageViewSize, imageViewSize)
+            setImageResource(context.drawableIdByName(drawableName))
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+        }.also {
+            contentView.addView(it)
         }
+
+        addSpace(20)
     }
 
     fun addTitle(title: String) {
-        post {
-            AppCompatTextView(context).apply {
-                text = title
-                textSize = 24f
-                typeface = ResourcesCompat.getFont(context, R.font.sf_pro_display_semibold)
-                setTextColor(ContextCompat.getColor(context, R.color.black_font))
-                layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-            }.also {
-                contentView.addView(it)
-            }
-
-            addSpace(20)
+        AppCompatTextView(context).apply {
+            text = title
+            textSize = 24f
+            typeface = ResourcesCompat.getFont(context, R.font.sf_pro_display_semibold)
+            setTextColor(ContextCompat.getColor(context, R.color.black_font))
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+        }.also {
+            contentView.addView(it)
         }
-    }
 
-    fun addText(textStr: String) {
-        post {
-            AppCompatTextView(context).apply {
-                text = textStr
-                typeface = ResourcesCompat.getFont(context, R.font.sf_pro_text_regular)
-                setTextColor(ContextCompat.getColor(context, R.color.black_font))
-                layoutParams = LayoutParams(measuredWidth * 9 / 10, LayoutParams.WRAP_CONTENT)
-            }.also {
-                contentView.addView(it)
-            }
-
-            addSpace(10)
-        }
+        addSpace(20)
     }
 
     fun addDataValue(dataValueViewAdapter: DataValueView.DataValueViewAdapter) {
-        post {
-            DataValueView(context).also {
-                //layoutParams = LayoutParams(measuredWidth * 9 / 10, LayoutParams.WRAP_CONTENT)
-                contentView.addView(it)
-                it.fillViewWithData(dataValueViewAdapter)
-            }
-            addSpace(10)
+        DataValueView(context).also {
+            //layoutParams = LayoutParams(measuredWidth * 9 / 10, LayoutParams.WRAP_CONTENT)
+            contentView.addView(it)
+            it.fillViewWithData(dataValueViewAdapter)
         }
+        addSpace(10)
     }
 
     fun addLocationView(onLocationClicked: () -> Unit) {
-        post {
-            LocationView(context).apply {
-                locationClickedAction = onLocationClicked
-            }.also {
-                contentView.addView(it)
-            }
-
-            addSpace(20)
+        LocationView(context).apply {
+            locationClickedAction = onLocationClicked
+        }.also {
+            contentView.addView(it)
         }
+
+        addSpace(20)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

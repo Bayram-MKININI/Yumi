@@ -71,7 +71,7 @@ class ReadMailContentView(context: Context, attrs: AttributeSet?) : ViewGroup(co
         )
 
         messageTextView.layoutToTopLeft(
-            (viewWidth - messageTextView.measuredWidth) / 2,
+            convertDpToPx(15),
             timeTextView.bottom + convertDpToPx(20)
         )
     }

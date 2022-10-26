@@ -54,19 +54,21 @@ class MailFragment : Fragment() {
                     when (message.messageOrigin) {
 
                         MessageOrigin.INBOX -> {
-                            ReadInboxMailFragment.newInstance(message.messageId)
-                                .show(
-                                    requireActivity().supportFragmentManager.beginTransaction(),
-                                    READ_MESSAGE_FRAGMENT_TAG
-                                )
+                            ReadInboxMailFragment.newInstance(
+                                message.messageId
+                            ).show(
+                                requireActivity().supportFragmentManager.beginTransaction(),
+                                READ_MESSAGE_FRAGMENT_TAG
+                            )
                         }
 
                         MessageOrigin.OUTBOX -> {
-                            ReadOutboxMailFragment.newInstance(message.messageId)
-                                .show(
-                                    requireActivity().supportFragmentManager.beginTransaction(),
-                                    READ_MESSAGE_FRAGMENT_TAG
-                                )
+                            ReadOutboxMailFragment.newInstance(
+                                message.messageId
+                            ).show(
+                                requireActivity().supportFragmentManager.beginTransaction(),
+                                READ_MESSAGE_FRAGMENT_TAG
+                            )
                         }
                         else -> Unit
                     }
@@ -74,11 +76,12 @@ class MailFragment : Fragment() {
             }
 
             override fun onComposeButtonClicked() {
-                SendMailFragment.newInstance(viewModel.messageSubjects)
-                    .show(
-                        requireActivity().supportFragmentManager.beginTransaction(),
-                        SEND_MESSAGES_FRAGMENT_TAG
-                    )
+                SendMailFragment.newInstance(
+                    viewModel.messageSubjects
+                ).show(
+                    requireActivity().supportFragmentManager.beginTransaction(),
+                    SEND_MESSAGES_FRAGMENT_TAG
+                )
             }
         }
     }

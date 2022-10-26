@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.handleSharedEvent
+import net.noliaware.yumi.commun.util.parseTimeString
 import net.noliaware.yumi.commun.util.parseToShortDate
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
@@ -67,7 +68,7 @@ class AlertsFragment : Fragment() {
                 time = getString(
                     R.string.received_at,
                     parseToShortDate(alert.alertDate),
-                    alert.alertTime
+                    parseTimeString(alert.alertTime)
                 ),
                 body = alert.alertText
             )

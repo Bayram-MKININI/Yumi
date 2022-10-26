@@ -12,10 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.MESSAGE_ID
-import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.parseToLongDate
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
-import net.noliaware.yumi.commun.util.withArgs
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_message.domain.model.Message
 import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
 
@@ -23,7 +20,8 @@ import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
 class ReadInboxMailFragment : AppCompatDialogFragment() {
 
     companion object {
-        fun newInstance(messageId: String): ReadInboxMailFragment = ReadInboxMailFragment().withArgs(MESSAGE_ID to messageId)
+        fun newInstance(messageId: String): ReadInboxMailFragment =
+            ReadInboxMailFragment().withArgs(MESSAGE_ID to messageId)
     }
 
     private var readMailView: ReadMailView? = null
@@ -81,7 +79,11 @@ class ReadInboxMailFragment : AppCompatDialogFragment() {
     private fun bindViewToData(message: Message) {
         ReadMailView.ReadMailViewAdapter(
             subject = message.messageSubject,
-            time = parseToLongDate(message.messageDate),
+            time = getString(
+                R.string.received_at,
+                parseToLongDate(message.messageDate),
+                parseTimeString(message.messageTime)
+            ),
             message = message.messageBody ?: ""
         ).also {
             readMailView?.fillViewWithData(it)

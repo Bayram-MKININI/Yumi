@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -84,11 +85,19 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
 
     fun fillViewWithData(profileViewAdapter: ProfileViewAdapter) {
 
+        if (myDataLinearLayout.isNotEmpty()) {
+            myDataLinearLayout.removeAllViews()
+        }
+
         profileViewAdapter.myDataAdapters.forEach { profileDataViewAdapter ->
             DataValueView(context).also {
                 it.fillViewWithData(profileDataViewAdapter)
                 myDataLinearLayout.addView(it)
             }
+        }
+
+        if (complementaryDataLinearLayout.isNotEmpty()) {
+            complementaryDataLinearLayout.removeAllViews()
         }
 
         profileViewAdapter.complementaryDataAdapters.forEach { profileDataViewAdapter ->

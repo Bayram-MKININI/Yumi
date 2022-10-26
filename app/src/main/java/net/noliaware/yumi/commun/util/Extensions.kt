@@ -120,6 +120,13 @@ fun parseToLongDate(dateStr: String?) = dateStr?.let {
     destFormatter.format(date)
 } ?: ""
 
+fun parseTimeString(dateStr: String?) = dateStr?.let {
+    val sourceFormatter = SimpleDateFormat("HH:mm:ss", Locale.FRANCE)
+    val date = sourceFormatter.parse(dateStr)
+    val destFormatter = SimpleDateFormat("HH:mm", Locale.FRANCE)
+    destFormatter.format(date)
+} ?: ""
+
 fun Fragment.handleSharedEvent(sharedEvent: UIEvent) {
 
     when (sharedEvent) {

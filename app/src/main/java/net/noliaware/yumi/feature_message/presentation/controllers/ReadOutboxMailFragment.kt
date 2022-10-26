@@ -12,10 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.MESSAGE_ID
-import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.parseToLongDate
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
-import net.noliaware.yumi.commun.util.withArgs
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_message.domain.model.Message
 import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
 
@@ -82,7 +79,11 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
     private fun bindViewToData(message: Message) {
         ReadMailView.ReadMailViewAdapter(
             subject = message.messageSubject,
-            time = parseToLongDate(message.messageDate),
+            time = getString(
+                R.string.received_at,
+                parseToLongDate(message.messageDate),
+                parseTimeString(message.messageTime)
+            ),
             message = message.messageBody ?: ""
         ).also {
             readMailView?.fillViewWithData(it)

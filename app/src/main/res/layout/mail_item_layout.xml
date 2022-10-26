@@ -25,6 +25,7 @@
         android:id="@+id/body_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
         android:fontFamily="@font/sf_pro_text_regular"
         android:justificationMode="inter_word"
         android:maxLines="5"

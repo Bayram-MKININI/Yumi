@@ -14,18 +14,19 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.QR_CODE_FRAGMENT_TAG
 import net.noliaware.yumi.commun.VOUCHER_ID
 import net.noliaware.yumi.commun.presentation.views.DataValueView
-import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.openMap
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
-import net.noliaware.yumi.commun.util.withArgs
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
+import net.noliaware.yumi.feature_categories.domain.model.VoucherCodeData
+import net.noliaware.yumi.feature_categories.domain.model.VoucherStatus
+import net.noliaware.yumi.feature_categories.presentation.controllers.QrCodeFragment.QrCodeFragmentCallback
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView
+import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView.VouchersDetailsViewCallback
 
 @AndroidEntryPoint
 class VoucherDetailsFragment : AppCompatDialogFragment() {
 
     companion object {
-        fun newInstance(voucherId: String): VoucherDetailsFragment =
+        fun newInstance(voucherId: String) =
             VoucherDetailsFragment().withArgs(VOUCHER_ID to voucherId)
     }
 
@@ -56,17 +57,24 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-
-            viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
+            viewModel.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreen(sharedEvent)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventsHelper.stateFlow.collect { vmState ->
+            viewModel.getVoucherStateFlow.collect { vmState ->
                 vmState.data?.let { voucher ->
                     bindViewToData(voucher)
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.getVoucherStatusStateFlow.collect { vmState ->
+                vmState.data?.let { voucherStatus ->
+                    handleVoucherStatusUpdate(voucherStatus)
                 }
             }
         }
@@ -78,14 +86,14 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
         DataValueView.DataValueViewAdapter(
             title = getString(R.string.creation_date),
-            value = voucher.voucherDate ?: ""
+            value = parseToLongDate(voucher.voucherDate)
         ).also {
             vouchersDetailsView?.addDataValue(it)
         }
 
         DataValueView.DataValueViewAdapter(
             title = getString(R.string.expiry_date_title),
-            value = voucher.voucherExpiryDate ?: ""
+            value = parseToLongDate(voucher.voucherExpiryDate)
         ).also {
             vouchersDetailsView?.addDataValue(it)
         }
@@ -169,14 +177,23 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         vouchersDetailsView?.addLocationView { vouchersDetailsViewCallback.onLocationClicked() }
     }
 
-    private val vouchersDetailsViewCallback: VouchersDetailsView.VouchersDetailsViewCallback by lazy {
-        object : VouchersDetailsView.VouchersDetailsViewCallback {
+    private fun handleVoucherStatusUpdate(voucherStatus: VoucherStatus) {
+        when (voucherStatus) {
+            VoucherStatus.INEXISTENT -> vouchersDetailsView?.setVoucherStatus(getString(R.string.voucher_inexistent))
+            VoucherStatus.CANCELED -> vouchersDetailsView?.setVoucherStatus(getString(R.string.voucher_canceled))
+            VoucherStatus.USABLE -> Unit
+            VoucherStatus.CONSUMED -> vouchersDetailsView?.setVoucherStatus(getString(R.string.voucher_consumed))
+        }
+    }
+
+    private val vouchersDetailsViewCallback: VouchersDetailsViewCallback by lazy {
+        object : VouchersDetailsViewCallback {
             override fun onBackButtonClicked() {
                 dismissAllowingStateLoss()
             }
 
             override fun onLocationClicked() {
-                viewModel.eventsHelper.stateFlow.value.data?.let { voucher ->
+                viewModel.getVoucherStateFlow.value.data?.let { voucher ->
                     val latitude = voucher.retailerAddressLatitude
                     val longitude = voucher.retailerAddressLongitude
                     val label = voucher.retailerLabel
@@ -184,10 +201,37 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 }
             }
 
-            override fun onUseVoucherButtonClicked() {
-                viewModel.eventsHelper.stateFlow.value.data?.voucherCode?.let { voucherCode ->
-                    QrCodeFragment.newInstance(voucherCode, resources.displayMetrics.widthPixels)
-                        .show(childFragmentManager.beginTransaction(), QR_CODE_FRAGMENT_TAG)
+            override fun onDisplayVoucherButtonClicked() {
+                viewModel.getVoucherStateFlow.value.data?.let { voucher ->
+                    QrCodeFragment.newInstance(
+                        VoucherCodeData(
+                            productLabel = voucher.productLabel,
+                            voucherDate = voucher.voucherDate,
+                            voucherExpiryDate = voucher.voucherExpiryDate,
+                            voucherCode = voucher.voucherCode,
+                            voucherCodeSize = resources.displayMetrics.widthPixels
+                        )
+                    ).apply {
+                        callback = qrCodeFragmentCallback
+                    }.show(
+                        childFragmentManager.beginTransaction(),
+                        QR_CODE_FRAGMENT_TAG
+                    )
+                }
+            }
+        }
+    }
+
+    private val qrCodeFragmentCallback: QrCodeFragmentCallback by lazy {
+        object : QrCodeFragmentCallback {
+            override fun handleDialogClosed(qrCodeUnlocked: Boolean) {
+
+                if (!qrCodeUnlocked) {
+                    return
+                }
+
+                viewModel.getVoucherStateFlow.value.data?.voucherId?.let {
+                    viewModel.callGetVoucherStatusById(it)
                 }
             }
         }

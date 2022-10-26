@@ -98,13 +98,14 @@ class SendMailFragment : AppCompatDialogFragment() {
 
                 builder.setTitle(R.string.select_subject)
 
-                viewModel.messageSubjects?.map { it.subjectLabel }?.toTypedArray()
-                    ?.let { messageSubjects ->
-                        builder.setItems(messageSubjects) { _, which ->
-                            selectedMessageIndex = which
-                            sendMailView?.setSubject(messageSubjects[which])
-                        }
+                viewModel.messageSubjects?.map {
+                    it.subjectLabel
+                }?.toTypedArray()?.let { messageSubjects ->
+                    builder.setItems(messageSubjects) { _, which ->
+                        selectedMessageIndex = which
+                        sendMailView?.setSubject(messageSubjects[which])
                     }
+                }
 
                 dialog = builder.create()
                 dialog?.show()

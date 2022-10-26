@@ -15,6 +15,7 @@ import net.noliaware.yumi.commun.CATEGORY_ID
 import net.noliaware.yumi.commun.CATEGORY_LABEL
 import net.noliaware.yumi.commun.VOUCHER_DETAILS_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.handleSharedEvent
+import net.noliaware.yumi.commun.util.parseToShortDate
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
@@ -78,7 +79,10 @@ class VouchersListFragment : AppCompatDialogFragment() {
         voucherList.map { voucher ->
             VoucherItemViewAdapter(
                 title = voucher.productLabel ?: "",
-                expiryDate = getString(R.string.expiry_date, voucher.voucherExpiryDate),
+                expiryDate = getString(
+                    R.string.expiry_date,
+                    parseToShortDate(voucher.voucherExpiryDate)
+                ),
                 description = getString(R.string.retailer, voucher.retailerLabel)
             )
         }.also {
@@ -95,8 +99,12 @@ class VouchersListFragment : AppCompatDialogFragment() {
             override fun onItemClickedAtIndex(index: Int) {
 
                 viewModel.eventsHelper.stateFlow.value.data?.get(index)?.voucherId?.let { voucherId ->
-                    VoucherDetailsFragment.newInstance(voucherId)
-                        .show(childFragmentManager.beginTransaction(), VOUCHER_DETAILS_FRAGMENT_TAG)
+                    VoucherDetailsFragment.newInstance(
+                        voucherId
+                    ).show(
+                        childFragmentManager.beginTransaction(),
+                        VOUCHER_DETAILS_FRAGMENT_TAG
+                    )
                 }
             }
         }

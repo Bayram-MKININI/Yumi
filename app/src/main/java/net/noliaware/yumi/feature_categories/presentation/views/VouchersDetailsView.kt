@@ -12,6 +12,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.GOLDEN_RATIO
 import net.noliaware.yumi.commun.presentation.views.DataValueView
@@ -23,14 +25,15 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
     private lateinit var backView: View
     private lateinit var parentContentView: View
     private lateinit var contentView: LinearLayoutCompat
-    private lateinit var useVoucherTextView: TextView
+    private lateinit var displayVoucherTextView: TextView
+    private lateinit var voucherStatusTextView: TextView
 
     var callback: VouchersDetailsViewCallback? by weak()
 
     interface VouchersDetailsViewCallback {
         fun onBackButtonClicked()
         fun onLocationClicked()
-        fun onUseVoucherButtonClicked()
+        fun onDisplayVoucherButtonClicked()
     }
 
     override fun onFinishInflate() {
@@ -46,15 +49,17 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
         parentContentView = findViewById(R.id.parent_content_layout)
         contentView = parentContentView.findViewById(R.id.content_layout)
 
-        useVoucherTextView = findViewById(R.id.use_vouchers_text_view)
-        useVoucherTextView.setOnClickListener(onButtonClickListener)
+        displayVoucherTextView = findViewById(R.id.display_voucher_text_view)
+        displayVoucherTextView.setOnClickListener(onButtonClickListener)
+
+        voucherStatusTextView = findViewById(R.id.voucher_status_text_view)
     }
 
     private val onButtonClickListener: OnClickListener by lazy {
         OnClickListener {
             when (it.id) {
                 R.id.back_view -> callback?.onBackButtonClicked()
-                R.id.use_vouchers_text_view -> callback?.onUseVoucherButtonClicked()
+                R.id.display_voucher_text_view -> callback?.onDisplayVoucherButtonClicked()
             }
         }
     }
@@ -111,6 +116,12 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
         addSpace(20)
     }
 
+    fun setVoucherStatus(voucherStatus: String) {
+        voucherStatusTextView.isVisible = true
+        displayVoucherTextView.isGone = true
+        voucherStatusTextView.text = voucherStatus
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val viewWidth = MeasureSpec.getSize(widthMeasureSpec)
         val viewHeight = MeasureSpec.getSize(heightMeasureSpec)
@@ -120,13 +131,22 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
-        useVoucherTextView.measure(
+        displayVoucherTextView.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth * 7 / 10, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY)
+        )
+
+        if (voucherStatusTextView.isVisible) {
+            voucherStatusTextView.measureWrapContent()
+        }
+
+        displayVoucherTextView.measure(
             MeasureSpec.makeMeasureSpec(viewWidth * 7 / 10, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY)
         )
 
         val parentContentViewHeight =
-            viewHeight - (backView.measuredHeight + useVoucherTextView.measuredHeight + convertDpToPx(
+            viewHeight - (backView.measuredHeight + displayVoucherTextView.measuredHeight + convertDpToPx(
                 100
             ))
 
@@ -153,9 +173,16 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
             backView.bottom + convertDpToPx(20)
         )
 
-        useVoucherTextView.layoutToBottomLeft(
-            (viewWidth - useVoucherTextView.measuredWidth) / 2,
-            bottom - convertDpToPx(40)
-        )
+        if (voucherStatusTextView.isVisible) {
+            voucherStatusTextView.layoutToBottomLeft(
+                (viewWidth - voucherStatusTextView.measuredWidth) / 2,
+                bottom - convertDpToPx(40)
+            )
+        } else {
+            displayVoucherTextView.layoutToBottomLeft(
+                (viewWidth - displayVoucherTextView.measuredWidth) / 2,
+                bottom - convertDpToPx(40)
+            )
+        }
     }
 }

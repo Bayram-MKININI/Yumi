@@ -9,24 +9,30 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import net.noliaware.yumi.commun.QR_CODE
-import net.noliaware.yumi.commun.QR_CODE_SIZE
+import net.noliaware.yumi.commun.VOUCHER_CODE_DATA
 import net.noliaware.yumi.commun.util.QRCodeGenerator
 import net.noliaware.yumi.commun.util.ViewModelState
+import net.noliaware.yumi.feature_categories.domain.model.VoucherCodeData
 import javax.inject.Inject
 
 @HiltViewModel
 class QrCodeFragmentViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _stateFlow = MutableStateFlow(ViewModelState<Bitmap>())
     val stateFlow = _stateFlow.asStateFlow()
+    val voucherCodeData get() = savedStateHandle.get<VoucherCodeData>(VOUCHER_CODE_DATA)
 
     init {
-        val qrCode = savedStateHandle.get<String>(QR_CODE) ?: ""
-        val qrCodeSize = savedStateHandle.get<Int>(QR_CODE_SIZE) ?: 0
-        generateQrCodeForCode(qrCode, qrCodeSize)
+        voucherCodeData?.let { voucherCodeData ->
+            voucherCodeData.voucherCode?.let { voucherCodeStr ->
+                generateQrCodeForCode(
+                    voucherCodeStr,
+                    voucherCodeData.voucherCodeSize
+                )
+            }
+        }
     }
 
     private fun generateQrCodeForCode(code: String, size: Int) {

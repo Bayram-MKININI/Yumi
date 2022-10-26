@@ -14,6 +14,7 @@ import net.noliaware.yumi.commun.USED_VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
+import net.noliaware.yumi.commun.util.parseToLongDate
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.feature_categories.presentation.controllers.HomeFragmentViewModel
 import net.noliaware.yumi.feature_categories.presentation.controllers.VouchersListFragment
@@ -103,7 +104,7 @@ class UserProfileFragment : Fragment() {
             title = getString(R.string.birth),
             value = getString(
                 R.string.birth_data,
-                userProfile.birthDate,
+                parseToLongDate(userProfile.birthDate),
                 userProfile.birthCity,
                 userProfile.birthCountry
             )

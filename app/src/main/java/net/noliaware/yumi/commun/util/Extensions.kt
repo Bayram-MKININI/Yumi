@@ -41,6 +41,8 @@ import java.io.Serializable
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun generateToken(timestamp: String, methodName: String, randomString: String): String {
     return "noliaware|$timestamp|${methodName}|${timestamp.reversed()}|$randomString".sha256()
@@ -104,6 +106,20 @@ fun handleSessionAndFailureIfAny(
     return null
 }
 
+fun parseToShortDate(dateStr: String?) = dateStr?.let {
+    val sourceFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.FRANCE)
+    val date = sourceFormatter.parse(dateStr)
+    val destFormatter = SimpleDateFormat("dd LLL yyyy", Locale.FRANCE)
+    destFormatter.format(date)
+} ?: ""
+
+fun parseToLongDate(dateStr: String?) = dateStr?.let {
+    val sourceFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.FRANCE)
+    val date = sourceFormatter.parse(dateStr)
+    val destFormatter = SimpleDateFormat("dd LLLL yyyy", Locale.FRANCE)
+    destFormatter.format(date)
+} ?: ""
+
 fun Fragment.handleSharedEvent(sharedEvent: UIEvent) {
 
     when (sharedEvent) {
@@ -138,7 +154,7 @@ fun Fragment.redirectToLoginScreen(sharedEvent: UIEvent) {
     }
 }
 
-suspend inline fun <T> handleWSResult(
+suspend inline fun <T> handleWSResponse(
     result: Resource<T>,
     stateFlow: MutableStateFlow<ViewModelState<T>>,
     eventFlow: MutableSharedFlow<UIEvent>
@@ -147,7 +163,7 @@ suspend inline fun <T> handleWSResult(
     when (result) {
         is Resource.Success -> {
             result.data?.let {
-                stateFlow.value = ViewModelState()
+                stateFlow.value = ViewModelState(it)
             }
         }
         is Resource.Loading -> {

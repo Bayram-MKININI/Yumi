@@ -6,25 +6,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.convertDpToPx
 import net.noliaware.yumi.commun.util.layoutToTopLeft
 import net.noliaware.yumi.commun.util.measureWrapContent
 import net.noliaware.yumi.feature_alerts.domain.model.AlertPriority
+import net.noliaware.yumi.feature_alerts.domain.model.AlertPriority.CRITICAL
+import net.noliaware.yumi.feature_alerts.domain.model.AlertPriority.IMPORTANT
 
 class AlertItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
     private lateinit var backgroundView: View
     private lateinit var priorityImageView: ImageView
-    private lateinit var senderTextView: TextView
     private lateinit var timeTextView: TextView
     private lateinit var bodyTextView: TextView
 
     data class AlertItemViewAdapter(
-        val priority: AlertPriority = AlertPriority.NONE,
-        val sender: String = "",
-        val time: String = "",
-        val body: String = ""
+        val priority: AlertPriority,
+        val time: String,
+        val body: String
     )
 
     override fun onFinishInflate() {
@@ -35,32 +37,27 @@ class AlertItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context,
     private fun initView() {
         backgroundView = findViewById(R.id.background_view)
         priorityImageView = findViewById(R.id.priority_image_view)
-        senderTextView = findViewById(R.id.sender_text_view)
         timeTextView = findViewById(R.id.time_text_view)
         bodyTextView = findViewById(R.id.body_text_view)
     }
 
     fun fillViewWithData(alertItemViewAdapter: AlertItemViewAdapter) {
 
-        senderTextView.text = alertItemViewAdapter.sender
         timeTextView.text = alertItemViewAdapter.time
         bodyTextView.text = alertItemViewAdapter.body
 
         when (alertItemViewAdapter.priority) {
-
-            AlertPriority.RED -> {
-                priorityImageView.visibility = VISIBLE
-                priorityImageView.setBackgroundResource(R.drawable.ring_filled_red)
-                priorityImageView.setImageResource(R.drawable.ic_danger)
-            }
-
-            AlertPriority.ORANGE -> {
-                priorityImageView.visibility = VISIBLE
+            IMPORTANT -> {
+                priorityImageView.isVisible = true
                 priorityImageView.setBackgroundResource(R.drawable.ring_filled_orange)
                 priorityImageView.setImageResource(R.drawable.ic_warning)
             }
-
-            else -> priorityImageView.visibility = GONE
+            CRITICAL -> {
+                priorityImageView.isVisible = true
+                priorityImageView.setBackgroundResource(R.drawable.ring_filled_red)
+                priorityImageView.setImageResource(R.drawable.ic_danger)
+            }
+            else -> priorityImageView.isGone = true
         }
     }
 
@@ -82,16 +79,8 @@ class AlertItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context,
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
-        senderTextView.measure(
-            MeasureSpec.makeMeasureSpec(
-                bodyTextViewWidth - timeTextView.measuredWidth,
-                MeasureSpec.AT_MOST
-            ),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        )
-
         viewHeight =
-            priorityImageView.measuredHeight + senderTextView.measuredHeight + bodyTextView.measuredHeight + convertDpToPx(
+            priorityImageView.measuredHeight + timeTextView.measuredHeight + bodyTextView.measuredHeight + convertDpToPx(
                 40
             )
 
@@ -110,43 +99,31 @@ class AlertItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context,
         val viewWidth = right - left
         val viewHeight = bottom - top
 
-        if (priorityImageView.visibility == VISIBLE)
+        if (priorityImageView.isVisible)
             priorityImageView.layoutToTopLeft(0, 0)
 
         backgroundView.layoutToTopLeft(convertDpToPx(4), convertDpToPx(4))
 
         val edgeSpace = priorityImageView.measuredWidth - convertDpToPx(4)
 
-        var senderTextViewTop = priorityImageView.bottom - convertDpToPx(4)
+        var timeTextViewTop = priorityImageView.bottom - convertDpToPx(4)
 
-        if (priorityImageView.visibility == GONE)
-            senderTextViewTop = edgeSpace
+        if (priorityImageView.isGone)
+            timeTextViewTop = edgeSpace
 
-        var senderTextViewLeft = priorityImageView.right - convertDpToPx(4)
+        var timeTextViewLeft = priorityImageView.right - convertDpToPx(4)
 
-        if (priorityImageView.visibility == GONE)
-            senderTextViewLeft = edgeSpace
+        if (priorityImageView.isGone)
+            timeTextViewLeft = edgeSpace
 
-        senderTextView.layoutToTopLeft(
-            senderTextViewTop,
-            senderTextViewLeft
-        )
-
-        val timeTextViewRight = backgroundView.right - (senderTextView.left - backgroundView.left)
-        val timeTextViewLeft = timeTextViewRight - timeTextView.measuredWidth
-        val timeTextViewBottom = senderTextView.bottom
-        val timeTextViewTop = timeTextViewBottom - timeTextView.measuredHeight
-
-        timeTextView.layout(
-            timeTextViewLeft,
+        timeTextView.layoutToTopLeft(
             timeTextViewTop,
-            timeTextViewRight,
-            timeTextViewBottom
+            timeTextViewLeft
         )
 
         bodyTextView.layoutToTopLeft(
             backgroundView.left + (backgroundView.measuredWidth - bodyTextView.measuredWidth) / 2,
-            senderTextView.bottom + convertDpToPx(10)
+            timeTextView.bottom + convertDpToPx(10)
         )
     }
 }

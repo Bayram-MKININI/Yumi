@@ -23,7 +23,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/use_vouchers_text_view"
+        android:id="@+id/display_voucher_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/button_filled_rounded_primary"
@@ -31,8 +31,19 @@
         android:focusable="true"
         android:fontFamily="@font/sf_pro_text_semibold"
         android:gravity="center"
-        android:text="@string/use_voucher"
+        android:text="@string/display_voucher"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/voucher_status_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/sf_pro_text_semibold"
+        android:gravity="center"
+        android:text="@string/display_voucher"
+        android:textColor="@color/red"
+        android:textSize="18sp"
+        android:visibility="gone" />
 
 </net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView>

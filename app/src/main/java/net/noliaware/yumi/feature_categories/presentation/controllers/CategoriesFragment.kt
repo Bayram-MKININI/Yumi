@@ -71,48 +71,6 @@ class CategoriesFragment : Fragment() {
         ).apply {
             categoriesView?.fillViewWithData(this)
         }
-
-        /*CategoryItemViewAdapter(
-            count = 12,
-            iconName = "ic_food",
-            title = "Alimentaire"
-        ).also {
-            categoriesViewAdapter.categoryItemViewAdapters.add(it)
-        }
-
-        CategoryItemViewAdapter(
-            count = 3,
-            iconName = "ic_sports",
-            title = "Sports"
-        ).also {
-            categoriesViewAdapter.categoryItemViewAdapters.add(it)
-        }
-
-        CategoryItemViewAdapter(
-            count = 6,
-            iconName = "ic_health",
-            title = "Santé"
-        ).also {
-            categoriesViewAdapter.categoryItemViewAdapters.add(it)
-        }
-
-        CategoryItemViewAdapter(
-            count = 15,
-            iconName = "ic_services",
-            title = "Services"
-        ).also {
-            categoriesViewAdapter.categoryItemViewAdapters.add(it)
-        }
-
-        CategoryItemViewAdapter(
-            count = 2,
-            iconName = "ic_energy",
-            title = "Energie"
-        ).also {
-            categoriesViewAdapter.categoryItemViewAdapters.add(it)
-        }
-
-         */
     }
 
     override fun onDestroyView() {

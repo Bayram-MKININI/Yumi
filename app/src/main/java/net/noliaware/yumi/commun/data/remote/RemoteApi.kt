@@ -4,6 +4,7 @@ import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.data.remote.dto.ResponseDTO
 import net.noliaware.yumi.feature_alerts.data.remote.dto.AlertsDTO
 import net.noliaware.yumi.feature_categories.data.remote.dto.GetVoucherDTO
+import net.noliaware.yumi.feature_categories.data.remote.dto.GetVoucherStatusDTO
 import net.noliaware.yumi.feature_categories.data.remote.dto.VouchersDTO
 import net.noliaware.yumi.feature_login.data.remote.dto.AccountDataDTO
 import net.noliaware.yumi.feature_login.data.remote.dto.InitDTO
@@ -63,6 +64,15 @@ interface RemoteApi {
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
     ): ResponseDTO<GetVoucherDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_VOUCHER_STATUS/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchVoucherStatusForId(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<GetVoucherStatusDTO>
 
     @FormUrlEncoded
     @POST("$GET_ACCOUNT/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")

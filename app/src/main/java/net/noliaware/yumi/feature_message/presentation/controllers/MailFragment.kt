@@ -13,10 +13,7 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
 import net.noliaware.yumi.commun.READ_MESSAGE_FRAGMENT_TAG
 import net.noliaware.yumi.commun.SEND_MESSAGES_FRAGMENT_TAG
-import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.inflate
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
-import net.noliaware.yumi.commun.util.withArgs
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.presentation.controllers.HomeFragmentViewModel
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.domain.model.Message
@@ -71,7 +68,7 @@ class MailFragment : Fragment() {
                                     READ_MESSAGE_FRAGMENT_TAG
                                 )
                         }
-                        else -> {}
+                        else -> Unit
                     }
                 }
             }
@@ -114,7 +111,7 @@ class MailFragment : Fragment() {
         messageList.map { message ->
             MailItemViewAdapter(
                 subject = message.messageFrom ?: "",
-                time = message.messageDate,
+                time = parseToShortDate(message.messageDate),
                 body = message.messageSubject
             )
         }.also {

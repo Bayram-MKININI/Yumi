@@ -21,14 +21,6 @@
         android:src="@drawable/ic_danger" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/sender_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/sf_pro_display_semibold"
-        android:textColor="@color/black_font"
-        android:textSize="18sp" />
-
-    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/time_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

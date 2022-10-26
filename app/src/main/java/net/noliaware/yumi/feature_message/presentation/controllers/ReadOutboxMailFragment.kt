@@ -13,12 +13,11 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.MESSAGE_ID
 import net.noliaware.yumi.commun.util.handleSharedEvent
+import net.noliaware.yumi.commun.util.parseToLongDate
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_message.domain.model.Message
 import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
-import java.text.SimpleDateFormat
-import java.util.*
 
 @AndroidEntryPoint
 class ReadOutboxMailFragment : AppCompatDialogFragment() {
@@ -83,17 +82,11 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
     private fun bindViewToData(message: Message) {
         ReadMailView.ReadMailViewAdapter(
             subject = message.messageSubject,
-            time = message.messageDate,
+            time = parseToLongDate(message.messageDate),
             message = message.messageBody ?: ""
         ).also {
             readMailView?.fillViewWithData(it)
         }
-    }
-
-    private fun formatTimestampToString(timestamp: Long): String {
-        val sdf = SimpleDateFormat(getString(R.string.mail_date_long_format), Locale.US)
-        val date = Date(timestamp)
-        return sdf.format(date)
     }
 
     override fun onDestroyView() {

@@ -22,7 +22,7 @@ import net.noliaware.yumi.feature_profile.presentation.controllers.UserProfileFr
 class HomeFragment : Fragment() {
 
     companion object {
-        fun newInstance(accountData: AccountData): HomeFragment =
+        fun newInstance(accountData: AccountData) =
             HomeFragment().withArgs(ACCOUNT_DATA to accountData)
     }
 

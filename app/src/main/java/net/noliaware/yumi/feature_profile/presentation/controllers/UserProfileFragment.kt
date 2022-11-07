@@ -81,21 +81,21 @@ class UserProfileFragment : Fragment() {
 
         DataValueView.DataValueViewAdapter(
             title = getString(R.string.login),
-            value = userProfile.login ?: ""
+            value = userProfile.login.orEmpty()
         ).also {
             profileViewAdapter.myDataAdapters.add(it)
         }
 
         DataValueView.DataValueViewAdapter(
             title = getString(R.string.surname),
-            value = userProfile.lastName ?: ""
+            value = userProfile.lastName.orEmpty()
         ).also {
             profileViewAdapter.myDataAdapters.add(it)
         }
 
         DataValueView.DataValueViewAdapter(
             title = getString(R.string.name),
-            value = userProfile.firstName ?: ""
+            value = userProfile.firstName.orEmpty()
         ).also {
             profileViewAdapter.myDataAdapters.add(it)
         }
@@ -132,7 +132,7 @@ class UserProfileFragment : Fragment() {
 
         DataValueView.DataValueViewAdapter(
             title = getString(R.string.phone_numbers),
-            value = userProfile.cellPhoneNumber ?: ""
+            value = userProfile.cellPhoneNumber.orEmpty()
         ).also {
             profileViewAdapter.complementaryDataAdapters.add(it)
         }

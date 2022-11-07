@@ -40,11 +40,13 @@ class CategoriesFragment : Fragment() {
             override fun onItemClickedAtIndex(index: Int) {
 
                 viewModel.accountData?.categories?.get(index)?.let { category ->
-                    VouchersListFragment.newInstance(category.categoryId, category.categoryLabel)
-                        .show(
-                            childFragmentManager.beginTransaction(),
-                            VOUCHERS_LIST_FRAGMENT_TAG
-                        )
+                    VouchersListFragment.newInstance(
+                        category.categoryId,
+                        category.categoryLabel
+                    ).show(
+                        childFragmentManager.beginTransaction(),
+                        VOUCHERS_LIST_FRAGMENT_TAG
+                    )
                 }
             }
         }

@@ -1,6 +1,6 @@
 package net.noliaware.yumi.commun
 
-enum class ServiceError(val errorCode: Int) {
+enum class ServiceError(errorCode: Int) {
 
     ErrDEFAULT(-99),
     ErrSYSTEM(-1),

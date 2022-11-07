@@ -85,10 +85,10 @@ class LoginRepositoryImpl @Inject constructor(
         )
 
         if (deviceId.isNullOrEmpty()) {
-            parameters["deviceType"] = "S"
-            parameters["deviceOS"] = "ANDROID"
-            parameters["deviceUUID"] = androidId
-            parameters["deviceLabel"] = Build.MODEL
+            parameters[DEVICE_TYPE] = "S"
+            parameters[DEVICE_OS] = "ANDROID"
+            parameters[DEVICE_UUID] = androidId
+            parameters[DEVICE_LABEL] = Build.MODEL
         } else {
             parameters[DEVICE_ID] = deviceId
         }
@@ -113,7 +113,7 @@ class LoginRepositoryImpl @Inject constructor(
             )
 
             val sessionNoFailure =
-                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
+                handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { accountDataDTO ->
@@ -122,17 +122,14 @@ class LoginRepositoryImpl @Inject constructor(
             }
 
         } catch (ex: HttpException) {
-
             emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
         } catch (ex: IOException) {
-
             emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
 
     private fun generateGetAccountParams(password: String) = mutableMapOf(
-        "password" to password
+        PASSWORD to password
     ).also { it.plusAssign(getCommonWSParams(sessionData)) }
 
     override fun selectAccountForId(accountId: String): Flow<Resource<AccountData>> = flow {
@@ -152,7 +149,7 @@ class LoginRepositoryImpl @Inject constructor(
             )
 
             val sessionNoFailure =
-                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
+                handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { accountDataDTO ->
@@ -161,16 +158,13 @@ class LoginRepositoryImpl @Inject constructor(
             }
 
         } catch (ex: HttpException) {
-
             emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
         } catch (ex: IOException) {
-
             emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
 
     private fun generateSelectAccountParams(accountId: String) = mutableMapOf(
-        "managedAccount" to accountId
+        MANAGED_ACCOUNT to accountId
     ).also { it.plusAssign(getCommonWSParams(sessionData)) }
 }

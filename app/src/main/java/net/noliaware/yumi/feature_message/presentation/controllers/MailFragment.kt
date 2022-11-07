@@ -17,7 +17,8 @@ import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.presentation.controllers.HomeFragmentViewModel
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.domain.model.Message
-import net.noliaware.yumi.feature_message.domain.model.MessageOrigin
+import net.noliaware.yumi.feature_message.domain.model.MessageOrigin.INBOX
+import net.noliaware.yumi.feature_message.domain.model.MessageOrigin.OUTBOX
 import net.noliaware.yumi.feature_message.presentation.views.MailItemView.MailItemViewAdapter
 import net.noliaware.yumi.feature_message.presentation.views.MailView
 
@@ -53,7 +54,7 @@ class MailFragment : Fragment() {
 
                     when (message.messageOrigin) {
 
-                        MessageOrigin.INBOX -> {
+                        INBOX -> {
                             ReadInboxMailFragment.newInstance(
                                 message.messageId
                             ).show(
@@ -62,7 +63,7 @@ class MailFragment : Fragment() {
                             )
                         }
 
-                        MessageOrigin.OUTBOX -> {
+                        OUTBOX -> {
                             ReadOutboxMailFragment.newInstance(
                                 message.messageId
                             ).show(
@@ -113,7 +114,7 @@ class MailFragment : Fragment() {
     private fun bindViewToData(messageList: List<Message>) {
         messageList.map { message ->
             MailItemViewAdapter(
-                subject = message.messageFrom ?: "",
+                subject = message.messageFrom.orEmpty(),
                 time = parseToShortDate(message.messageDate),
                 body = message.messageSubject
             )

@@ -30,6 +30,7 @@
     <string name="address_title">Adresse:</string>
     <string name="landline">Tél fixe:</string>
     <string name="mobile">Tél mobile:</string>
+    <string name="mobile_short">Tél: %s</string>
     <string name="email">Mail:</string>
     <string name="location">Localisation:</string>
     <string name="application_not_found">Application cartographique introuvable</string>

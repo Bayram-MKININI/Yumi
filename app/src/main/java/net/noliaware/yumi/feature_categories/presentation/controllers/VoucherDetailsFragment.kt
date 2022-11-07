@@ -20,6 +20,7 @@ import net.noliaware.yumi.feature_categories.domain.model.VoucherCodeData
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStatus
 import net.noliaware.yumi.feature_categories.presentation.controllers.QrCodeFragment.QrCodeFragmentCallback
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView
+import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView.VouchersDetailsViewAdapter
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView.VouchersDetailsViewCallback
 
 @AndroidEntryPoint
@@ -81,8 +82,13 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
     }
 
     private fun bindViewToData(voucher: Voucher) {
-        vouchersDetailsView?.addImageByDrawableName("ic_fruit_basket")
-        vouchersDetailsView?.addTitle(voucher.productLabel ?: "")
+
+        vouchersDetailsView?.fillViewWithData(
+            VouchersDetailsViewAdapter(
+                title = voucher.productLabel.orEmpty(),
+                partnerDescription = voucher.partnerInfoText
+            )
+        )
 
         DataValueView.DataValueViewAdapter(
             title = getString(R.string.creation_date),
@@ -118,7 +124,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
         DataValueView.DataValueViewAdapter(
             title = getString(R.string.retailer_title),
-            value = voucher.retailerLabel ?: ""
+            value = voucher.retailerLabel.orEmpty()
         ).also {
             vouchersDetailsView?.addDataValue(it)
         }
@@ -146,21 +152,21 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
         DataValueView.DataValueViewAdapter(
             title = getString(R.string.mobile),
-            value = voucher.retailerCellPhoneNumber ?: ""
+            value = voucher.retailerCellPhoneNumber.orEmpty()
         ).also {
             vouchersDetailsView?.addDataValue(it)
         }
 
         DataValueView.DataValueViewAdapter(
             title = getString(R.string.landline),
-            value = voucher.retailerPhoneNumber ?: ""
+            value = voucher.retailerPhoneNumber.orEmpty()
         ).also {
             vouchersDetailsView?.addDataValue(it)
         }
 
         DataValueView.DataValueViewAdapter(
             title = getString(R.string.email),
-            value = voucher.retailerEmail ?: ""
+            value = voucher.retailerEmail.orEmpty()
         ).also {
             vouchersDetailsView?.addDataValue(it)
         }
@@ -168,7 +174,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         if (!voucher.retailerWebsite.isNullOrEmpty()) {
             DataValueView.DataValueViewAdapter(
                 title = getString(R.string.web_page),
-                value = voucher.retailerWebsite ?: ""
+                value = voucher.retailerWebsite
             ).also {
                 vouchersDetailsView?.addDataValue(it)
             }
@@ -190,6 +196,14 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         object : VouchersDetailsViewCallback {
             override fun onBackButtonClicked() {
                 dismissAllowingStateLoss()
+            }
+
+            override fun onPartnerInfoClicked() {
+                viewModel.getVoucherStateFlow.value.data?.let { voucher ->
+                    voucher.partnerInfoURL?.let { url ->
+                        context?.openWebPage(url)
+                    }
+                }
             }
 
             override fun onLocationClicked() {

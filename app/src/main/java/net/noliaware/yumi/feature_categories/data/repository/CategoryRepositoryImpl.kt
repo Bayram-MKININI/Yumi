@@ -37,8 +37,7 @@ class CategoryRepositoryImpl(
                 params = generateVoucherListParams(categoryId)
             )
 
-            val sessionNoFailure =
-                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { vouchersDTO ->
@@ -80,8 +79,7 @@ class CategoryRepositoryImpl(
                 params = generateVoucherByIdParams(voucherId)
             )
 
-            val sessionNoFailure =
-                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { getVoucherDTO ->
@@ -119,8 +117,7 @@ class CategoryRepositoryImpl(
                 params = generateVoucherByIdParams(voucherId)
             )
 
-            val sessionNoFailure =
-                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { getVoucherStatusDTO ->
@@ -129,11 +126,8 @@ class CategoryRepositoryImpl(
             }
 
         } catch (ex: HttpException) {
-
             emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
         } catch (ex: IOException) {
-
             emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }

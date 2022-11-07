@@ -26,7 +26,7 @@ import net.noliaware.yumi.feature_message.presentation.views.SendMailView.SendMa
 class SendMailFragment : AppCompatDialogFragment() {
 
     companion object {
-        fun newInstance(messageSubjects: List<MessageSubject>?): SendMailFragment =
+        fun newInstance(messageSubjects: List<MessageSubject>?) =
             SendMailFragment().withArgs(MESSAGE_SUBJECTS_DATA to messageSubjects)
     }
 
@@ -71,7 +71,7 @@ class SendMailFragment : AppCompatDialogFragment() {
                     if (status)
                         Toast.makeText(
                             requireContext(),
-                            getString(R.string.mail_sent),
+                            R.string.mail_sent,
                             Toast.LENGTH_LONG
                         ).show()
                 }

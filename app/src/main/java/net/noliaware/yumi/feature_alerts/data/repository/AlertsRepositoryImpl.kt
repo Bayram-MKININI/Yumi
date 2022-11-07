@@ -1,6 +1,5 @@
 package net.noliaware.yumi.feature_alerts.data.repository
 
-import android.util.Log
 import net.noliaware.yumi.commun.GET_ALERT_LIST
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
@@ -35,7 +34,7 @@ class AlertsRepositoryImpl(
                 params = getCommonWSParams(sessionData)
             )
 
-            handleSessionAndFailureIfAny(
+            handleSessionWithFailureMessage(
                 remoteData.session,
                 sessionData,
                 remoteData.error
@@ -44,7 +43,6 @@ class AlertsRepositoryImpl(
             }
 
             remoteData.data?.let { alertsDTO ->
-                Log.e("getAlerts", "Terminated")
                 return Resource.Success(data = alertsDTO.alertDTOList.map { it.toAlert() })
             }
 

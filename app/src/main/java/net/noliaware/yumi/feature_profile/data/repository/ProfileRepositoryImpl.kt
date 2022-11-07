@@ -131,8 +131,7 @@ class ProfileRepositoryImpl(
                 params = generateUsedVoucherListParams(categoryId)
             )
 
-            val sessionNoFailure =
-                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { vouchersDTO ->
@@ -141,11 +140,8 @@ class ProfileRepositoryImpl(
             }
 
         } catch (ex: HttpException) {
-
             emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
         } catch (ex: IOException) {
-
             emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }

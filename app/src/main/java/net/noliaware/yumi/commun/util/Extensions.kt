@@ -3,24 +3,26 @@ package net.noliaware.yumi.commun.util
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.MeasureSpec
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.CheckResult
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
+import androidx.annotation.*
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -44,6 +46,7 @@ import java.security.NoSuchAlgorithmException
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 fun generateToken(timestamp: String, methodName: String, randomString: String): String {
     return "noliaware|$timestamp|${methodName}|${timestamp.reversed()}|$randomString".sha256()
 }
@@ -56,54 +59,45 @@ fun getCommonWSParams(sessionData: SessionData) = mapOf(
     SESSION_TOKEN to sessionData.sessionToken
 )
 
-suspend fun <T> FlowCollector<Resource<T>>.handleSessionAndFailureIfAny(
+suspend fun <T> FlowCollector<Resource<T>>.handleSessionWithNoFailure(
     session: SessionDTO?,
     sessionData: SessionData,
     error: ErrorDTO?
-): Boolean {
+) = session?.let { sessionDTO ->
 
-    var errorType: ErrorType = ErrorType.SYSTEM_ERROR
-
-    session?.let { sessionDTO ->
-        sessionData.apply {
-            sessionId = sessionDTO.sessionId
-            sessionToken = sessionDTO.sessionToken
-        }
-        errorType = ErrorType.RECOVERABLE_ERROR
+    sessionData.apply {
+        sessionId = sessionDTO.sessionId
+        sessionToken = sessionDTO.sessionToken
     }
+
+    true
+
+} ?: run {
 
     error?.let { errorDTO ->
         emit(
             Resource.Error(
-                errorType = errorType,
+                errorType = ErrorType.SYSTEM_ERROR,
                 errorMessage = errorDTO.errorMessage
             )
         )
-
-        return true
     }
 
-    return false
+    false
 }
 
-fun handleSessionAndFailureIfAny(
+fun handleSessionWithFailureMessage(
     session: SessionDTO?,
     sessionData: SessionData,
     error: ErrorDTO?
-): String? {
-
-    session?.let { sessionDTO ->
-        sessionData.apply {
-            sessionId = sessionDTO.sessionId
-            sessionToken = sessionDTO.sessionToken
-        }
+) = session?.let { sessionDTO ->
+    sessionData.apply {
+        sessionId = sessionDTO.sessionId
+        sessionToken = sessionDTO.sessionToken
     }
-
-    error?.let { errorDTO ->
-        return errorDTO.errorMessage
-    }
-
-    return null
+    null
+} ?: run {
+    error?.errorMessage
 }
 
 fun parseToShortDate(dateStr: String?) = dateStr?.let {
@@ -111,21 +105,21 @@ fun parseToShortDate(dateStr: String?) = dateStr?.let {
     val date = sourceFormatter.parse(dateStr)
     val destFormatter = SimpleDateFormat("dd LLL yyyy", Locale.FRANCE)
     destFormatter.format(date)
-} ?: ""
+}.orEmpty()
 
 fun parseToLongDate(dateStr: String?) = dateStr?.let {
     val sourceFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.FRANCE)
     val date = sourceFormatter.parse(dateStr)
     val destFormatter = SimpleDateFormat("dd LLLL yyyy", Locale.FRANCE)
     destFormatter.format(date)
-} ?: ""
+}.orEmpty()
 
 fun parseTimeString(dateStr: String?) = dateStr?.let {
     val sourceFormatter = SimpleDateFormat("HH:mm:ss", Locale.FRANCE)
     val date = sourceFormatter.parse(dateStr)
     val destFormatter = SimpleDateFormat("HH:mm", Locale.FRANCE)
     destFormatter.format(date)
-} ?: ""
+}.orEmpty()
 
 fun Fragment.handleSharedEvent(sharedEvent: UIEvent) {
 
@@ -234,6 +228,23 @@ fun View.convertDpToPx(dpValue: Int): Int = TypedValue.applyDimension(
     dpValue.toFloat(),
     context.resources.displayMetrics
 ).toInt()
+
+
+@JvmOverloads
+@Dimension(unit = Dimension.PX)
+fun Number.dpToPx(
+    metrics: DisplayMetrics = Resources.getSystem().displayMetrics
+): Float {
+    return toFloat() * metrics.density
+}
+
+@JvmOverloads
+@Dimension(unit = Dimension.DP)
+fun Number.pxToDp(
+    metrics: DisplayMetrics = Resources.getSystem().displayMetrics
+): Float {
+    return toFloat() / metrics.density
+}
 
 fun RecyclerView.onItemClicked(
     onClick: ((position: Int, view: View) -> Unit)? = null,
@@ -345,3 +356,67 @@ inline fun <reified T : Serializable> Intent.getSerializable(key: String): T? =
         )
         else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
     }
+
+fun Context.startWebBrowserAtURL(url: String) {
+    Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }.run {
+        startActivity(this)
+    }
+}
+
+fun Context.openWebPage(url: String): Boolean {
+    // Format the URI properly.
+    val uri = url.toWebUri()
+
+    // Try using Chrome Custom Tabs.
+    try {
+
+        val params = CustomTabColorSchemeParams.Builder()
+            .setToolbarColor(getColorCompat(R.color.colorPrimary))
+            .build()
+
+        val intent = CustomTabsIntent.Builder()
+            .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, params)
+            .setShowTitle(true)
+            .build()
+        intent.launchUrl(this, uri)
+        return true
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+    }
+
+    // Fall back to launching a default web browser intent.
+    try {
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+            return true
+        }
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+    }
+
+    // We were unable to show the web page.
+    return false
+}
+
+fun String.toWebUri(): Uri {
+    return (
+            if (startsWith("http://") || startsWith("https://"))
+                this
+            else
+                "https://$this"
+            ).toUri()
+}
+
+fun Context.toActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) {
+            return context
+        }
+        context = context.baseContext
+    }
+    return null
+}

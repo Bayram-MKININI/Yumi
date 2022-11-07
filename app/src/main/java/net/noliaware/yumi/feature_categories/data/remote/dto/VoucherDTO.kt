@@ -46,12 +46,10 @@ data class VoucherDTO(
     val retailerEmail: String?,
     @Json(name = "retailerWebsite")
     val retailerWebsite: String?,
-    @Json(name = "partnerDisplayText")
-    val partnerDisplayText: String?,
-    @Json(name = "partnerBannerUrl")
-    val partnerBannerUrl: String?,
-    @Json(name = "partnerBannerAction")
-    val partnerBannerAction: String?
+    @Json(name = "partnerInfoText")
+    val partnerInfoText: String?,
+    @Json(name = "partnerInfoURL")
+    val partnerInfoURL: String?
 ) {
     fun toVoucher(sessionId: String? = null) = Voucher(
         voucherId = voucherId,
@@ -74,8 +72,7 @@ data class VoucherDTO(
         retailerCellPhoneNumber = retailerCellPhoneNumber,
         retailerEmail = retailerEmail,
         retailerWebsite = retailerWebsite,
-        partnerDisplayText = partnerDisplayText,
-        partnerBannerUrl = partnerBannerUrl,
-        partnerBannerAction = partnerBannerAction
+        partnerInfoText = partnerInfoText,
+        partnerInfoURL = partnerInfoURL
     )
 }

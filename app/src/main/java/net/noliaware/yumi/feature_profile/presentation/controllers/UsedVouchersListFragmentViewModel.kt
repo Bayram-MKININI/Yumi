@@ -21,7 +21,7 @@ class UsedVouchersListFragmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     val eventsHelper = EventsHelper<List<Voucher>>()
-    val categoryLabel get() = savedStateHandle.get<String>(CATEGORY_LABEL) ?: ""
+    val categoryLabel get() = savedStateHandle.get<String>(CATEGORY_LABEL).orEmpty()
 
     init {
         savedStateHandle.get<String>(CATEGORY_ID)?.let { callGetVoucherList(it) }

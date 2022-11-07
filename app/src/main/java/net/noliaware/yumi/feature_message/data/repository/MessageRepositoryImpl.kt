@@ -38,7 +38,7 @@ class MessageRepositoryImpl(
                 params = generateGetMessagesListParams()
             )
 
-            handleSessionAndFailureIfAny(
+            handleSessionWithFailureMessage(
                 remoteData.session,
                 sessionData,
                 remoteData.error
@@ -134,8 +134,7 @@ class MessageRepositoryImpl(
                 params = generateGetMessageParams(messageId)
             )
 
-            val sessionNoFailure =
-                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { singleMessageDTO ->
@@ -177,8 +176,7 @@ class MessageRepositoryImpl(
                 params = generateGetMessageParams(messageId)
             )
 
-            val sessionNoFailure =
-                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { singleMessageDTO ->
@@ -187,11 +185,8 @@ class MessageRepositoryImpl(
             }
 
         } catch (ex: HttpException) {
-
             emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
         } catch (ex: IOException) {
-
             emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
@@ -221,19 +216,15 @@ class MessageRepositoryImpl(
                 params = generateSendMessageParams(messageSubjectId, messageBody)
             )
 
-            val sessionNoFailure =
-                !handleSessionAndFailureIfAny(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 emit(Resource.Success(data = true))
             }
 
         } catch (ex: HttpException) {
-
             emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
         } catch (ex: IOException) {
-
             emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }

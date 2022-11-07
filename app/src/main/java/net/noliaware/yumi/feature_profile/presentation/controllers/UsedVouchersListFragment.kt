@@ -69,7 +69,7 @@ class UsedVouchersListFragment : AppCompatDialogFragment() {
 
         voucherList.map { voucher ->
             VoucherItemViewAdapter(
-                title = voucher.productLabel ?: "",
+                title = voucher.productLabel.orEmpty(),
                 expiryDate = getString(R.string.expiry_date, voucher.voucherExpiryDate),
                 description = getString(R.string.retailer, voucher.retailerLabel)
             )

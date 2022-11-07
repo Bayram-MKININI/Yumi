@@ -8,5 +8,5 @@ class ErrorDTO(
     @Json(name = "errorCode")
     val errorCode: String = "",
     @Json(name = "errorMessage")
-    val errorMessage: String = "",
+    val errorMessage: String = ""
 )

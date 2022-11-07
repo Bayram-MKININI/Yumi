@@ -21,7 +21,6 @@ data class Voucher(
     val retailerCellPhoneNumber: String?,
     val retailerEmail: String?,
     val retailerWebsite: String?,
-    val partnerDisplayText: String?,
-    val partnerBannerUrl: String?,
-    val partnerBannerAction: String?
+    val partnerInfoText: String?,
+    val partnerInfoURL: String?
 )

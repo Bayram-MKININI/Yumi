@@ -73,7 +73,7 @@ class QrCodeFragment : AppCompatDialogFragment() {
         viewModel.voucherCodeData?.let { voucherCodeData ->
             qrCodeView?.fillViewWithData(
                 QrCodeViewAdapter(
-                    title = voucherCodeData.productLabel ?: "",
+                    title = voucherCodeData.productLabel.orEmpty(),
                     creationDate = parseToLongDate(voucherCodeData.voucherDate),
                     expiryDate = parseToLongDate(voucherCodeData.voucherExpiryDate)
                 )

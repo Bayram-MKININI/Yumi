@@ -1,7 +1,6 @@
 package net.noliaware.yumi.feature_login.data.repository
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -50,15 +49,14 @@ class DataStoreRepositoryImpl @Inject constructor(
     override fun readUserPreferences(): Flow<UserPreferences> = context.dataStore.data
         .catch { exception ->
             if (exception is IOException) {
-                Log.d("DataStoreRepository", exception.message.toString())
                 emit(emptyPreferences())
             } else {
                 throw exception
             }
         }
         .map { preference ->
-            val login = preference[LOGIN_PREF] ?: ""
-            val deviceId = preference[DEVICE_ID_PREF] ?: ""
+            val login = preference[LOGIN_PREF].orEmpty()
+            val deviceId = preference[DEVICE_ID_PREF].orEmpty()
             UserPreferences(login, deviceId)
         }
 

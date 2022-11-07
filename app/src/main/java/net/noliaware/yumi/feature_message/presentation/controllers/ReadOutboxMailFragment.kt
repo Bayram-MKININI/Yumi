@@ -15,6 +15,8 @@ import net.noliaware.yumi.commun.MESSAGE_ID
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_message.domain.model.Message
 import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
+import net.noliaware.yumi.feature_message.presentation.views.ReadMailView.ReadMailViewAdapter
+import net.noliaware.yumi.feature_message.presentation.views.ReadMailView.ReadMailViewCallback
 
 @AndroidEntryPoint
 class ReadOutboxMailFragment : AppCompatDialogFragment() {
@@ -43,8 +45,8 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
         }
     }
 
-    private val readMailViewCallback: ReadMailView.ReadMailViewCallback by lazy {
-        object : ReadMailView.ReadMailViewCallback {
+    private val readMailViewCallback: ReadMailViewCallback by lazy {
+        object : ReadMailViewCallback {
             override fun onBackButtonClicked() {
                 dismissAllowingStateLoss()
             }
@@ -77,14 +79,14 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
     }
 
     private fun bindViewToData(message: Message) {
-        ReadMailView.ReadMailViewAdapter(
+        ReadMailViewAdapter(
             subject = message.messageSubject,
             time = getString(
                 R.string.received_at,
                 parseToLongDate(message.messageDate),
                 parseTimeString(message.messageTime)
             ),
-            message = message.messageBody ?: ""
+            message = message.messageBody.orEmpty()
         ).also {
             readMailView?.fillViewWithData(it)
         }

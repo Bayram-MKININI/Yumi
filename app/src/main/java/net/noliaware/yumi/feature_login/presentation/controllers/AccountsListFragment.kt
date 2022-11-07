@@ -62,8 +62,8 @@ class AccountsListFragment : AppCompatDialogFragment() {
 
             AccountItemViewAdapter(
                 title = "${managedProfile.title} ${managedProfile.firstName} ${managedProfile.lastName}",
-                phoneNumber = "Tel: ${managedProfile.cellPhoneNumber}",
-                lastLogin = managedProfile.login ?: ""
+                phoneNumber = getString(R.string.mobile_short, managedProfile.cellPhoneNumber),
+                lastLogin = managedProfile.login.orEmpty()
             ).also { accountItemViewAdapter ->
 
                 managedProfile.categories.map { category ->

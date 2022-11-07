@@ -7,8 +7,8 @@ import com.squareup.moshi.JsonClass
 class ResponseDTO<T>(
     @Json(name = "status")
     val status: Int,
-    //@Json(name = "actions")
-    //val actions: List<String> = listOf(),
+    @Json(name = "actions")
+    val actions: List<ActionDTO> = listOf(),
     @Json(name = "session")
     val session: SessionDTO?,
     @Json(name = "error")

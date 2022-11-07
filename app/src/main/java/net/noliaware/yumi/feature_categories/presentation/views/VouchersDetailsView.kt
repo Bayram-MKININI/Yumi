@@ -5,33 +5,37 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
-import android.widget.Space
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import coil.load
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.GOLDEN_RATIO
 import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.*
-import kotlin.math.roundToInt
 
 class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
     private lateinit var backView: View
     private lateinit var parentContentView: View
     private lateinit var contentView: LinearLayoutCompat
+    private lateinit var titleTextView: TextView
+    private lateinit var partnerDescriptionTextView: TextView
     private lateinit var displayVoucherTextView: TextView
     private lateinit var voucherStatusTextView: TextView
 
     var callback: VouchersDetailsViewCallback? by weak()
 
+    data class VouchersDetailsViewAdapter(
+        val title: String = "",
+        val partnerDescription: String? = null,
+        val partnerBannerURL: String? = null,
+    )
+
     interface VouchersDetailsViewCallback {
         fun onBackButtonClicked()
+        fun onPartnerInfoClicked()
         fun onLocationClicked()
         fun onDisplayVoucherButtonClicked()
     }
@@ -48,6 +52,11 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
 
         parentContentView = findViewById(R.id.parent_content_layout)
         contentView = parentContentView.findViewById(R.id.content_layout)
+        titleTextView = contentView.findViewById(R.id.title_text_view)
+        partnerDescriptionTextView = contentView.findViewById(R.id.partner_description_text_view)
+        partnerDescriptionTextView.setOnClickListener {
+            callback?.onPartnerInfoClicked()
+        }
 
         displayVoucherTextView = findViewById(R.id.display_voucher_text_view)
         displayVoucherTextView.setOnClickListener(onButtonClickListener)
@@ -64,37 +73,17 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
         }
     }
 
-    private fun addSpace(spaceHeight: Int) {
-        val space = Space(context)
-        space.minimumHeight = convertDpToPx(spaceHeight)
-        contentView.addView(space)
-    }
+    fun fillViewWithData(vouchersDetailsViewAdapter: VouchersDetailsViewAdapter) {
 
-    fun addImageByDrawableName(drawableName: String) {
-        AppCompatImageView(context).apply {
-            val imageViewSize = (width * (1 - 1 / GOLDEN_RATIO)).roundToInt()
-            val params = LayoutParams(imageViewSize, imageViewSize)
-            setImageResource(context.drawableIdByName(drawableName))
-            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-        }.also {
-            contentView.addView(it)
+        titleTextView.text = vouchersDetailsViewAdapter.title
+
+        vouchersDetailsViewAdapter.partnerBannerURL?.let {
+            partnerDescriptionTextView.text = vouchersDetailsViewAdapter.partnerDescription
+        } ?: run {
+            partnerDescriptionTextView.isGone = true
         }
 
-        addSpace(20)
-    }
-
-    fun addTitle(title: String) {
-        AppCompatTextView(context).apply {
-            text = title
-            textSize = 24f
-            typeface = ResourcesCompat.getFont(context, R.font.sf_pro_display_semibold)
-            setTextColor(ContextCompat.getColor(context, R.color.black_font))
-            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-        }.also {
-            contentView.addView(it)
-        }
-
-        addSpace(20)
+        partnerDescriptionTextView.text = vouchersDetailsViewAdapter.partnerDescription
     }
 
     fun addDataValue(dataValueViewAdapter: DataValueView.DataValueViewAdapter) {
@@ -103,7 +92,6 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
             contentView.addView(it)
             it.fillViewWithData(dataValueViewAdapter)
         }
-        addSpace(10)
     }
 
     fun addLocationView(onLocationClicked: () -> Unit) {
@@ -112,8 +100,6 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
         }.also {
             contentView.addView(it)
         }
-
-        addSpace(20)
     }
 
     fun setVoucherStatus(voucherStatus: String) {

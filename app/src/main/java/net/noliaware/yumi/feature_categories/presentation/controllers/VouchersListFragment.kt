@@ -1,5 +1,6 @@
 package net.noliaware.yumi.feature_categories.presentation.controllers
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,7 +28,7 @@ import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
 class VouchersListFragment : AppCompatDialogFragment() {
 
     companion object {
-        fun newInstance(categoryId: String, categoryLabel: String): VouchersListFragment =
+        fun newInstance(categoryId: String, categoryLabel: String) =
             VouchersListFragment().withArgs(
                 CATEGORY_ID to categoryId,
                 CATEGORY_LABEL to categoryLabel
@@ -36,6 +37,7 @@ class VouchersListFragment : AppCompatDialogFragment() {
 
     private var vouchersListView: VouchersListView? = null
     private val viewModel by viewModels<VouchersListFragmentViewModel>()
+    var callback: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,12 +103,24 @@ class VouchersListFragment : AppCompatDialogFragment() {
                 viewModel.eventsHelper.stateFlow.value.data?.get(index)?.voucherId?.let { voucherId ->
                     VoucherDetailsFragment.newInstance(
                         voucherId
-                    ).show(
+                    ).apply {
+                        callback = {
+                            viewModel.dataShouldRefresh = true
+                            viewModel.callGetVoucherList()
+                        }
+                    }.show(
                         childFragmentManager.beginTransaction(),
                         VOUCHER_DETAILS_FRAGMENT_TAG
                     )
                 }
             }
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if (viewModel.dataShouldRefresh == true) {
+            callback?.invoke()
         }
     }
 

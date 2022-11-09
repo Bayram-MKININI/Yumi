@@ -73,11 +73,15 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
 
     fun fillViewWithData(categoriesViewAdapter: CategoriesViewAdapter) {
         descriptionTextView.text = categoriesViewAdapter.description
+        refreshCategoryList(categoriesViewAdapter.categoryItemViewAdapters)
+    }
 
-        if (categoryItemViewAdapters.isNotEmpty())
-            categoryItemViewAdapters.clear()
+    fun refreshCategoryList(categoryItemViewAdapters: List<CategoryItemViewAdapter>) {
 
-        categoryItemViewAdapters.addAll(categoriesViewAdapter.categoryItemViewAdapters)
+        if (this.categoryItemViewAdapters.isNotEmpty())
+            this.categoryItemViewAdapters.clear()
+
+        this.categoryItemViewAdapters.addAll(categoryItemViewAdapters)
         recyclerView.adapter?.notifyDataSetChanged()
     }
 

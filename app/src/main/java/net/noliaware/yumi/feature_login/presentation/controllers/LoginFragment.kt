@@ -79,7 +79,7 @@ class LoginFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventFlow.collectLatest { sharedEvent ->
+            viewModel.accountDataEventsHelper.eventFlow.collectLatest { sharedEvent ->
                 loginParentView?.let {
                     it.setLoginViewProgressVisible(false)
                     it.clearSecretDigits()
@@ -91,7 +91,7 @@ class LoginFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
 
-            viewModel.initStateFlow.collect { vmState ->
+            viewModel.initEventsHelper.stateFlow.collect { vmState ->
                 vmState.data?.let { initData ->
 
                     viewModel.saveDeviceIdPreferences(initData.deviceId)
@@ -106,7 +106,7 @@ class LoginFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
 
-            viewModel.connectStateFlow.collect { vmState ->
+            viewModel.accountDataEventsHelper.stateFlow.collect { vmState ->
                 vmState.data?.let { accountData ->
 
                     if (accountData.managedAccountProfiles.isNotEmpty()) {

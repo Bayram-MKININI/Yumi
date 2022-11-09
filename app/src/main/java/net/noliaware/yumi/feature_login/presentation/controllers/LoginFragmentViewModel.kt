@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import net.noliaware.yumi.commun.util.UIEvent
+import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.commun.util.ViewModelState
-import net.noliaware.yumi.commun.util.handleWSResponse
 import net.noliaware.yumi.feature_login.data.repository.DataStoreRepository
 import net.noliaware.yumi.feature_login.data.repository.LoginRepository
 import net.noliaware.yumi.feature_login.domain.model.AccountData
@@ -26,14 +28,8 @@ class LoginFragmentViewModel @Inject constructor(
     private val _prefsStateFlow = MutableStateFlow(ViewModelState<UserPreferences>())
     val prefsStateFlow = _prefsStateFlow.asStateFlow()
 
-    private val _initStateFlow = MutableStateFlow(ViewModelState<InitData>())
-    val initStateFlow = _initStateFlow.asStateFlow()
-
-    private val _connectStateFlow = MutableStateFlow(ViewModelState<AccountData>())
-    val connectStateFlow = _connectStateFlow.asStateFlow()
-
-    private val _eventFlow = MutableSharedFlow<UIEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    val initEventsHelper = EventsHelper<InitData>()
+    val accountDataEventsHelper = EventsHelper<AccountData>()
 
     init {
         callReadPreferences()
@@ -68,7 +64,7 @@ class LoginFragmentViewModel @Inject constructor(
     fun callInitWebservice(androidId: String, deviceId: String?, login: String) {
         viewModelScope.launch {
             repository.getInitData(androidId, deviceId, login).onEach { result ->
-                handleWSResponse(result, _initStateFlow, _eventFlow)
+                initEventsHelper.handleResponse(result)
             }.launchIn(this)
         }
     }
@@ -76,7 +72,7 @@ class LoginFragmentViewModel @Inject constructor(
     fun callConnectWebserviceWithIndexes(passwordIndexes: List<Int>) {
         viewModelScope.launch {
             repository.getAccountData(JSONArray(passwordIndexes).toString()).onEach { result ->
-                handleWSResponse(result, _connectStateFlow, _eventFlow)
+                accountDataEventsHelper.handleResponse(result)
             }.launchIn(this)
         }
     }

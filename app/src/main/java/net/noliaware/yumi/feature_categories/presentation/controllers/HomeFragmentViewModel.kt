@@ -14,6 +14,8 @@ import net.noliaware.yumi.commun.ACCOUNT_DATA
 import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.feature_alerts.data.repository.AlertsRepository
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
+import net.noliaware.yumi.feature_categories.data.repository.CategoryRepository
+import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_login.domain.model.AccountData
 import net.noliaware.yumi.feature_message.data.repository.MessageRepository
 import net.noliaware.yumi.feature_message.domain.model.Message
@@ -23,6 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeFragmentViewModel @Inject constructor(
+    private val categoryRepository: CategoryRepository,
     private val profileRepository: ProfileRepository,
     private val messageRepository: MessageRepository,
     private val alertsRepository: AlertsRepository,
@@ -32,6 +35,7 @@ class HomeFragmentViewModel @Inject constructor(
     val accountData get() = savedStateHandle.get<AccountData>(ACCOUNT_DATA)
     val messageSubjects get() = accountData?.messageSubjects
 
+    val availableCategoriesEventsHelper = EventsHelper<List<Category>>()
     val userProfileEventsHelper = EventsHelper<UserProfile>()
     val messageListEventsHelper = EventsHelper<List<Message>>()
     val alertListEventsHelper = EventsHelper<List<Alert>>()
@@ -42,6 +46,14 @@ class HomeFragmentViewModel @Inject constructor(
         wsCallsFlow.onEach { job ->
             job.join()
         }.launchIn(viewModelScope)
+    }
+
+    fun callGetAvailableCategories() {
+        viewModelScope.launch {
+            categoryRepository.getAvailableCategories().onEach { result ->
+                availableCategoriesEventsHelper.handleResponse(result)
+            }.launchIn(this)
+        }
     }
 
     fun callGetUserProfile() {

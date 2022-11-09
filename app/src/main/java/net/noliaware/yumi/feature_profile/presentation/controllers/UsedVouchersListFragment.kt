@@ -11,9 +11,10 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.CATEGORY_ID
+import net.noliaware.yumi.commun.CATEGORY_LABEL
 import net.noliaware.yumi.commun.VOUCHER_DETAILS_FRAGMENT_TAG
-import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.presentation.controllers.VoucherDetailsFragment
 import net.noliaware.yumi.feature_categories.presentation.views.VoucherItemView.VoucherItemViewAdapter
@@ -22,6 +23,14 @@ import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
 
 @AndroidEntryPoint
 class UsedVouchersListFragment : AppCompatDialogFragment() {
+
+    companion object {
+        fun newInstance(categoryId: String, categoryLabel: String) =
+            UsedVouchersListFragment().withArgs(
+                CATEGORY_ID to categoryId,
+                CATEGORY_LABEL to categoryLabel
+            )
+    }
 
     private var vouchersListView: VouchersListView? = null
     private val viewModel by viewModels<UsedVouchersListFragmentViewModel>()
@@ -70,7 +79,11 @@ class UsedVouchersListFragment : AppCompatDialogFragment() {
         voucherList.map { voucher ->
             VoucherItemViewAdapter(
                 title = voucher.productLabel.orEmpty(),
-                expiryDate = getString(R.string.expiry_date, voucher.voucherExpiryDate),
+                expiryDate = getString(
+                    R.string.usage_date,
+                    parseToShortDate(voucher.voucherUseDate),
+                    parseTimeString(voucher.voucherUseTime)
+                ),
                 description = getString(R.string.retailer, voucher.retailerLabel)
             )
         }.also {
@@ -87,8 +100,13 @@ class UsedVouchersListFragment : AppCompatDialogFragment() {
             override fun onItemClickedAtIndex(index: Int) {
 
                 viewModel.eventsHelper.stateFlow.value.data?.get(index)?.voucherId?.let { voucherId ->
-                    VoucherDetailsFragment.newInstance(voucherId)
-                        .show(childFragmentManager.beginTransaction(), VOUCHER_DETAILS_FRAGMENT_TAG)
+                    VoucherDetailsFragment.newInstance(
+                        voucherId,
+                        true
+                    ).show(
+                        childFragmentManager.beginTransaction(),
+                        VOUCHER_DETAILS_FRAGMENT_TAG
+                    )
                 }
             }
         }

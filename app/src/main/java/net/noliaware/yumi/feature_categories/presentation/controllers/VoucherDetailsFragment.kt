@@ -1,5 +1,6 @@
 package net.noliaware.yumi.feature_categories.presentation.controllers
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,15 +11,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.merge
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.QR_CODE_FRAGMENT_TAG
 import net.noliaware.yumi.commun.VOUCHER_ID
+import net.noliaware.yumi.commun.VOUCHER_VALIDATED
 import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.domain.model.VoucherCodeData
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStatus
-import net.noliaware.yumi.feature_categories.presentation.controllers.QrCodeFragment.QrCodeFragmentCallback
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView.VouchersDetailsViewAdapter
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsView.VouchersDetailsViewCallback
@@ -27,12 +29,16 @@ import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsV
 class VoucherDetailsFragment : AppCompatDialogFragment() {
 
     companion object {
-        fun newInstance(voucherId: String) =
-            VoucherDetailsFragment().withArgs(VOUCHER_ID to voucherId)
+        fun newInstance(voucherId: String, voucherValidated: Boolean = false) =
+            VoucherDetailsFragment().withArgs(
+                VOUCHER_ID to voucherId,
+                VOUCHER_VALIDATED to voucherValidated
+            )
     }
 
     private var vouchersDetailsView: VouchersDetailsView? = null
     private val viewModel by viewModels<VoucherDetailsFragmentViewModel>()
+    var callback: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,14 +64,17 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventFlow.collectLatest { sharedEvent ->
+            merge(
+                viewModel.getVoucherEventsHelper.eventFlow,
+                viewModel.getVoucherStatusEventsHelper.eventFlow
+            ).collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreen(sharedEvent)
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.getVoucherStateFlow.collect { vmState ->
+            viewModel.getVoucherEventsHelper.stateFlow.collect { vmState ->
                 vmState.data?.let { voucher ->
                     bindViewToData(voucher)
                 }
@@ -73,7 +82,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.getVoucherStatusStateFlow.collect { vmState ->
+            viewModel.getVoucherStatusEventsHelper.stateFlow.collect { vmState ->
                 vmState.data?.let { voucherStatus ->
                     handleVoucherStatusUpdate(voucherStatus)
                 }
@@ -86,7 +95,9 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         vouchersDetailsView?.fillViewWithData(
             VouchersDetailsViewAdapter(
                 title = voucher.productLabel.orEmpty(),
-                partnerDescription = voucher.partnerInfoText
+                partnerDescription = voucher.partnerInfoText,
+                partnerURL = voucher.partnerInfoURL,
+                hideDisplayVoucher = viewModel.voucherValidated == true,
             )
         )
 
@@ -199,7 +210,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             }
 
             override fun onPartnerInfoClicked() {
-                viewModel.getVoucherStateFlow.value.data?.let { voucher ->
+                viewModel.getVoucherEventsHelper.stateFlow.value.data?.let { voucher ->
                     voucher.partnerInfoURL?.let { url ->
                         context?.openWebPage(url)
                     }
@@ -207,7 +218,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             }
 
             override fun onLocationClicked() {
-                viewModel.getVoucherStateFlow.value.data?.let { voucher ->
+                viewModel.getVoucherEventsHelper.stateFlow.value.data?.let { voucher ->
                     val latitude = voucher.retailerAddressLatitude
                     val longitude = voucher.retailerAddressLongitude
                     val label = voucher.retailerLabel
@@ -216,7 +227,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             }
 
             override fun onDisplayVoucherButtonClicked() {
-                viewModel.getVoucherStateFlow.value.data?.let { voucher ->
+                viewModel.getVoucherEventsHelper.stateFlow.value.data?.let { voucher ->
                     QrCodeFragment.newInstance(
                         VoucherCodeData(
                             productLabel = voucher.productLabel,
@@ -226,7 +237,11 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                             voucherCodeSize = resources.displayMetrics.widthPixels
                         )
                     ).apply {
-                        callback = qrCodeFragmentCallback
+                        callback = {
+                            viewModel.getVoucherEventsHelper.stateFlow.value.data?.voucherId?.let {
+                                viewModel.callGetVoucherStatusById(it)
+                            }
+                        }
                     }.show(
                         childFragmentManager.beginTransaction(),
                         QR_CODE_FRAGMENT_TAG
@@ -236,17 +251,11 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         }
     }
 
-    private val qrCodeFragmentCallback: QrCodeFragmentCallback by lazy {
-        object : QrCodeFragmentCallback {
-            override fun handleDialogClosed(qrCodeUnlocked: Boolean) {
-
-                if (!qrCodeUnlocked) {
-                    return
-                }
-
-                viewModel.getVoucherStateFlow.value.data?.voucherId?.let {
-                    viewModel.callGetVoucherStatusById(it)
-                }
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        viewModel.getVoucherStatusEventsHelper.stateFlow.value.data?.let { voucherStatus ->
+            if (voucherStatus == VoucherStatus.CONSUMED) {
+                callback?.invoke()
             }
         }
     }

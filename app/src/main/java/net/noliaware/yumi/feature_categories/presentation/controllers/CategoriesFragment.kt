@@ -6,10 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.VOUCHERS_LIST_FRAGMENT_TAG
+import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
+import net.noliaware.yumi.commun.util.redirectToLoginScreen
+import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewCallback
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
@@ -43,7 +48,10 @@ class CategoriesFragment : Fragment() {
                     VouchersListFragment.newInstance(
                         category.categoryId,
                         category.categoryLabel
-                    ).show(
+                    ).apply {
+                        callback = {
+                        }
+                    }.show(
                         childFragmentManager.beginTransaction(),
                         VOUCHERS_LIST_FRAGMENT_TAG
                     )
@@ -54,22 +62,44 @@ class CategoriesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        collectFlows()
         bindViewToData()
     }
 
-    private fun bindViewToData() {
+    private fun collectFlows() {
 
-        val itemViewAdapters = viewModel.accountData?.categories?.map { category ->
-            CategoryItemViewAdapter(
-                count = category.voucherCount,
-                iconName = category.categoryIcon ?: "ic_food",
-                title = category.categoryLabel
-            )
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.availableCategoriesEventsHelper.eventFlow.collectLatest { sharedEvent ->
+                handleSharedEvent(sharedEvent)
+                redirectToLoginScreen(sharedEvent)
+            }
         }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.availableCategoriesEventsHelper.stateFlow.collect { vmState ->
+                vmState.data?.let { categoryList ->
+                    categoriesView?.refreshCategoryList(categoryList.map { category ->
+                        mapCategory(category)
+                    })
+                }
+            }
+        }
+    }
+
+    private fun mapCategory(category: Category) =
+        CategoryItemViewAdapter(
+            count = category.voucherCount,
+            iconName = category.categoryIcon ?: "ic_food",
+            title = category.categoryLabel
+        )
+
+    private fun bindViewToData() {
 
         CategoriesView.CategoriesViewAdapter(
             description = getString(R.string.categories_list),
-            categoryItemViewAdapters = itemViewAdapters ?: listOf()
+            categoryItemViewAdapters = viewModel.accountData?.categories?.map { category ->
+                mapCategory(category)
+            }.orEmpty()
         ).apply {
             categoriesView?.fillViewWithData(this)
         }

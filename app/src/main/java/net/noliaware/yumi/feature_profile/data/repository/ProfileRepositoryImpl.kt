@@ -83,7 +83,7 @@ class ProfileRepositoryImpl(
         val timestamp = System.currentTimeMillis().toString()
         val randomString = UUID.randomUUID().toString()
 
-        val remoteCategoriesData = api.fetchDataByCategory(
+        val remoteCategoriesData = api.fetchUsedDataByCategory(
             timestamp = timestamp,
             saltString = randomString,
             token = generateToken(

@@ -57,7 +57,8 @@
         android:gravity="center"
         android:text="@string/display_voucher"
         android:textColor="@android:color/white"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:visibility="gone" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/voucher_status_text_view"

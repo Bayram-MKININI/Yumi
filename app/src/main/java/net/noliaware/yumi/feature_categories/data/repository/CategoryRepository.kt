@@ -2,10 +2,13 @@ package net.noliaware.yumi.feature_categories.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import net.noliaware.yumi.commun.util.Resource
+import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStatus
 
 interface CategoryRepository {
+
+    fun getAvailableCategories(): Flow<Resource<List<Category>>>
 
     fun getVoucherList(categoryId: String): Flow<Resource<List<Voucher>>>
 

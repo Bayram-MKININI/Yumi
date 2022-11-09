@@ -17,7 +17,6 @@ import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.parseToLongDate
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.feature_categories.presentation.controllers.HomeFragmentViewModel
-import net.noliaware.yumi.feature_categories.presentation.controllers.VouchersListFragment
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileView
@@ -180,9 +179,9 @@ class UserProfileFragment : Fragment() {
 
             override fun onCategoryClickedAtIndex(index: Int) {
 
-                viewModel.userProfileEventsHelper.stateFlow.value.data?.categories?.get(index)
+                viewModel.userProfileEventsHelper.stateFlow.value.data?.categories?.getOrNull(index)
                     ?.let { category ->
-                        VouchersListFragment.newInstance(
+                        UsedVouchersListFragment.newInstance(
                             category.categoryId,
                             category.categoryLabel
                         ).show(

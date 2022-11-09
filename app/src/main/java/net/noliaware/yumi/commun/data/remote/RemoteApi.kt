@@ -3,6 +3,7 @@ package net.noliaware.yumi.commun.data.remote
 import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.data.remote.dto.ResponseDTO
 import net.noliaware.yumi.feature_alerts.data.remote.dto.AlertsDTO
+import net.noliaware.yumi.feature_categories.data.remote.dto.AvailableVoucherCategoriesDTO
 import net.noliaware.yumi.feature_categories.data.remote.dto.GetVoucherDTO
 import net.noliaware.yumi.feature_categories.data.remote.dto.GetVoucherStatusDTO
 import net.noliaware.yumi.feature_categories.data.remote.dto.VouchersDTO
@@ -48,6 +49,15 @@ interface RemoteApi {
     ): ResponseDTO<AccountDataDTO>
 
     @FormUrlEncoded
+    @POST("$GET_DATA_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchAvailableDataByCategory(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<AvailableVoucherCategoriesDTO>
+
+    @FormUrlEncoded
     @POST("$GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
     suspend fun fetchVouchersForCategory(
         @Path(TIMESTAMP) timestamp: String,
@@ -85,7 +95,7 @@ interface RemoteApi {
 
     @FormUrlEncoded
     @POST("$GET_DATA_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
-    suspend fun fetchDataByCategory(
+    suspend fun fetchUsedDataByCategory(
         @Path(TIMESTAMP) timestamp: String,
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,

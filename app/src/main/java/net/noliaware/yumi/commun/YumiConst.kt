@@ -54,6 +54,10 @@ const val CATEGORY_LABEL = "categoryLabel"
 const val MESSAGE_INBOX_DAT = "message_inbox_dat"
 const val MESSAGE_OUTBOX_DAT = "message_outbox_dat"
 
+const val DATA_SHOULD_REFRESH = "dataShouldRefresh"
+const val VOUCHER_VALIDATED = "voucherValidated"
+const val SELECTED_MESSAGE_INDEX = "selectedMessageIndex"
+
 //FRAGMENT TAGS
 const val ACCOUNTS_LIST_FRAGMENT_TAG = "accounts_list_fragment"
 const val VOUCHERS_LIST_FRAGMENT_TAG = "vouchers_list_fragment"

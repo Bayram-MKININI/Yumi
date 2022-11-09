@@ -14,6 +14,10 @@ data class VoucherDTO(
     val voucherDate: String?,
     @Json(name = "voucherExpiryDate")
     val voucherExpiryDate: String?,
+    @Json(name = "voucherUseDate")
+    val voucherUseDate: String?,
+    @Json(name = "voucherUseTime")
+    val voucherUseTime: String?,
     @Json(name = "productLabel")
     val productLabel: String?,
     @Json(name = "productDescription")
@@ -56,6 +60,8 @@ data class VoucherDTO(
         voucherCode = voucherCode + if (!sessionId.isNullOrBlank()) sessionId else sessionId,
         voucherDate = voucherDate,
         voucherExpiryDate = voucherExpiryDate,
+        voucherUseDate = voucherUseDate,
+        voucherUseTime = voucherUseTime,
         productLabel = productLabel,
         productDescription = productDescription,
         productWebpage = productWebpage,

@@ -13,7 +13,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.VOUCHER_CODE_DATA
 import net.noliaware.yumi.commun.util.parseToLongDate
-import net.noliaware.yumi.commun.util.weak
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.domain.model.VoucherCodeData
 import net.noliaware.yumi.feature_categories.presentation.views.QrCodeView
@@ -31,11 +30,7 @@ class QrCodeFragment : AppCompatDialogFragment() {
 
     private var qrCodeView: QrCodeView? = null
     private val viewModel by viewModels<QrCodeFragmentViewModel>()
-    var callback: QrCodeFragmentCallback? by weak()
-
-    interface QrCodeFragmentCallback {
-        fun handleDialogClosed(qrCodeUnlocked: Boolean)
-    }
+    var callback: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,8 +90,10 @@ class QrCodeFragment : AppCompatDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        qrCodeView?.isQrCodeRevealed()?.let {
-            callback?.handleDialogClosed(it)
+        qrCodeView?.isQrCodeRevealed()?.let { isQrCodeRevealed ->
+            if (isQrCodeRevealed) {
+                callback?.invoke()
+            }
         }
     }
 

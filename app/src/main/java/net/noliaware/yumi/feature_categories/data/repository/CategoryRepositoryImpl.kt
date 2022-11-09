@@ -6,6 +6,7 @@ import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStatus
 import okio.IOException
@@ -16,6 +17,43 @@ class CategoryRepositoryImpl(
     private val api: RemoteApi,
     private val sessionData: SessionData
 ) : CategoryRepository {
+
+    override fun getAvailableCategories(): Flow<Resource<List<Category>>> = flow {
+
+        emit(Resource.Loading())
+
+        try {
+
+            val timestamp = System.currentTimeMillis().toString()
+            val randomString = UUID.randomUUID().toString()
+
+            val remoteData = api.fetchAvailableDataByCategory(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(
+                    timestamp,
+                    GET_DATA_PER_CATEGORY,
+                    randomString
+                ),
+                params = getCommonWSParams(sessionData)
+            )
+
+            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+
+            if (sessionNoFailure) {
+                remoteData.data?.let { availableVoucherCategoriesDTO ->
+                    availableVoucherCategoriesDTO.availableCategoryDTOs?.let { categoriesDTO ->
+                        emit(Resource.Success(data = categoriesDTO.map { it.toCategory() }))
+                    }
+                }
+            }
+
+        } catch (ex: HttpException) {
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
+        } catch (ex: IOException) {
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        }
+    }
 
     override fun getVoucherList(categoryId: String): Flow<Resource<List<Voucher>>> = flow {
 
@@ -46,11 +84,8 @@ class CategoryRepositoryImpl(
             }
 
         } catch (ex: HttpException) {
-
             emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
         } catch (ex: IOException) {
-
             emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }
@@ -88,11 +123,8 @@ class CategoryRepositoryImpl(
             }
 
         } catch (ex: HttpException) {
-
             emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
         } catch (ex: IOException) {
-
             emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }

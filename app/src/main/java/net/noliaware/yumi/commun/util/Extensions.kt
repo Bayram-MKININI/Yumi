@@ -30,8 +30,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.*
@@ -63,27 +61,30 @@ suspend fun <T> FlowCollector<Resource<T>>.handleSessionWithNoFailure(
     session: SessionDTO?,
     sessionData: SessionData,
     error: ErrorDTO?
-) = session?.let { sessionDTO ->
+): Boolean {
 
-    sessionData.apply {
-        sessionId = sessionDTO.sessionId
-        sessionToken = sessionDTO.sessionToken
+    val errorType = session?.let { sessionDTO ->
+        sessionData.apply {
+            sessionId = sessionDTO.sessionId
+            sessionToken = sessionDTO.sessionToken
+        }
+
+        ErrorType.RECOVERABLE_ERROR
+    } ?: run {
+        ErrorType.SYSTEM_ERROR
     }
-
-    true
-
-} ?: run {
 
     error?.let { errorDTO ->
         emit(
             Resource.Error(
-                errorType = ErrorType.SYSTEM_ERROR,
+                errorType = errorType,
                 errorMessage = errorDTO.errorMessage
             )
         )
+        return false
+    } ?: run {
+        return true
     }
-
-    false
 }
 
 fun handleSessionWithFailureMessage(
@@ -151,28 +152,6 @@ fun Fragment.redirectToLoginScreen(sharedEvent: UIEvent) {
         if (sharedEvent.errorType == ErrorType.SYSTEM_ERROR) {
             activity?.finish()
             startActivity(Intent(requireActivity(), LoginActivity::class.java))
-        }
-    }
-}
-
-suspend inline fun <T> handleWSResponse(
-    result: Resource<T>,
-    stateFlow: MutableStateFlow<ViewModelState<T>>,
-    eventFlow: MutableSharedFlow<UIEvent>
-) {
-
-    when (result) {
-        is Resource.Success -> {
-            result.data?.let {
-                stateFlow.value = ViewModelState(it)
-            }
-        }
-        is Resource.Loading -> {
-            stateFlow.value = ViewModelState()
-        }
-        is Resource.Error -> {
-            stateFlow.value = ViewModelState()
-            eventFlow.emit(UIEvent.ShowSnackBar(result.errorType))
         }
     }
 }

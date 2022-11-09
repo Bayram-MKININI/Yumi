@@ -5,6 +5,8 @@ data class Voucher(
     val voucherCode: String?,
     val voucherDate: String?,
     val voucherExpiryDate: String?,
+    val voucherUseDate: String?,
+    val voucherUseTime: String?,
     val productLabel: String?,
     val productDescription: String?,
     val productWebpage: String?,

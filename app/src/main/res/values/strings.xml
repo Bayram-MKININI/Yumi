@@ -52,6 +52,7 @@
     <string name="new_line">\n</string>
     <string name="phone_numbers">N° de tél:</string>
     <string name="occupation">Occupation:</string>
+    <string name="usage_date">Date d\'utilisation: %s à %s</string>
 
     <string name="mail">Messagerie</string>
     <string name="mail_description">Le centre de messagerie vous permet de communiquer avec votre agent</string>

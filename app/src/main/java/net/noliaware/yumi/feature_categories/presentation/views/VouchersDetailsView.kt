@@ -5,12 +5,10 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import coil.load
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.*
@@ -30,7 +28,8 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
     data class VouchersDetailsViewAdapter(
         val title: String = "",
         val partnerDescription: String? = null,
-        val partnerBannerURL: String? = null,
+        val partnerURL: String? = null,
+        val hideDisplayVoucher: Boolean = false,
     )
 
     interface VouchersDetailsViewCallback {
@@ -77,13 +76,15 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
 
         titleTextView.text = vouchersDetailsViewAdapter.title
 
-        vouchersDetailsViewAdapter.partnerBannerURL?.let {
+        vouchersDetailsViewAdapter.partnerURL?.let {
             partnerDescriptionTextView.text = vouchersDetailsViewAdapter.partnerDescription
         } ?: run {
             partnerDescriptionTextView.isGone = true
         }
 
         partnerDescriptionTextView.text = vouchersDetailsViewAdapter.partnerDescription
+
+        displayVoucherTextView.isGone = vouchersDetailsViewAdapter.hideDisplayVoucher
     }
 
     fun addDataValue(dataValueViewAdapter: DataValueView.DataValueViewAdapter) {
@@ -117,19 +118,16 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
-        displayVoucherTextView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth * 7 / 10, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY)
-        )
+        if (displayVoucherTextView.isVisible) {
+            displayVoucherTextView.measure(
+                MeasureSpec.makeMeasureSpec(viewWidth * 7 / 10, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY)
+            )
+        }
 
         if (voucherStatusTextView.isVisible) {
             voucherStatusTextView.measureWrapContent()
         }
-
-        displayVoucherTextView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth * 7 / 10, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY)
-        )
 
         val parentContentViewHeight =
             viewHeight - (backView.measuredHeight + displayVoucherTextView.measuredHeight + convertDpToPx(
@@ -159,16 +157,20 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
             backView.bottom + convertDpToPx(20)
         )
 
-        if (voucherStatusTextView.isVisible) {
-            voucherStatusTextView.layoutToBottomLeft(
-                (viewWidth - voucherStatusTextView.measuredWidth) / 2,
-                bottom - convertDpToPx(40)
-            )
-        } else {
-            displayVoucherTextView.layoutToBottomLeft(
-                (viewWidth - displayVoucherTextView.measuredWidth) / 2,
-                bottom - convertDpToPx(40)
-            )
+
+        when {
+            voucherStatusTextView.isVisible -> {
+                voucherStatusTextView.layoutToBottomLeft(
+                    (viewWidth - voucherStatusTextView.measuredWidth) / 2,
+                    bottom - convertDpToPx(40)
+                )
+            }
+            displayVoucherTextView.isVisible -> {
+                displayVoucherTextView.layoutToBottomLeft(
+                    (viewWidth - displayVoucherTextView.measuredWidth) / 2,
+                    bottom - convertDpToPx(40)
+                )
+            }
         }
     }
 }

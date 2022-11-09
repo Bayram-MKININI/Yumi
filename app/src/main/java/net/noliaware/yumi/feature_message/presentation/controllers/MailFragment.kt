@@ -26,7 +26,7 @@ import net.noliaware.yumi.feature_message.presentation.views.MailView
 class MailFragment : Fragment() {
 
     companion object {
-        fun newInstance(messageSubjects: List<MessageSubject>?): MailFragment =
+        fun newInstance(messageSubjects: List<MessageSubject>?) =
             MailFragment().withArgs(MESSAGE_SUBJECTS_DATA to messageSubjects)
     }
 
@@ -79,7 +79,11 @@ class MailFragment : Fragment() {
             override fun onComposeButtonClicked() {
                 SendMailFragment.newInstance(
                     viewModel.messageSubjects
-                ).show(
+                ).apply {
+                    callback = {
+                        viewModel.callGetInboxMessageList()
+                    }
+                }.show(
                     requireActivity().supportFragmentManager.beginTransaction(),
                     SEND_MESSAGES_FRAGMENT_TAG
                 )

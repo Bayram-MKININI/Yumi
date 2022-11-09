@@ -1,5 +1,6 @@
 package net.noliaware.yumi.feature_message.presentation.controllers
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -33,7 +34,7 @@ class SendMailFragment : AppCompatDialogFragment() {
     private var sendMailView: SendMailView? = null
     private val viewModel by viewModels<SendMailFragmentViewModel>()
     private var dialog: AlertDialog? = null
-    private var selectedMessageIndex: Int = 0
+    var callback: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,7 +103,7 @@ class SendMailFragment : AppCompatDialogFragment() {
                     it.subjectLabel
                 }?.toTypedArray()?.let { messageSubjects ->
                     builder.setItems(messageSubjects) { _, which ->
-                        selectedMessageIndex = which
+                        viewModel.selectedMessageIndex = which
                         sendMailView?.setSubject(messageSubjects[which])
                     }
                 }
@@ -116,9 +117,7 @@ class SendMailFragment : AppCompatDialogFragment() {
             }
 
             override fun onSendMailClicked(text: String) {
-                viewModel.messageSubjects?.get(selectedMessageIndex)?.let {
-                    viewModel.callSendMessage(it.subjectId.toString(), text)
-                }
+                viewModel.callSendMessage(text)
             }
         }
     }
@@ -126,6 +125,15 @@ class SendMailFragment : AppCompatDialogFragment() {
     override fun onResume() {
         super.onResume()
         sendMailView?.computeMailView()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        viewModel.eventsHelper.stateFlow.value.data?.let { dataRefreshed ->
+            if (dataRefreshed) {
+                callback?.invoke()
+            }
+        }
     }
 
     override fun onDestroyView() {

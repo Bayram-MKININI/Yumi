@@ -79,12 +79,8 @@ class LoginFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.accountDataEventsHelper.eventFlow.collectLatest { sharedEvent ->
-                loginParentView?.let {
-                    it.setLoginViewProgressVisible(false)
-                    it.clearSecretDigits()
-                    passwordIndexes.clear()
-                }
+            viewModel.initEventsHelper.eventFlow.collectLatest { sharedEvent ->
+                loginParentView?.setLoginViewProgressVisible(false)
                 handleSharedEvent(sharedEvent)
             }
         }
@@ -101,6 +97,17 @@ class LoginFragment : Fragment() {
                     loginParentView?.displayPasswordView()
                     loginParentView?.fillPadViewWithData(initData.keyboard)
                 }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.accountDataEventsHelper.eventFlow.collectLatest { sharedEvent ->
+                loginParentView?.let {
+                    it.setLoginViewProgressVisible(false)
+                    it.clearSecretDigits()
+                    passwordIndexes.clear()
+                }
+                handleSharedEvent(sharedEvent)
             }
         }
 

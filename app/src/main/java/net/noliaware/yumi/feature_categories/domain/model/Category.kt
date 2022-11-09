@@ -8,5 +8,6 @@ data class Category(
     val categoryIcon: String?,
     val categoryLabel: String,
     val categoryDescription: String,
-    val voucherCount: Int
+    val availableVoucherCount: Int?,
+    val usedVoucherCount: Int?
 ) : Serializable

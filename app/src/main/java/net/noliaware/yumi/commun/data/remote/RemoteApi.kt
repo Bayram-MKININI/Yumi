@@ -3,15 +3,11 @@ package net.noliaware.yumi.commun.data.remote
 import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.data.remote.dto.ResponseDTO
 import net.noliaware.yumi.feature_alerts.data.remote.dto.AlertsDTO
-import net.noliaware.yumi.feature_categories.data.remote.dto.AvailableVoucherCategoriesDTO
-import net.noliaware.yumi.feature_categories.data.remote.dto.GetVoucherDTO
-import net.noliaware.yumi.feature_categories.data.remote.dto.GetVoucherStatusDTO
-import net.noliaware.yumi.feature_categories.data.remote.dto.VouchersDTO
+import net.noliaware.yumi.feature_categories.data.remote.dto.*
 import net.noliaware.yumi.feature_login.data.remote.dto.AccountDataDTO
 import net.noliaware.yumi.feature_login.data.remote.dto.InitDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.MessagesDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.SingleMessageDTO
-import net.noliaware.yumi.feature_profile.data.remote.dto.UsedVoucherCategoriesDTO
 import net.noliaware.yumi.feature_profile.data.remote.dto.UsedVouchersDTO
 import net.noliaware.yumi.feature_profile.data.remote.dto.UserAccountDTO
 import retrofit2.http.FieldMap
@@ -50,12 +46,12 @@ interface RemoteApi {
 
     @FormUrlEncoded
     @POST("$GET_DATA_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
-    suspend fun fetchAvailableDataByCategory(
+    suspend fun fetchDataByCategory(
         @Path(TIMESTAMP) timestamp: String,
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<AvailableVoucherCategoriesDTO>
+    ): ResponseDTO<VoucherCategoriesDTO>
 
     @FormUrlEncoded
     @POST("$GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
@@ -92,15 +88,6 @@ interface RemoteApi {
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
     ): ResponseDTO<UserAccountDTO>
-
-    @FormUrlEncoded
-    @POST("$GET_DATA_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
-    suspend fun fetchUsedDataByCategory(
-        @Path(TIMESTAMP) timestamp: String,
-        @Path(SALT_STRING) saltString: String,
-        @Path(TOKEN) token: String,
-        @FieldMap params: Map<String, String>
-    ): ResponseDTO<UsedVoucherCategoriesDTO>
 
     @FormUrlEncoded
     @POST("$GET_USED_VOUCHER_LIST_BY_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")

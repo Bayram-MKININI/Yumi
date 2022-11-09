@@ -147,8 +147,7 @@ class LoginRepositoryImpl @Inject constructor(
                 params = generateSelectAccountParams(accountId)
             )
 
-            val sessionNoFailure =
-                handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
                 remoteData.data?.let { accountDataDTO ->

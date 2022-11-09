@@ -83,7 +83,7 @@ class ProfileRepositoryImpl(
         val timestamp = System.currentTimeMillis().toString()
         val randomString = UUID.randomUUID().toString()
 
-        val remoteCategoriesData = api.fetchUsedDataByCategory(
+        val remoteCategoriesData = api.fetchDataByCategory(
             timestamp = timestamp,
             saltString = randomString,
             token = generateToken(
@@ -94,7 +94,7 @@ class ProfileRepositoryImpl(
             params = getCommonWSParams(sessionData)
         )
 
-        remoteCategoriesData.data?.let { usedVoucherCategoriesDTO ->
+        remoteCategoriesData.data?.let { voucherCategoriesDTO ->
 
             remoteCategoriesData.session?.let { sessionDTO ->
                 sessionData.apply {
@@ -103,7 +103,7 @@ class ProfileRepositoryImpl(
                 }
             }
 
-            usedVoucherCategoriesDTO.usedCategoryDTOs?.let { categoriesDTO ->
+            voucherCategoriesDTO.categoryDTOs?.let { categoriesDTO ->
                 return Resource.Success(data = categoriesDTO.map { it.toCategory() })
             }
         }

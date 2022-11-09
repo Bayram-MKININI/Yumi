@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class AvailableVoucherCategoriesDTO(
-    @Json(name = "availableVoucherCountPerCategory")
-    val availableCategoryDTOs: List<CategoryDTO>?
+data class VoucherCategoriesDTO(
+    @Json(name = "voucherCountPerCategory")
+    val categoryDTOs: List<CategoryDTO>?
 )

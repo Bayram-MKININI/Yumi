@@ -16,8 +16,10 @@ data class CategoryDTO(
     val categoryColor: String,
     @Json(name = "categoryIcon")
     val categoryIcon: String?,
-    @Json(name = "voucherCount")
-    val voucherCount: Int
+    @Json(name = "availableVoucherCount")
+    val availableVoucherCount: Int?,
+    @Json(name = "usedVoucherCount")
+    val usedVoucherCount: Int?
 ) {
     fun toCategory() = Category(
         categoryId = categoryId,
@@ -25,6 +27,7 @@ data class CategoryDTO(
         categoryIcon = categoryIcon,
         categoryLabel = categoryLabel,
         categoryDescription = categoryDescription,
-        voucherCount = voucherCount
+        availableVoucherCount = availableVoucherCount,
+        usedVoucherCount = usedVoucherCount
     )
 }

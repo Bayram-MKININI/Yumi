@@ -27,7 +27,7 @@ class CategoryRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            val remoteData = api.fetchAvailableDataByCategory(
+            val remoteData = api.fetchDataByCategory(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
@@ -41,8 +41,8 @@ class CategoryRepositoryImpl(
             val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
 
             if (sessionNoFailure) {
-                remoteData.data?.let { availableVoucherCategoriesDTO ->
-                    availableVoucherCategoriesDTO.availableCategoryDTOs?.let { categoriesDTO ->
+                remoteData.data?.let { voucherCategoriesDTO ->
+                    voucherCategoriesDTO.categoryDTOs?.let { categoriesDTO ->
                         emit(Resource.Success(data = categoriesDTO.map { it.toCategory() }))
                     }
                 }

@@ -70,7 +70,7 @@ class AccountsListFragment : AppCompatDialogFragment() {
                     AccountCategoryView.AccountCategoryViewAdapter(
                         iconName = category.categoryIcon ?: "ic_food",
                         title = category.categoryLabel,
-                        count = category.voucherCount
+                        count = category.availableVoucherCount ?: 0
                     )
                 }.also {
                     accountItemViewAdapter.accountCategoryViewAdapters.addAll(it)

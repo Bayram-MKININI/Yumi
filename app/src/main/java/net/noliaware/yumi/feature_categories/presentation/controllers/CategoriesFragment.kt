@@ -88,7 +88,7 @@ class CategoriesFragment : Fragment() {
 
     private fun mapCategory(category: Category) =
         CategoryItemViewAdapter(
-            count = category.voucherCount,
+            count = category.availableVoucherCount ?: 0,
             iconName = category.categoryIcon ?: "ic_food",
             title = category.categoryLabel
         )

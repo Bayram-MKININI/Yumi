@@ -143,11 +143,8 @@ class MessageRepositoryImpl(
             }
 
         } catch (ex: HttpException) {
-
             emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-
         } catch (ex: IOException) {
-
             emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
     }

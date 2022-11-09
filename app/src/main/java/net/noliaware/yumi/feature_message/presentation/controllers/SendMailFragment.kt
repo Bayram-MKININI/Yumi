@@ -34,7 +34,7 @@ class SendMailFragment : AppCompatDialogFragment() {
     private var sendMailView: SendMailView? = null
     private val viewModel by viewModels<SendMailFragmentViewModel>()
     private var dialog: AlertDialog? = null
-    var callback: (() -> Unit)? = null
+    var onMessageSent: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,7 +131,7 @@ class SendMailFragment : AppCompatDialogFragment() {
         super.onDismiss(dialog)
         viewModel.eventsHelper.stateFlow.value.data?.let { dataRefreshed ->
             if (dataRefreshed) {
-                callback?.invoke()
+                onMessageSent?.invoke()
             }
         }
     }

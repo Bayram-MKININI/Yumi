@@ -30,7 +30,7 @@ class QrCodeFragment : AppCompatDialogFragment() {
 
     private var qrCodeView: QrCodeView? = null
     private val viewModel by viewModels<QrCodeFragmentViewModel>()
-    var callback: (() -> Unit)? = null
+    var handleDialogClosed: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,7 +92,7 @@ class QrCodeFragment : AppCompatDialogFragment() {
         super.onDismiss(dialog)
         qrCodeView?.isQrCodeRevealed()?.let { isQrCodeRevealed ->
             if (isQrCodeRevealed) {
-                callback?.invoke()
+                handleDialogClosed?.invoke()
             }
         }
     }

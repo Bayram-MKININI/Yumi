@@ -80,7 +80,7 @@ class MailFragment : Fragment() {
                 SendMailFragment.newInstance(
                     viewModel.messageSubjects
                 ).apply {
-                    callback = {
+                    onMessageSent = {
                         viewModel.callGetInboxMessageList()
                     }
                 }.show(

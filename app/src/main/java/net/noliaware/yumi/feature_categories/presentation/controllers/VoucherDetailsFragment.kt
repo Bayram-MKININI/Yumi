@@ -38,7 +38,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
     private var vouchersDetailsView: VouchersDetailsView? = null
     private val viewModel by viewModels<VoucherDetailsFragmentViewModel>()
-    var callback: (() -> Unit)? = null
+    var onDataRefreshed: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -237,7 +237,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                             voucherCodeSize = resources.displayMetrics.widthPixels
                         )
                     ).apply {
-                        callback = {
+                        handleDialogClosed = {
                             viewModel.getVoucherEventsHelper.stateFlow.value.data?.voucherId?.let {
                                 viewModel.callGetVoucherStatusById(it)
                             }
@@ -255,7 +255,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         super.onDismiss(dialog)
         viewModel.getVoucherStatusEventsHelper.stateFlow.value.data?.let { voucherStatus ->
             if (voucherStatus == VoucherStatus.CONSUMED) {
-                callback?.invoke()
+                onDataRefreshed?.invoke()
             }
         }
     }

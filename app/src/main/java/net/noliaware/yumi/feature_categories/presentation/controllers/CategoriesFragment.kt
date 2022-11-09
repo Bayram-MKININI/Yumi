@@ -49,7 +49,8 @@ class CategoriesFragment : Fragment() {
                         category.categoryId,
                         category.categoryLabel
                     ).apply {
-                        callback = {
+                        this.onDataRefreshed = {
+                            viewModel.callGetAvailableCategories()
                         }
                     }.show(
                         childFragmentManager.beginTransaction(),

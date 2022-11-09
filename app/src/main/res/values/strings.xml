@@ -4,6 +4,7 @@
     <string name="error_contact_support">Une erreur est survenue, veuillez contacter le support technique.</string>
     <string name="error_message">%s Essais restants: %d</string>
 
+    //Login
     <string name="enter_login_message">Saisissez votre identifiant</string>
     <string name="enter_code_message">Saisissez votre code</string>
     <string name="enter_code_description">Saisissez votre code à 6 chiffres</string>
@@ -14,6 +15,7 @@
     <string name="confirm">Valider</string>
     <string name="correct">Corriger</string>
 
+    //Category list
     <string name="categories">Catégories</string>
     <string name="categories_list">Liste des familles de coupons</string>
     <string name="back">Retour</string>
@@ -22,6 +24,7 @@
     <string name="display_voucher">Afficher ce coupon</string>
     <string name="use_voucher">Utiliser ce coupon</string>
 
+    //Vouchers
     <string name="creation_date">Date de création:</string>
     <string name="expiry_date_title">Date d\'expiration:</string>
     <string name="description">Description:</string>
@@ -38,6 +41,7 @@
     <string name="voucher_canceled">Coupon annulé</string>
     <string name="voucher_consumed">Coupon consommé</string>
 
+    //Profile
     <string name="my_profile">Mon Profil</string>
     <string name="my_data">Mes informations</string>
     <string name="complementary_data">Informations complémentaires</string>
@@ -54,10 +58,10 @@
     <string name="occupation">Occupation:</string>
     <string name="usage_date">Date d\'utilisation: %s à %s</string>
 
+    //Messages
     <string name="mail">Messagerie</string>
     <string name="mail_description">Le centre de messagerie vous permet de communiquer avec votre agent</string>
-    <string name="mail_date_short_format">EEE dd/MM</string>
-    <string name="mail_date_long_format">EEE dd MMM yyyy HH:mm:ss</string>
+    <string name="sent_at">Envoyé le %s à %s</string>
     <string name="select_subject">Sélectionner un sujet</string>
     <string name="new_mail">Nouveau message</string>
     <string name="send">Envoyer</string>
@@ -65,6 +69,7 @@
     <string name="mail_body">Message</string>
     <string name="mail_sent">Message envoyé</string>
 
+    //Alert
     <string name="notifications">Notifications</string>
     <string name="notification_description">Le centre de notifications est une fonction pour vous informer de toutes les mises à jour</string>
     <string name="received_at">Reçu le %s à %s</string>

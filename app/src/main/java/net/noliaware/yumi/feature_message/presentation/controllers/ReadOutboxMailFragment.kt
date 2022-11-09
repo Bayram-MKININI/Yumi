@@ -82,7 +82,7 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
         ReadMailViewAdapter(
             subject = message.messageSubject,
             time = getString(
-                R.string.received_at,
+                R.string.sent_at,
                 parseToLongDate(message.messageDate),
                 parseTimeString(message.messageTime)
             ),

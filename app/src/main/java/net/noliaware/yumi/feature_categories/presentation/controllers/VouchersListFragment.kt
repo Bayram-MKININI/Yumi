@@ -37,7 +37,7 @@ class VouchersListFragment : AppCompatDialogFragment() {
 
     private var vouchersListView: VouchersListView? = null
     private val viewModel by viewModels<VouchersListFragmentViewModel>()
-    var callback: (() -> Unit)? = null
+    var onDataRefreshed: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,7 +104,7 @@ class VouchersListFragment : AppCompatDialogFragment() {
                     VoucherDetailsFragment.newInstance(
                         voucherId
                     ).apply {
-                        callback = {
+                        this.onDataRefreshed = {
                             viewModel.dataShouldRefresh = true
                             viewModel.callGetVoucherList()
                         }
@@ -120,7 +120,7 @@ class VouchersListFragment : AppCompatDialogFragment() {
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         if (viewModel.dataShouldRefresh == true) {
-            callback?.invoke()
+            onDataRefreshed?.invoke()
         }
     }
 

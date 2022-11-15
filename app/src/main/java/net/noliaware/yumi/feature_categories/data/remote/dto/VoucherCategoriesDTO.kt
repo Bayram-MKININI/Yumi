@@ -5,6 +5,6 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class VoucherCategoriesDTO(
-    @Json(name = "voucherCountPerCategory")
+    @Json(name = "dataPerCategory")
     val categoryDTOs: List<CategoryDTO>?
 )

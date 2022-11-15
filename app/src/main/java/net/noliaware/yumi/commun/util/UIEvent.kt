@@ -1,5 +1,12 @@
 package net.noliaware.yumi.commun.util
 
-sealed class UIEvent {
-    data class ShowSnackBar(val errorType: ErrorType, val errorMessage: String? = null) : UIEvent()
+import androidx.annotation.StringRes
+import net.noliaware.yumi.commun.domain.model.AppMessage
+
+sealed interface UIEvent {
+    data class ShowAppMessage(val appMessage: AppMessage) : UIEvent
+    data class ShowError(
+        val errorType: ErrorType? = null,
+        @StringRes val errorStrRes: Int
+    ) : UIEvent
 }

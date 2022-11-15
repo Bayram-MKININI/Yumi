@@ -1,3 +1,6 @@
 package net.noliaware.yumi.commun.util
 
-data class ViewModelState<T>(val data: T? = null)
+sealed interface ViewModelState<T> {
+    data class DataState<T>(val data: T? = null) : ViewModelState<T>
+    class LoadingState<T> : ViewModelState<T>
+}

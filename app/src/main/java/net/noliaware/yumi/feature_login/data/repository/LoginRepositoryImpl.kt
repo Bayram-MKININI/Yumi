@@ -112,11 +112,21 @@ class LoginRepositoryImpl @Inject constructor(
                 params = generateGetAccountParams(password)
             )
 
-            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(
+                remoteData.session,
+                sessionData,
+                remoteData.message,
+                remoteData.error
+            )
 
             if (sessionNoFailure) {
                 remoteData.data?.let { accountDataDTO ->
-                    emit(Resource.Success(data = accountDataDTO.toAccountData()))
+                    emit(
+                        Resource.Success(
+                            data = accountDataDTO.toAccountData(),
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
                 }
             }
 
@@ -147,11 +157,21 @@ class LoginRepositoryImpl @Inject constructor(
                 params = generateSelectAccountParams(accountId)
             )
 
-            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(
+                remoteData.session,
+                sessionData,
+                remoteData.message,
+                remoteData.error
+            )
 
             if (sessionNoFailure) {
                 remoteData.data?.let { accountDataDTO ->
-                    emit(Resource.Success(data = accountDataDTO.toAccountData()))
+                    emit(
+                        Resource.Success(
+                            data = accountDataDTO.toAccountData(),
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
                 }
             }
 

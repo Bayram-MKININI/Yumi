@@ -17,16 +17,15 @@ import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.presentation.controllers.HomeFragmentViewModel
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.domain.model.Message
-import net.noliaware.yumi.feature_message.domain.model.MessageOrigin.INBOX
-import net.noliaware.yumi.feature_message.domain.model.MessageOrigin.OUTBOX
-import net.noliaware.yumi.feature_message.presentation.views.MailItemView.MailItemViewAdapter
+import net.noliaware.yumi.feature_message.domain.model.MessageOrigin
+import net.noliaware.yumi.feature_message.presentation.views.MailItemView
 import net.noliaware.yumi.feature_message.presentation.views.MailView
 
 @AndroidEntryPoint
 class MailFragment : Fragment() {
 
     companion object {
-        fun newInstance(messageSubjects: List<MessageSubject>?) =
+        fun newInstance(messageSubjects: List<MessageSubject>?): MailFragment =
             MailFragment().withArgs(MESSAGE_SUBJECTS_DATA to messageSubjects)
     }
 
@@ -48,37 +47,37 @@ class MailFragment : Fragment() {
         object : MailView.MailViewCallback {
             override fun onItemClickedAtIndex(index: Int) {
 
-                val message = viewModel.messageListEventsHelper.stateFlow.value.data?.get(index)
+                when (val messageList = viewModel.messageListEventsHelper.stateFlow.value) {
+                    is ViewModelState.DataState -> {
+                        messageList.data?.get(index)?.let { message ->
+                            when (message.messageOrigin) {
 
-                message?.let {
+                                MessageOrigin.INBOX -> {
+                                    ReadInboxMailFragment.newInstance(message.messageId)
+                                        .show(
+                                            childFragmentManager.beginTransaction(),
+                                            READ_MESSAGE_FRAGMENT_TAG
+                                        )
+                                }
 
-                    when (message.messageOrigin) {
-
-                        INBOX -> {
-                            ReadInboxMailFragment.newInstance(
-                                message.messageId
-                            ).show(
-                                requireActivity().supportFragmentManager.beginTransaction(),
-                                READ_MESSAGE_FRAGMENT_TAG
-                            )
+                                MessageOrigin.OUTBOX -> {
+                                    ReadOutboxMailFragment.newInstance(message.messageId)
+                                        .show(
+                                            childFragmentManager.beginTransaction(),
+                                            READ_MESSAGE_FRAGMENT_TAG
+                                        )
+                                }
+                                else -> Unit
+                            }
                         }
-
-                        OUTBOX -> {
-                            ReadOutboxMailFragment.newInstance(
-                                message.messageId
-                            ).show(
-                                requireActivity().supportFragmentManager.beginTransaction(),
-                                READ_MESSAGE_FRAGMENT_TAG
-                            )
-                        }
-                        else -> Unit
                     }
+                    is ViewModelState.LoadingState -> Unit
                 }
             }
 
             override fun onComposeButtonClicked() {
                 SendMailFragment.newInstance(
-                    viewModel.messageSubjects
+                    viewModel.messageSubjects ?: listOf()
                 ).apply {
                     onMessageSent = {
                         viewModel.callGetInboxMessageList()
@@ -108,8 +107,11 @@ class MailFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.messageListEventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { messageList ->
-                    bindViewToData(messageList)
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { messageList ->
+                        bindViewToData(messageList)
+                    }
                 }
             }
         }
@@ -117,7 +119,7 @@ class MailFragment : Fragment() {
 
     private fun bindViewToData(messageList: List<Message>) {
         messageList.map { message ->
-            MailItemViewAdapter(
+            MailItemView.MailItemViewAdapter(
                 subject = message.messageFrom.orEmpty(),
                 time = parseToShortDate(message.messageDate),
                 body = message.messageSubject

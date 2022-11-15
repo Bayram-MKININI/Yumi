@@ -29,12 +29,16 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.FlowCollector
 import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.*
+import net.noliaware.yumi.commun.data.remote.dto.AppMessageDTO
 import net.noliaware.yumi.commun.data.remote.dto.ErrorDTO
 import net.noliaware.yumi.commun.data.remote.dto.SessionDTO
+import net.noliaware.yumi.commun.domain.model.AppMessageType
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.feature_login.presentation.controllers.LoginActivity
 import java.io.Serializable
@@ -43,7 +47,6 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 fun generateToken(timestamp: String, methodName: String, randomString: String): String {
     return "noliaware|$timestamp|${methodName}|${timestamp.reversed()}|$randomString".sha256()
@@ -60,6 +63,7 @@ fun getCommonWSParams(sessionData: SessionData) = mapOf(
 suspend fun <T> FlowCollector<Resource<T>>.handleSessionWithNoFailure(
     session: SessionDTO?,
     sessionData: SessionData,
+    appMessage: AppMessageDTO?,
     error: ErrorDTO?
 ): Boolean {
 
@@ -78,7 +82,8 @@ suspend fun <T> FlowCollector<Resource<T>>.handleSessionWithNoFailure(
         emit(
             Resource.Error(
                 errorType = errorType,
-                errorMessage = errorDTO.errorMessage
+                errorMessage = errorDTO.errorMessage,
+                appMessage = appMessage?.toAppMessage()
             )
         )
         return false
@@ -87,18 +92,31 @@ suspend fun <T> FlowCollector<Resource<T>>.handleSessionWithNoFailure(
     }
 }
 
-fun handleSessionWithFailureMessage(
+fun <T> handleSessionWithError(
     session: SessionDTO?,
     sessionData: SessionData,
+    appMessage: AppMessageDTO?,
     error: ErrorDTO?
-) = session?.let { sessionDTO ->
-    sessionData.apply {
-        sessionId = sessionDTO.sessionId
-        sessionToken = sessionDTO.sessionToken
+): Resource<T>? {
+
+    val errorType = session?.let { sessionDTO ->
+        sessionData.apply {
+            sessionId = sessionDTO.sessionId
+            sessionToken = sessionDTO.sessionToken
+        }
+
+        ErrorType.RECOVERABLE_ERROR
+    } ?: run {
+        ErrorType.SYSTEM_ERROR
     }
-    null
-} ?: run {
-    error?.errorMessage
+
+    return error?.let { errorDTO ->
+        Resource.Error(
+            errorType = errorType,
+            errorMessage = errorDTO.errorMessage,
+            appMessage = appMessage?.toAppMessage()
+        )
+    }
 }
 
 fun parseToShortDate(dateStr: String?) = dateStr?.let {
@@ -122,33 +140,56 @@ fun parseTimeString(dateStr: String?) = dateStr?.let {
     destFormatter.format(date)
 }.orEmpty()
 
-fun Fragment.handleSharedEvent(sharedEvent: UIEvent) {
+fun Fragment.handleSharedEvent(sharedEvent: UIEvent) = context?.let {
 
     when (sharedEvent) {
 
-        is UIEvent.ShowSnackBar -> {
+        is UIEvent.ShowAppMessage -> {
 
-            val message = if (!sharedEvent.errorMessage.isNullOrEmpty()) {
-
-                sharedEvent.errorMessage
-
-            } else {
-
-                when (sharedEvent.errorType) {
-                    ErrorType.NETWORK_ERROR -> getString(R.string.error_no_network)
-                    ErrorType.SYSTEM_ERROR -> getString(R.string.error_contact_support)
-                    ErrorType.RECOVERABLE_ERROR -> getString(R.string.error_contact_support)
-                    ErrorType.NONE -> ""
+            val appMessage = sharedEvent.appMessage
+            when (appMessage.type) {
+                AppMessageType.POPUP -> {
+                    MaterialAlertDialogBuilder(it)
+                        .setTitle(appMessage.title)
+                        .setMessage(appMessage.body)
+                        .setPositiveButton(R.string.ok) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .setCancelable(false)
+                        .create().apply {
+                            setCanceledOnTouchOutside(false)
+                            show()
+                        }
                 }
+                AppMessageType.SNACKBAR -> {
+                    Snackbar.make(
+                        requireView(),
+                        appMessage.body,
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+                AppMessageType.TOAST -> {
+                    Toast.makeText(
+                        context,
+                        appMessage.body,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                else -> Unit
             }
-
-            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        }
+        is UIEvent.ShowError -> {
+            Toast.makeText(
+                context,
+                getString(sharedEvent.errorStrRes),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 }
 
 fun Fragment.redirectToLoginScreen(sharedEvent: UIEvent) {
-    if (sharedEvent is UIEvent.ShowSnackBar) {
+    if (sharedEvent is UIEvent.ShowError) {
         if (sharedEvent.errorType == ErrorType.SYSTEM_ERROR) {
             activity?.finish()
             startActivity(Intent(requireActivity(), LoginActivity::class.java))
@@ -203,9 +244,7 @@ fun View.layoutToBottomRight(right: Int, bottom: Int) {
 }
 
 fun View.convertDpToPx(dpValue: Int): Int = TypedValue.applyDimension(
-    TypedValue.COMPLEX_UNIT_DIP,
-    dpValue.toFloat(),
-    context.resources.displayMetrics
+    TypedValue.COMPLEX_UNIT_DIP, dpValue.toFloat(), context.resources.displayMetrics
 ).toInt()
 
 
@@ -304,6 +343,7 @@ fun Drawable.tint(context: Context, @ColorRes color: Int): Drawable {
 }
 
 fun <T> unsafeLazy(initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)
+val <T> T.exhaustive: T get() = this
 
 fun openMap(
     context: Context?,

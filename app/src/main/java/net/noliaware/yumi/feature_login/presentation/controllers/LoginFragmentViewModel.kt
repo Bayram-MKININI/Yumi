@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.commun.util.ViewModelState
+import net.noliaware.yumi.commun.util.ViewModelState.DataState
 import net.noliaware.yumi.feature_login.data.repository.DataStoreRepository
 import net.noliaware.yumi.feature_login.data.repository.LoginRepository
 import net.noliaware.yumi.feature_login.domain.model.AccountData
@@ -25,8 +26,15 @@ class LoginFragmentViewModel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
-    private val _prefsStateFlow = MutableStateFlow(ViewModelState<UserPreferences>())
+    private val _prefsStateFlow: MutableStateFlow<ViewModelState<UserPreferences>> =
+        MutableStateFlow(DataState())
     val prefsStateFlow = _prefsStateFlow.asStateFlow()
+
+    val prefsStateData
+        get() = when (prefsStateFlow.value) {
+            is DataState -> (prefsStateFlow.value as DataState<UserPreferences>).data
+            is ViewModelState.LoadingState -> null
+        }
 
     val initEventsHelper = EventsHelper<InitData>()
     val accountDataEventsHelper = EventsHelper<AccountData>()
@@ -38,7 +46,7 @@ class LoginFragmentViewModel @Inject constructor(
     private fun callReadPreferences() {
         viewModelScope.launch {
             dataStoreRepository.readUserPreferences().onEach { userPreferences ->
-                _prefsStateFlow.value = ViewModelState(userPreferences)
+                _prefsStateFlow.value = DataState(userPreferences)
             }.launchIn(this)
         }
     }

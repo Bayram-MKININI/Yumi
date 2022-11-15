@@ -10,10 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.parseTimeString
-import net.noliaware.yumi.commun.util.parseToShortDate
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
 import net.noliaware.yumi.feature_alerts.domain.model.AlertPriority
 import net.noliaware.yumi.feature_alerts.presentation.views.AlertItemView.AlertItemViewAdapter
@@ -53,8 +50,11 @@ class AlertsFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.alertListEventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { alertList ->
-                    bindViewToData(alertList)
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { alertList ->
+                        bindViewToData(alertList)
+                    }
                 }
             }
         }

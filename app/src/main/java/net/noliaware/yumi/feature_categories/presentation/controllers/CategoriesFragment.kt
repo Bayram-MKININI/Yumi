@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.VOUCHERS_LIST_FRAGMENT_TAG
+import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
@@ -78,10 +79,13 @@ class CategoriesFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.availableCategoriesEventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { categoryList ->
-                    categoriesView?.refreshCategoryList(categoryList.map { category ->
-                        mapCategory(category)
-                    })
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { categoryList ->
+                        categoriesView?.refreshCategoryList(categoryList.map { category ->
+                            mapCategory(category)
+                        })
+                    }
                 }
             }
         }

@@ -12,10 +12,7 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.USED_VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.presentation.views.DataValueView
-import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.inflate
-import net.noliaware.yumi.commun.util.parseToLongDate
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.presentation.controllers.HomeFragmentViewModel
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
@@ -57,8 +54,11 @@ class UserProfileFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.userProfileEventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { userProfile ->
-                    bindViewToData(userProfile)
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { userProfile ->
+                        bindViewToData(userProfile)
+                    }
                 }
             }
         }
@@ -179,7 +179,7 @@ class UserProfileFragment : Fragment() {
 
             override fun onCategoryClickedAtIndex(index: Int) {
 
-                viewModel.userProfileEventsHelper.stateFlow.value.data?.categories?.getOrNull(index)
+                viewModel.userProfileEventsHelper.stateData?.categories?.getOrNull(index)
                     ?.let { category ->
                         UsedVouchersListFragment.newInstance(
                             category.categoryId,

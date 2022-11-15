@@ -38,12 +38,13 @@ class MessageRepositoryImpl(
                 params = generateGetMessagesListParams()
             )
 
-            handleSessionWithFailureMessage(
+            handleSessionWithError<List<Message>>(
                 remoteData.session,
                 sessionData,
+                remoteData.message,
                 remoteData.error
-            )?.let { errorMessage ->
-                return Resource.Error(ErrorType.RECOVERABLE_ERROR, errorMessage = errorMessage)
+            )?.let {
+                return it
             }
 
             remoteData.data?.let { inboxMessagesDTO ->
@@ -134,11 +135,21 @@ class MessageRepositoryImpl(
                 params = generateGetMessageParams(messageId)
             )
 
-            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(
+                remoteData.session,
+                sessionData,
+                remoteData.message,
+                remoteData.error
+            )
 
             if (sessionNoFailure) {
                 remoteData.data?.let { singleMessageDTO ->
-                    emit(Resource.Success(data = singleMessageDTO.message.toMessage()))
+                    emit(
+                        Resource.Success(
+                            data = singleMessageDTO.message.toMessage(),
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
                 }
             }
 
@@ -173,11 +184,21 @@ class MessageRepositoryImpl(
                 params = generateGetMessageParams(messageId)
             )
 
-            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(
+                remoteData.session,
+                sessionData,
+                remoteData.message,
+                remoteData.error
+            )
 
             if (sessionNoFailure) {
                 remoteData.data?.let { singleMessageDTO ->
-                    emit(Resource.Success(data = singleMessageDTO.message.toMessage()))
+                    emit(
+                        Resource.Success(
+                            data = singleMessageDTO.message.toMessage(),
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
                 }
             }
 
@@ -213,10 +234,20 @@ class MessageRepositoryImpl(
                 params = generateSendMessageParams(messageSubjectId, messageBody)
             )
 
-            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(
+                remoteData.session,
+                sessionData,
+                remoteData.message,
+                remoteData.error
+            )
 
             if (sessionNoFailure) {
-                emit(Resource.Success(data = true))
+                emit(
+                    Resource.Success(
+                        data = remoteData.data != null,
+                        appMessage = remoteData.message?.toAppMessage()
+                    )
+                )
             }
 
         } catch (ex: HttpException) {

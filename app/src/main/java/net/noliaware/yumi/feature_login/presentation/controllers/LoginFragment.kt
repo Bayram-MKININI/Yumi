@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNTS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.ACCOUNT_DATA
+import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.feature_categories.presentation.controllers.MainActivity
@@ -72,8 +73,11 @@ class LoginFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.prefsStateFlow.collectLatest { vmState ->
-                vmState.data?.let { userPrefs ->
-                    loginParentView?.setLogin(userPrefs.login)
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { userPrefs ->
+                        loginParentView?.setLogin(userPrefs.login)
+                    }
                 }
             }
         }
@@ -88,14 +92,17 @@ class LoginFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
 
             viewModel.initEventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { initData ->
+                when (vmState) {
+                    is ViewModelState.LoadingState -> loginParentView?.setLoginViewProgressVisible(
+                        true
+                    )
 
-                    viewModel.saveDeviceIdPreferences(initData.deviceId)
-
-                    loginParentView?.setLoginViewProgressVisible(false)
-
-                    loginParentView?.displayPasswordView()
-                    loginParentView?.fillPadViewWithData(initData.keyboard)
+                    is ViewModelState.DataState -> vmState.data?.let { initData ->
+                        viewModel.saveDeviceIdPreferences(initData.deviceId)
+                        loginParentView?.setLoginViewProgressVisible(false)
+                        loginParentView?.displayPasswordView()
+                        loginParentView?.fillPadViewWithData(initData.keyboard)
+                    }
                 }
             }
         }
@@ -114,19 +121,21 @@ class LoginFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
 
             viewModel.accountDataEventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { accountData ->
-
-                    if (accountData.managedAccountProfiles.isNotEmpty()) {
-                        AccountsListFragment.newInstance(accountData.managedAccountProfiles)
-                            .show(
-                                childFragmentManager.beginTransaction(),
-                                ACCOUNTS_LIST_FRAGMENT_TAG
-                            )
-                    } else {
-                        activity?.finish()
-                        val intent = Intent(requireActivity(), MainActivity::class.java)
-                        intent.putExtra(ACCOUNT_DATA, accountData)
-                        startActivity(intent)
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { accountData ->
+                        if (accountData.managedAccountProfiles.isNotEmpty()) {
+                            AccountsListFragment.newInstance(accountData.managedAccountProfiles)
+                                .show(
+                                    childFragmentManager.beginTransaction(),
+                                    ACCOUNTS_LIST_FRAGMENT_TAG
+                                )
+                        } else {
+                            activity?.finish()
+                            val intent = Intent(requireActivity(), MainActivity::class.java)
+                            intent.putExtra(ACCOUNT_DATA, accountData)
+                            startActivity(intent)
+                        }
                     }
                 }
             }
@@ -139,10 +148,9 @@ class LoginFragment : Fragment() {
 
                 viewModel.saveLoginPreferences(login)
 
-                loginParentView?.setLoginViewProgressVisible(true)
                 viewModel.callInitWebservice(
                     getAndroidId(),
-                    viewModel.prefsStateFlow.value.data?.deviceId,
+                    viewModel.prefsStateData?.deviceId,
                     login
                 )
             }

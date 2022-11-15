@@ -4,14 +4,20 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import net.noliaware.yumi.commun.util.Resource
-import net.noliaware.yumi.commun.util.UIEvent
-import net.noliaware.yumi.commun.util.ViewModelState
+import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.ViewModelState.DataState
+import net.noliaware.yumi.commun.util.ViewModelState.LoadingState
 
 class EventsHelper<S> {
 
-    private val _stateFlow = MutableStateFlow(ViewModelState<S>())
+    private val _stateFlow: MutableStateFlow<ViewModelState<S>> = MutableStateFlow(DataState())
     val stateFlow = _stateFlow.asStateFlow()
+
+    val stateData get() = when(stateFlow.value){
+        is DataState -> (stateFlow.value as DataState<S>).data
+        is LoadingState -> null
+    }
 
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -20,16 +26,27 @@ class EventsHelper<S> {
         when (result) {
             is Resource.Success -> {
                 result.data?.let {
-                    _stateFlow.value = ViewModelState(it)
+                    _stateFlow.value = DataState(it)
+                }
+                result.appMessage?.let {
+                    _eventFlow.emit(UIEvent.ShowAppMessage(it))
                 }
             }
             is Resource.Loading -> {
-                _stateFlow.value = ViewModelState()
+                _stateFlow.value = LoadingState()
             }
             is Resource.Error -> {
-                _stateFlow.value = ViewModelState()
-                _eventFlow.emit(UIEvent.ShowSnackBar(result.errorType, result.errorMessage))
+                when (result.errorType) {
+                    ErrorType.NETWORK_ERROR -> {
+                        _eventFlow.emit(UIEvent.ShowError(errorStrRes = R.string.error_no_network))
+                    }
+                    else -> {
+                        result.appMessage?.let {
+                            _eventFlow.emit(UIEvent.ShowAppMessage(it))
+                        }
+                    }
+                }
             }
-        }
+        }.exhaustive
     }
 }

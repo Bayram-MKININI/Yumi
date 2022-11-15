@@ -67,8 +67,11 @@ class UsedVouchersListFragment : AppCompatDialogFragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { voucherList ->
-                    bindViewToData(voucherList)
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { voucherList ->
+                        bindViewToData(voucherList)
+                    }
                 }
             }
         }
@@ -99,7 +102,7 @@ class UsedVouchersListFragment : AppCompatDialogFragment() {
 
             override fun onItemClickedAtIndex(index: Int) {
 
-                viewModel.eventsHelper.stateFlow.value.data?.get(index)?.voucherId?.let { voucherId ->
+                viewModel.eventsHelper.stateData?.get(index)?.voucherId?.let { voucherId ->
                     VoucherDetailsFragment.newInstance(
                         voucherId,
                         true

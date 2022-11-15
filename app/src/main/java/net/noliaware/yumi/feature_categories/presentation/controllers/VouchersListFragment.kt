@@ -15,10 +15,7 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.CATEGORY_ID
 import net.noliaware.yumi.commun.CATEGORY_LABEL
 import net.noliaware.yumi.commun.VOUCHER_DETAILS_FRAGMENT_TAG
-import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.parseToShortDate
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
-import net.noliaware.yumi.commun.util.withArgs
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.presentation.views.VoucherItemView.VoucherItemViewAdapter
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
@@ -69,8 +66,11 @@ class VouchersListFragment : AppCompatDialogFragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { voucherList ->
-                    bindViewToData(voucherList)
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { voucherList ->
+                        bindViewToData(voucherList)
+                    }
                 }
             }
         }
@@ -100,7 +100,7 @@ class VouchersListFragment : AppCompatDialogFragment() {
 
             override fun onItemClickedAtIndex(index: Int) {
 
-                viewModel.eventsHelper.stateFlow.value.data?.get(index)?.voucherId?.let { voucherId ->
+                viewModel.eventsHelper.stateData?.get(index)?.voucherId?.let { voucherId ->
                     VoucherDetailsFragment.newInstance(
                         voucherId
                     ).apply {

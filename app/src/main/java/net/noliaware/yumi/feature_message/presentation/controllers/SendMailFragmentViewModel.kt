@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
-import net.noliaware.yumi.commun.SELECTED_MESSAGE_INDEX
 import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.data.repository.MessageRepository
@@ -23,14 +22,9 @@ class SendMailFragmentViewModel @Inject constructor(
     val messageSubjects get() = savedStateHandle.get<List<MessageSubject>>(MESSAGE_SUBJECTS_DATA)
     val eventsHelper = EventsHelper<Boolean>()
 
-    var selectedMessageIndex
-        get() = savedStateHandle.get<Int>(SELECTED_MESSAGE_INDEX) ?: -1
-        set(value) = savedStateHandle.set(SELECTED_MESSAGE_INDEX, value)
-
-    fun callSendMessage(messageBody: String) {
+    fun callSendMessage(messageSubjectId: String, messageBody: String) {
         viewModelScope.launch {
-            val subject = messageSubjects?.getOrNull(selectedMessageIndex)?.subjectId.toString()
-            repository.sendMessage(subject, messageBody).onEach { result ->
+            repository.sendMessage(messageSubjectId, messageBody).onEach { result ->
                 eventsHelper.handleResponse(result)
             }.launchIn(this)
         }

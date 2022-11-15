@@ -34,16 +34,20 @@ class AlertsRepositoryImpl(
                 params = getCommonWSParams(sessionData)
             )
 
-            handleSessionWithFailureMessage(
+            handleSessionWithError<List<Alert>>(
                 remoteData.session,
                 sessionData,
+                remoteData.message,
                 remoteData.error
-            )?.let { errorMessage ->
-                return Resource.Error(ErrorType.RECOVERABLE_ERROR, errorMessage = errorMessage)
+            )?.let {
+                return it
             }
 
             remoteData.data?.let { alertsDTO ->
-                return Resource.Success(data = alertsDTO.alertDTOList.map { it.toAlert() })
+                return Resource.Success(
+                    data = alertsDTO.alertDTOList.map { it.toAlert() },
+                    appMessage = remoteData.message?.toAppMessage()
+                )
             }
 
         } catch (ex: HttpException) {

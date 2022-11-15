@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
 import net.noliaware.yumi.commun.MANAGED_PROFILES_DATA
+import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
@@ -94,12 +95,14 @@ class AccountsListFragment : AppCompatDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
 
             viewModel.eventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { accountData ->
-
-                    activity?.finish()
-                    val intent = Intent(requireActivity(), MainActivity::class.java)
-                    intent.putExtra(ACCOUNT_DATA, accountData)
-                    startActivity(intent)
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { accountData ->
+                        activity?.finish()
+                        val intent = Intent(requireActivity(), MainActivity::class.java)
+                        intent.putExtra(ACCOUNT_DATA, accountData)
+                        startActivity(intent)
+                    }
                 }
             }
         }

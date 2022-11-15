@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.R.style
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -21,19 +21,20 @@ import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.presentation.views.SendMailView
-import net.noliaware.yumi.feature_message.presentation.views.SendMailView.SendMailViewCallback
 
 @AndroidEntryPoint
 class SendMailFragment : AppCompatDialogFragment() {
 
     companion object {
-        fun newInstance(messageSubjects: List<MessageSubject>?) =
-            SendMailFragment().withArgs(MESSAGE_SUBJECTS_DATA to messageSubjects)
+        fun newInstance(
+            messageSubjects: List<MessageSubject>
+        ) = SendMailFragment().withArgs(MESSAGE_SUBJECTS_DATA to messageSubjects)
     }
 
     private var sendMailView: SendMailView? = null
     private val viewModel by viewModels<SendMailFragmentViewModel>()
     private var dialog: AlertDialog? = null
+    private var selectedMessageIndex: Int = 0
     var onMessageSent: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,23 +66,10 @@ class SendMailFragment : AppCompatDialogFragment() {
                 redirectToLoginScreen(sharedEvent)
             }
         }
-
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { status ->
-                    if (status)
-                        Toast.makeText(
-                            requireContext(),
-                            R.string.mail_sent,
-                            Toast.LENGTH_LONG
-                        ).show()
-                }
-            }
-        }
     }
 
-    private val sendMailViewCallback: SendMailViewCallback by lazy {
-        object : SendMailViewCallback {
+    private val sendMailViewCallback: SendMailView.SendMailViewCallback by lazy {
+        object : SendMailView.SendMailViewCallback {
             override fun onBackButtonClicked() {
                 dismissAllowingStateLoss()
             }
@@ -94,7 +82,7 @@ class SendMailFragment : AppCompatDialogFragment() {
                 // setup the alert builder
                 val builder = MaterialAlertDialogBuilder(
                     requireContext(),
-                    R.style.ThemeOverlay_Material3_Dialog
+                    style.ThemeOverlay_Material3_Dialog
                 )
 
                 builder.setTitle(R.string.select_subject)
@@ -103,7 +91,7 @@ class SendMailFragment : AppCompatDialogFragment() {
                     it.subjectLabel
                 }?.toTypedArray()?.let { messageSubjects ->
                     builder.setItems(messageSubjects) { _, which ->
-                        viewModel.selectedMessageIndex = which
+                        selectedMessageIndex = which
                         sendMailView?.setSubject(messageSubjects[which])
                     }
                 }
@@ -117,7 +105,9 @@ class SendMailFragment : AppCompatDialogFragment() {
             }
 
             override fun onSendMailClicked(text: String) {
-                viewModel.callSendMessage(text)
+                viewModel.messageSubjects?.get(selectedMessageIndex)?.let {
+                    viewModel.callSendMessage(it.subjectId.toString(), text)
+                }
             }
         }
     }
@@ -129,7 +119,7 @@ class SendMailFragment : AppCompatDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        viewModel.eventsHelper.stateFlow.value.data?.let { dataRefreshed ->
+        viewModel.eventsHelper.stateData?.let { dataRefreshed ->
             if (dataRefreshed) {
                 onMessageSent?.invoke()
             }

@@ -14,6 +14,7 @@
     <string name="secret_code">Votre code secret</string>
     <string name="confirm">Valider</string>
     <string name="correct">Corriger</string>
+    <string name="ok">OK</string>
 
     //Category list
     <string name="categories">Catégories</string>
@@ -67,7 +68,6 @@
     <string name="send">Envoyer</string>
     <string name="mail_object">Object</string>
     <string name="mail_body">Message</string>
-    <string name="mail_sent">Message envoyé</string>
 
     //Alert
     <string name="notifications">Notifications</string>

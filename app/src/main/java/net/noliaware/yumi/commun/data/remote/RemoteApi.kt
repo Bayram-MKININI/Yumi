@@ -7,6 +7,7 @@ import net.noliaware.yumi.feature_categories.data.remote.dto.*
 import net.noliaware.yumi.feature_login.data.remote.dto.AccountDataDTO
 import net.noliaware.yumi.feature_login.data.remote.dto.InitDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.MessagesDTO
+import net.noliaware.yumi.feature_message.data.remote.dto.SentMessageDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.SingleMessageDTO
 import net.noliaware.yumi.feature_profile.data.remote.dto.UsedVouchersDTO
 import net.noliaware.yumi.feature_profile.data.remote.dto.UserAccountDTO
@@ -141,7 +142,7 @@ interface RemoteApi {
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<Boolean>
+    ): ResponseDTO<SentMessageDTO>
 
     @FormUrlEncoded
     @POST("$GET_ALERT_LIST/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")

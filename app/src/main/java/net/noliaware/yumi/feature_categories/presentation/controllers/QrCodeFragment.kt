@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.VOUCHER_CODE_DATA
+import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.parseToLongDate
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.domain.model.VoucherCodeData
@@ -57,8 +58,11 @@ class QrCodeFragment : AppCompatDialogFragment() {
     private fun collectFlows() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.stateFlow.collect { vmState ->
-                vmState.data?.let { qrCode ->
-                    qrCodeView?.setQrCode(qrCode)
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { qrCode ->
+                        qrCodeView?.setQrCode(qrCode)
+                    }
                 }
             }
         }

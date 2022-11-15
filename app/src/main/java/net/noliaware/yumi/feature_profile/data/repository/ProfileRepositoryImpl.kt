@@ -131,11 +131,21 @@ class ProfileRepositoryImpl(
                 params = generateUsedVoucherListParams(categoryId)
             )
 
-            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(
+                remoteData.session,
+                sessionData,
+                remoteData.message,
+                remoteData.error
+            )
 
             if (sessionNoFailure) {
                 remoteData.data?.let { vouchersDTO ->
-                    emit(Resource.Success(data = vouchersDTO.voucherDTOList.map { it.toVoucher() }))
+                    emit(
+                        Resource.Success(
+                            data = vouchersDTO.voucherDTOList.map { it.toVoucher() },
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
                 }
             }
 

@@ -38,12 +38,22 @@ class CategoryRepositoryImpl(
                 params = getCommonWSParams(sessionData)
             )
 
-            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(
+                remoteData.session,
+                sessionData,
+                remoteData.message,
+                remoteData.error
+            )
 
             if (sessionNoFailure) {
                 remoteData.data?.let { voucherCategoriesDTO ->
                     voucherCategoriesDTO.categoryDTOs?.let { categoriesDTO ->
-                        emit(Resource.Success(data = categoriesDTO.map { it.toCategory() }))
+                        emit(
+                            Resource.Success(
+                                data = categoriesDTO.map { it.toCategory() },
+                                appMessage = remoteData.message?.toAppMessage()
+                            )
+                        )
                     }
                 }
             }
@@ -75,11 +85,21 @@ class CategoryRepositoryImpl(
                 params = generateVoucherListParams(categoryId)
             )
 
-            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(
+                remoteData.session,
+                sessionData,
+                remoteData.message,
+                remoteData.error
+            )
 
             if (sessionNoFailure) {
                 remoteData.data?.let { vouchersDTO ->
-                    emit(Resource.Success(data = vouchersDTO.voucherDTOList.map { it.toVoucher() }))
+                    emit(
+                        Resource.Success(
+                            data = vouchersDTO.voucherDTOList.map { it.toVoucher() },
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
                 }
             }
 
@@ -114,11 +134,21 @@ class CategoryRepositoryImpl(
                 params = generateVoucherByIdParams(voucherId)
             )
 
-            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(
+                remoteData.session,
+                sessionData,
+                remoteData.message,
+                remoteData.error
+            )
 
             if (sessionNoFailure) {
                 remoteData.data?.let { getVoucherDTO ->
-                    emit(Resource.Success(data = getVoucherDTO.voucherDTO.toVoucher(sessionData.sessionId)))
+                    emit(
+                        Resource.Success(
+                            data = getVoucherDTO.voucherDTO.toVoucher(sessionData.sessionId),
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
                 }
             }
 
@@ -149,11 +179,21 @@ class CategoryRepositoryImpl(
                 params = generateVoucherByIdParams(voucherId)
             )
 
-            val sessionNoFailure = handleSessionWithNoFailure(remoteData.session, sessionData, remoteData.error)
+            val sessionNoFailure = handleSessionWithNoFailure(
+                remoteData.session,
+                sessionData,
+                remoteData.message,
+                remoteData.error
+            )
 
             if (sessionNoFailure) {
                 remoteData.data?.let { getVoucherStatusDTO ->
-                    emit(Resource.Success(data = getVoucherStatusDTO.toVoucherStatus()))
+                    emit(
+                        Resource.Success(
+                            data = getVoucherStatusDTO.toVoucherStatus(),
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
                 }
             }
 

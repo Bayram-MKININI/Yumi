@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 import net.noliaware.yumi.commun.VOUCHER_CODE_DATA
 import net.noliaware.yumi.commun.util.QRCodeGenerator
 import net.noliaware.yumi.commun.util.ViewModelState
+import net.noliaware.yumi.commun.util.ViewModelState.DataState
+import net.noliaware.yumi.commun.util.ViewModelState.LoadingState
 import net.noliaware.yumi.feature_categories.domain.model.VoucherCodeData
 import javax.inject.Inject
 
@@ -20,7 +22,8 @@ class QrCodeFragmentViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _stateFlow = MutableStateFlow(ViewModelState<Bitmap>())
+    private val _stateFlow: MutableStateFlow<ViewModelState<Bitmap>> =
+        MutableStateFlow(DataState())
     val stateFlow = _stateFlow.asStateFlow()
     val voucherCodeData get() = savedStateHandle.get<VoucherCodeData>(VOUCHER_CODE_DATA)
 
@@ -37,8 +40,9 @@ class QrCodeFragmentViewModel @Inject constructor(
 
     private fun generateQrCodeForCode(code: String, size: Int) {
         viewModelScope.launch(Dispatchers.IO) {
+            _stateFlow.value = LoadingState()
             QRCodeGenerator.encodeAsBitmap(code, size)?.let { bitmap ->
-                _stateFlow.value = ViewModelState(bitmap)
+                _stateFlow.value = DataState(bitmap)
             }
         }
     }

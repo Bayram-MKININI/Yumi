@@ -11,6 +11,8 @@ class ResponseDTO<T>(
     val actions: List<ActionDTO> = listOf(),
     @Json(name = "session")
     val session: SessionDTO?,
+    @Json(name = "message")
+    val message: AppMessageDTO?,
     @Json(name = "error")
     val error: ErrorDTO?,
     @Json(name = "data")

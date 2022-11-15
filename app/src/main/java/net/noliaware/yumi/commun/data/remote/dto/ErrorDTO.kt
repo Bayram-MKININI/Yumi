@@ -5,6 +5,8 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 class ErrorDTO(
+    @Json(name = "errorId")
+    val errorId: String = "",
     @Json(name = "errorCode")
     val errorCode: String = "",
     @Json(name = "errorMessage")

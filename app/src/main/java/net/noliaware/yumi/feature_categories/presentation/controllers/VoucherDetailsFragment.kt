@@ -75,16 +75,22 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.getVoucherEventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { voucher ->
-                    bindViewToData(voucher)
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { voucher ->
+                        bindViewToData(voucher)
+                    }
                 }
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.getVoucherStatusEventsHelper.stateFlow.collect { vmState ->
-                vmState.data?.let { voucherStatus ->
-                    handleVoucherStatusUpdate(voucherStatus)
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { voucherStatus ->
+                        handleVoucherStatusUpdate(voucherStatus)
+                    }
                 }
             }
         }
@@ -210,7 +216,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             }
 
             override fun onPartnerInfoClicked() {
-                viewModel.getVoucherEventsHelper.stateFlow.value.data?.let { voucher ->
+                viewModel.getVoucherEventsHelper.stateData?.let { voucher ->
                     voucher.partnerInfoURL?.let { url ->
                         context?.openWebPage(url)
                     }
@@ -218,7 +224,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             }
 
             override fun onLocationClicked() {
-                viewModel.getVoucherEventsHelper.stateFlow.value.data?.let { voucher ->
+                viewModel.getVoucherEventsHelper.stateData?.let { voucher ->
                     val latitude = voucher.retailerAddressLatitude
                     val longitude = voucher.retailerAddressLongitude
                     val label = voucher.retailerLabel
@@ -227,7 +233,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             }
 
             override fun onDisplayVoucherButtonClicked() {
-                viewModel.getVoucherEventsHelper.stateFlow.value.data?.let { voucher ->
+                viewModel.getVoucherEventsHelper.stateData?.let { voucher ->
                     QrCodeFragment.newInstance(
                         VoucherCodeData(
                             productLabel = voucher.productLabel,
@@ -238,7 +244,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                         )
                     ).apply {
                         handleDialogClosed = {
-                            viewModel.getVoucherEventsHelper.stateFlow.value.data?.voucherId?.let {
+                            viewModel.getVoucherEventsHelper.stateData?.voucherId?.let {
                                 viewModel.callGetVoucherStatusById(it)
                             }
                         }
@@ -253,7 +259,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        viewModel.getVoucherStatusEventsHelper.stateFlow.value.data?.let { voucherStatus ->
+        viewModel.getVoucherStatusEventsHelper.stateData?.let { voucherStatus ->
             if (voucherStatus == VoucherStatus.CONSUMED) {
                 onDataRefreshed?.invoke()
             }

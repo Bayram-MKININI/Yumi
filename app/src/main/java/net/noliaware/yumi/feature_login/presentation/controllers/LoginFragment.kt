@@ -124,12 +124,11 @@ class LoginFragment : Fragment() {
                 when (vmState) {
                     is ViewModelState.LoadingState -> Unit
                     is ViewModelState.DataState -> vmState.data?.let { accountData ->
-                        if (accountData.managedAccountProfiles.isNotEmpty()) {
-                            AccountsListFragment.newInstance(accountData.managedAccountProfiles)
-                                .show(
-                                    childFragmentManager.beginTransaction(),
-                                    ACCOUNTS_LIST_FRAGMENT_TAG
-                                )
+                        if (accountData.isAccountManager) {
+                            AccountsListFragment.newInstance().show(
+                                childFragmentManager.beginTransaction(),
+                                ACCOUNTS_LIST_FRAGMENT_TAG
+                            )
                         } else {
                             activity?.finish()
                             val intent = Intent(requireActivity(), MainActivity::class.java)

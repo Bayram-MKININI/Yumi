@@ -8,21 +8,23 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.presentation.adapters.BaseAdapter
 import net.noliaware.yumi.commun.util.*
-import net.noliaware.yumi.feature_categories.presentation.views.VoucherItemView.VoucherItemViewAdapter
+import net.noliaware.yumi.feature_categories.presentation.adapters.VoucherAdapter
 
 class VouchersListView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
     private lateinit var backView: View
     private lateinit var titleTextView: TextView
     private lateinit var recyclerView: RecyclerView
-    private val voucherItemViewAdaptersList = mutableListOf<VoucherItemViewAdapter>()
+    var voucherAdapter
+        get() = recyclerView.adapter as VoucherAdapter
+        set(adapter) {
+            recyclerView.adapter = adapter
+        }
     var callback: VouchersListViewCallback? by weak()
 
     interface VouchersListViewCallback {
         fun onBackButtonClicked()
-        fun onItemClickedAtIndex(index: Int)
     }
 
     override fun onFinishInflate() {
@@ -40,35 +42,14 @@ class VouchersListView(context: Context, attrs: AttributeSet?) : ViewGroup(conte
         titleTextView = findViewById(R.id.title_text_view)
         recyclerView = findViewById(R.id.recycler_view)
 
-        val adapter = BaseAdapter(voucherItemViewAdaptersList)
-
-        adapter.expressionViewHolderBinding = { eachItem, view ->
-            (view as VoucherItemView).fillViewWithData(eachItem)
-        }
-
-        adapter.expressionOnCreateViewHolder = { viewGroup ->
-            viewGroup.inflate(R.layout.voucher_item_layout, false)
-        }
-
         recyclerView.also {
             it.layoutManager = LinearLayoutManager(context)
             it.addItemDecoration(MarginItemDecoration(convertDpToPx(20)))
-            it.adapter = adapter
-            it.onItemClicked(onClick = { position, _ ->
-                callback?.onItemClickedAtIndex(position)
-            })
         }
     }
 
-    fun fillViewWithData(title: String, adaptersList: List<VoucherItemViewAdapter>) {
-
+    fun setTitle(title: String) {
         titleTextView.text = title
-
-        if (voucherItemViewAdaptersList.isNotEmpty())
-            voucherItemViewAdaptersList.clear()
-
-        voucherItemViewAdaptersList.addAll(adaptersList)
-        recyclerView.adapter?.notifyDataSetChanged()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

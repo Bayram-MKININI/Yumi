@@ -15,9 +15,9 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.CATEGORY_ID
 import net.noliaware.yumi.commun.CATEGORY_LABEL
 import net.noliaware.yumi.commun.VOUCHER_DETAILS_FRAGMENT_TAG
-import net.noliaware.yumi.commun.util.*
-import net.noliaware.yumi.feature_categories.domain.model.Voucher
-import net.noliaware.yumi.feature_categories.presentation.views.VoucherItemView.VoucherItemViewAdapter
+import net.noliaware.yumi.commun.presentation.adapters.ListLoadStateAdapter
+import net.noliaware.yumi.commun.util.withArgs
+import net.noliaware.yumi.feature_categories.presentation.adapters.VoucherAdapter
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView.VouchersListViewCallback
 
@@ -47,48 +47,36 @@ class VouchersListFragment : AppCompatDialogFragment() {
         return inflater.inflate(R.layout.vouchers_list_layout, container, false).apply {
             vouchersListView = this as VouchersListView
             vouchersListView?.callback = readMailViewCallback
+            vouchersListView?.voucherAdapter = VoucherAdapter(AvailableVoucherMapper()) { voucher ->
+                VoucherDetailsFragment.newInstance(
+                    voucher.voucherId
+                ).apply {
+                    this.onDataRefreshed = {
+                        viewModel.dataShouldRefresh = true
+                        viewModel.invalidateDataSource()
+                    }
+                }.show(
+                    childFragmentManager.beginTransaction(),
+                    VOUCHER_DETAILS_FRAGMENT_TAG
+                )
+            }
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        vouchersListView?.setTitle(viewModel.categoryLabel)
         collectFlows()
     }
 
     private fun collectFlows() {
-
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
-                handleSharedEvent(sharedEvent)
-                redirectToLoginScreen(sharedEvent)
+            viewModel.vouchers.collectLatest {
+                vouchersListView?.voucherAdapter?.withLoadStateFooter(
+                    footer = ListLoadStateAdapter()
+                )
+                vouchersListView?.voucherAdapter?.submitData(it)
             }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventsHelper.stateFlow.collect { vmState ->
-                when (vmState) {
-                    is ViewModelState.LoadingState -> Unit
-                    is ViewModelState.DataState -> vmState.data?.let { voucherList ->
-                        bindViewToData(voucherList)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun bindViewToData(voucherList: List<Voucher>) {
-
-        voucherList.map { voucher ->
-            VoucherItemViewAdapter(
-                title = voucher.productLabel.orEmpty(),
-                expiryDate = getString(
-                    R.string.expiry_date,
-                    parseToShortDate(voucher.voucherExpiryDate)
-                ),
-                description = getString(R.string.retailer, voucher.retailerLabel)
-            )
-        }.also {
-            vouchersListView?.fillViewWithData(viewModel.categoryLabel, it)
         }
     }
 
@@ -96,23 +84,6 @@ class VouchersListFragment : AppCompatDialogFragment() {
         object : VouchersListViewCallback {
             override fun onBackButtonClicked() {
                 dismissAllowingStateLoss()
-            }
-
-            override fun onItemClickedAtIndex(index: Int) {
-
-                viewModel.eventsHelper.stateData?.get(index)?.voucherId?.let { voucherId ->
-                    VoucherDetailsFragment.newInstance(
-                        voucherId
-                    ).apply {
-                        this.onDataRefreshed = {
-                            viewModel.dataShouldRefresh = true
-                            viewModel.callGetVoucherList()
-                        }
-                    }.show(
-                        childFragmentManager.beginTransaction(),
-                        VOUCHER_DETAILS_FRAGMENT_TAG
-                    )
-                }
             }
         }
     }

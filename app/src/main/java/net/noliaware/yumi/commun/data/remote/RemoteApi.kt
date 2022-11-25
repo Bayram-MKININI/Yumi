@@ -6,6 +6,7 @@ import net.noliaware.yumi.feature_alerts.data.remote.dto.AlertsDTO
 import net.noliaware.yumi.feature_categories.data.remote.dto.*
 import net.noliaware.yumi.feature_login.data.remote.dto.AccountDataDTO
 import net.noliaware.yumi.feature_login.data.remote.dto.InitDTO
+import net.noliaware.yumi.feature_login.data.remote.dto.ManagedAccountsDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.MessagesDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.SentMessageDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.SingleMessageDTO
@@ -35,6 +36,15 @@ interface RemoteApi {
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
     ): ResponseDTO<AccountDataDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_MANAGED_ACCOUNT_LIST/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchManagedAccounts(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<ManagedAccountsDTO>
 
     @FormUrlEncoded
     @POST("$SELECT_ACCOUNT/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")

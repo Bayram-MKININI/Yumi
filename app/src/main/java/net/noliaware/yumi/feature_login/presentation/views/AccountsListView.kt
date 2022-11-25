@@ -8,9 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.presentation.adapters.BaseAdapter
 import net.noliaware.yumi.commun.util.*
-import net.noliaware.yumi.feature_login.presentation.views.AccountItemView.AccountItemViewAdapter
+import net.noliaware.yumi.feature_login.presentation.adapters.ManagedAccountAdapter
 
 class AccountsListView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
@@ -19,12 +18,11 @@ class AccountsListView(context: Context, attrs: AttributeSet?) : ViewGroup(conte
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
 
-    private val accountItemViewAdapters = mutableListOf<AccountItemViewAdapter>()
-    var callback: AccountsListViewCallback? by weak()
-
-    interface AccountsListViewCallback {
-        fun onItemClickedAtIndex(index: Int)
-    }
+    var managedAccountAdapter
+        get() = recyclerView.adapter as ManagedAccountAdapter
+        set(adapter) {
+            recyclerView.adapter = adapter
+        }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -38,35 +36,10 @@ class AccountsListView(context: Context, attrs: AttributeSet?) : ViewGroup(conte
         recyclerView = findViewById(R.id.recycler_view)
         progressBar = findViewById(R.id.progress_bar)
 
-        val adapter = BaseAdapter(accountItemViewAdapters)
-
-        adapter.expressionViewHolderBinding = { eachItem, view ->
-            (view as AccountItemView).fillViewWithData(eachItem)
-        }
-
-        adapter.expressionOnCreateViewHolder = { viewGroup ->
-            viewGroup.inflate(R.layout.account_item_layout, false)
-        }
-
         recyclerView.also {
-
             it.layoutManager = LinearLayoutManager(context)
             it.addItemDecoration(MarginItemDecoration(convertDpToPx(20)))
-            it.adapter = adapter
-
-            it.onItemClicked(onClick = { position, _ ->
-                callback?.onItemClickedAtIndex(position)
-            })
         }
-    }
-
-    fun fillViewWithData(adaptersList: List<AccountItemViewAdapter>) {
-
-        if (accountItemViewAdapters.isNotEmpty())
-            accountItemViewAdapters.clear()
-
-        accountItemViewAdapters.addAll(adaptersList)
-        recyclerView.adapter?.notifyDataSetChanged()
     }
 
     fun setProgressVisible(visible: Boolean) {

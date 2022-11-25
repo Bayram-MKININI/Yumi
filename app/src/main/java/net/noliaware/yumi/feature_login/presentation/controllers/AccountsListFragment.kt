@@ -13,23 +13,19 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
-import net.noliaware.yumi.commun.MANAGED_PROFILES_DATA
+import net.noliaware.yumi.commun.presentation.adapters.ListLoadStateAdapter
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
-import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.controllers.MainActivity
-import net.noliaware.yumi.feature_login.presentation.views.AccountCategoryView
-import net.noliaware.yumi.feature_login.presentation.views.AccountItemView.AccountItemViewAdapter
+import net.noliaware.yumi.feature_login.presentation.adapters.ManagedAccountAdapter
 import net.noliaware.yumi.feature_login.presentation.views.AccountsListView
-import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 
 @AndroidEntryPoint
 class AccountsListFragment : AppCompatDialogFragment() {
 
     companion object {
-        fun newInstance(userProfiles: List<UserProfile>): AccountsListFragment =
-            AccountsListFragment().withArgs(MANAGED_PROFILES_DATA to userProfiles)
+        fun newInstance() = AccountsListFragment()
     }
 
     private var accountsListView: AccountsListView? = null
@@ -47,40 +43,15 @@ class AccountsListFragment : AppCompatDialogFragment() {
     ): View? {
         return inflater.inflate(R.layout.accounts_list_layout, container, false).apply {
             accountsListView = this as AccountsListView
-            accountsListView?.callback = accountsListViewCallback
+            accountsListView?.managedAccountAdapter = ManagedAccountAdapter { userProfile ->
+                userProfile.login?.let { viewModel.callSelectAccountForLogin(it) }
+            }
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        refreshAdapters()
         collectFlows()
-    }
-
-    private fun refreshAdapters() {
-
-        viewModel.managedProfiles?.map { managedProfile ->
-
-            AccountItemViewAdapter(
-                title = "${managedProfile.title} ${managedProfile.firstName} ${managedProfile.lastName}",
-                phoneNumber = getString(R.string.mobile_short, managedProfile.cellPhoneNumber),
-                lastLogin = managedProfile.login.orEmpty()
-            ).also { accountItemViewAdapter ->
-
-                managedProfile.categories.map { category ->
-                    AccountCategoryView.AccountCategoryViewAdapter(
-                        iconName = category.categoryIcon ?: "ic_food",
-                        title = category.categoryLabel,
-                        count = category.availableVoucherCount ?: 0
-                    )
-                }.also {
-                    accountItemViewAdapter.accountCategoryViewAdapters.addAll(it)
-                }
-            }
-
-        }.also { accountItemViewAdapters ->
-            accountItemViewAdapters?.let { accountsListView?.fillViewWithData(it) }
-        }
     }
 
     private fun collectFlows() {
@@ -93,7 +64,6 @@ class AccountsListFragment : AppCompatDialogFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-
             viewModel.eventsHelper.stateFlow.collect { vmState ->
                 when (vmState) {
                     is ViewModelState.LoadingState -> Unit
@@ -106,15 +76,13 @@ class AccountsListFragment : AppCompatDialogFragment() {
                 }
             }
         }
-    }
 
-    private val accountsListViewCallback: AccountsListView.AccountsListViewCallback by lazy {
-        object : AccountsListView.AccountsListViewCallback {
-            override fun onItemClickedAtIndex(index: Int) {
-
-                viewModel.managedProfiles?.get(index)?.login?.let {
-                    viewModel.callSelectAccountForLogin(it)
-                }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.managedProfiles.collectLatest {
+                accountsListView?.managedAccountAdapter?.withLoadStateFooter(
+                    footer = ListLoadStateAdapter()
+                )
+                accountsListView?.managedAccountAdapter?.submitData(it)
             }
         }
     }

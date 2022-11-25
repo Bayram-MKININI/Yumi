@@ -14,10 +14,11 @@ class EventsHelper<S> {
     private val _stateFlow: MutableStateFlow<ViewModelState<S>> = MutableStateFlow(DataState())
     val stateFlow = _stateFlow.asStateFlow()
 
-    val stateData get() = when(stateFlow.value){
-        is DataState -> (stateFlow.value as DataState<S>).data
-        is LoadingState -> null
-    }
+    val stateData
+        get() = when (stateFlow.value) {
+            is DataState -> (stateFlow.value as DataState<S>).data
+            is LoadingState -> null
+        }
 
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -38,7 +39,20 @@ class EventsHelper<S> {
             is Resource.Error -> {
                 when (result.errorType) {
                     ErrorType.NETWORK_ERROR -> {
-                        _eventFlow.emit(UIEvent.ShowError(errorStrRes = R.string.error_no_network))
+                        _eventFlow.emit(
+                            UIEvent.ShowError(
+                                errorType = ErrorType.NETWORK_ERROR,
+                                errorStrRes = R.string.error_no_network
+                            )
+                        )
+                    }
+                    ErrorType.SYSTEM_ERROR -> {
+                        _eventFlow.emit(
+                            UIEvent.ShowError(
+                                errorType = ErrorType.SYSTEM_ERROR,
+                                errorStrRes = R.string.error_contact_support
+                            )
+                        )
                     }
                     else -> {
                         result.appMessage?.let {

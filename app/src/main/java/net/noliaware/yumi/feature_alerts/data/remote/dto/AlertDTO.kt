@@ -12,22 +12,22 @@ data class AlertDTO(
     val alertDate: String,
     @Json(name = "alertTime")
     val alertTime: String,
+    @Json(name = "alertTimestamp")
+    val alertTimestamp: Long,
     @Json(name = "alertLevel")
     val alertLevel: Int,
-    @Json(name = "alertRank")
-    val alertRank: Int,
     @Json(name = "alertText")
     val alertText: String,
-    @Json(name = "alertTotal")
-    val alertTotal: Int
+    @Json(name = "alertRank")
+    val alertRank: Int,
+    @Json(name = "alertCount")
+    val alertCount: Int
 ) {
     fun toAlert() = Alert(
         alertId = alertId,
         alertDate = alertDate,
         alertTime = alertTime,
         alertLevel = alertLevel,
-        alertRank = alertRank,
         alertText = alertText,
-        alertTotal = alertTotal
     )
 }

@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -13,7 +13,6 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.USED_VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.*
-import net.noliaware.yumi.feature_categories.presentation.controllers.HomeFragmentViewModel
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileView
@@ -24,7 +23,7 @@ import net.noliaware.yumi.feature_profile.presentation.views.ProfileView.Profile
 class UserProfileFragment : Fragment() {
 
     private var profileView: ProfileView? = null
-    private val viewModel by activityViewModels<HomeFragmentViewModel>()
+    private val viewModel by viewModels<UserProfileFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +39,6 @@ class UserProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         collectFlows()
-        viewModel.callGetUserProfile()
     }
 
     private fun collectFlows() {

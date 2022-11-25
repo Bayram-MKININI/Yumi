@@ -16,10 +16,6 @@ data class MessageDTO(
     val messageSubject: String,
     @Json(name = "messageToRecipients")
     val messageToRecipients: String?,
-    @Json(name = "messageRank")
-    val messageRank: Int?,
-    @Json(name = "messageTotal")
-    val messageTotal: Int?,
     @Json(name = "messageType")
     val messageType: String?,
     @Json(name = "messageReadStatus")
@@ -27,15 +23,17 @@ data class MessageDTO(
     @Json(name = "messageFrom")
     val messageFrom: String?,
     @Json(name = "messageBody")
-    val messageBody: String?
+    val messageBody: String?,
+    @Json(name = "messageRank")
+    val messageRank: Int?,
+    @Json(name = "messageCount")
+    val messageCount: Int?
 ) {
     fun toMessage() = Message(
         messageId = messageId,
         messageDate = messageDate,
         messageTime = messageTime,
         messageSubject = messageSubject,
-        messageRank = messageRank,
-        messageTotal = messageTotal,
         messageToRecipients = messageToRecipients,
         messageType = messageType,
         messageReadStatus = messageReadStatus,

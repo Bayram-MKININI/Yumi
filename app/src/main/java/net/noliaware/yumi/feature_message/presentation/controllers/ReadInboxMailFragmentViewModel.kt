@@ -15,14 +15,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReadInboxMailFragmentViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val repository: MessageRepository,
 ) : ViewModel() {
 
     val eventsHelper = EventsHelper<Message>()
+    val messageId get() = savedStateHandle.get<String>(MESSAGE_ID)
 
     init {
-        savedStateHandle.get<String>(MESSAGE_ID)?.let {
+        messageId?.let {
             callGetMessageForId(it)
         }
     }

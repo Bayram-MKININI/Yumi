@@ -1,6 +1,5 @@
 package net.noliaware.yumi.feature_alerts.data.remote.dto
 
-
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 

@@ -7,7 +7,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import net.noliaware.yumi.commun.MESSAGE_ID
 import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
+import net.noliaware.yumi.commun.MESSAGE_SUBJECT_LABEL
 import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.data.repository.MessageRepository
@@ -20,13 +22,21 @@ class SendMailFragmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     val messageSubjects get() = savedStateHandle.get<List<MessageSubject>>(MESSAGE_SUBJECTS_DATA)
+    val messageId get() = savedStateHandle.get<String>(MESSAGE_ID)
+    val messageSubjectLabel get() = savedStateHandle.get<String>(MESSAGE_SUBJECT_LABEL)
     val eventsHelper = EventsHelper<Boolean>()
 
-    fun callSendMessage(messageSubjectId: String, messageBody: String) {
+    fun callSendMessage(
+        messagePriority: Int,
+        messageId: String? = null,
+        messageSubjectId: String? = null,
+        messageBody: String
+    ) {
         viewModelScope.launch {
-            repository.sendMessage(messageSubjectId, messageBody).onEach { result ->
-                eventsHelper.handleResponse(result)
-            }.launchIn(this)
+            repository.sendMessage(messagePriority, messageId, messageSubjectId, messageBody)
+                .onEach { result ->
+                    eventsHelper.handleResponse(result)
+                }.launchIn(this)
         }
     }
 }

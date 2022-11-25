@@ -7,9 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.presentation.adapters.BaseAdapter
 import net.noliaware.yumi.commun.util.*
-import net.noliaware.yumi.feature_alerts.presentation.views.AlertItemView.AlertItemViewAdapter
+import net.noliaware.yumi.feature_alerts.presentation.adapters.AlertAdapter
 
 class AlertsView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
@@ -17,7 +16,11 @@ class AlertsView(context: Context, attrs: AttributeSet?) : ViewGroup(context, at
     private lateinit var descriptionTextView: TextView
     private lateinit var recyclerView: RecyclerView
 
-    private val alertItemViewAdaptersList = mutableListOf<AlertItemViewAdapter>()
+    var alertAdapter
+        get() = recyclerView.adapter as AlertAdapter
+        set(adapter) {
+            recyclerView.adapter = adapter
+        }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -30,30 +33,10 @@ class AlertsView(context: Context, attrs: AttributeSet?) : ViewGroup(context, at
         descriptionTextView = findViewById(R.id.description_text_view)
         recyclerView = findViewById(R.id.recycler_view)
 
-        val adapter = BaseAdapter(alertItemViewAdaptersList)
-
-        adapter.expressionViewHolderBinding = { eachItem, view ->
-            (view as AlertItemView).fillViewWithData(eachItem)
-        }
-
-        adapter.expressionOnCreateViewHolder = { viewGroup ->
-            viewGroup.inflate(R.layout.alert_item_layout, false)
-        }
-
         recyclerView.also {
             it.layoutManager = LinearLayoutManager(context)
             it.addItemDecoration(MarginItemDecoration(convertDpToPx(16)))
-            it.adapter = adapter
         }
-    }
-
-    fun fillViewWithData(adaptersList: List<AlertItemViewAdapter>) {
-
-        if (alertItemViewAdaptersList.isNotEmpty())
-            alertItemViewAdaptersList.clear()
-
-        alertItemViewAdaptersList.addAll(adaptersList)
-        recyclerView.adapter?.notifyDataSetChanged()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

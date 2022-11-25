@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<net.noliaware.yumi.feature_message.presentation.views.MailView xmlns:android="http://schemas.android.com/apk/res/android"
+<net.noliaware.yumi.feature_message.presentation.views.MessagingView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mail_layout"
     android:layout_width="match_parent"
@@ -23,11 +24,15 @@
         android:textColor="@color/grey_1"
         android:textSize="18sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:overScrollMode="never" />
+        android:layout_height="wrap_content" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/compose_fab"
@@ -39,4 +44,4 @@
         app:elevation="16dp"
         app:tint="@android:color/white" />
 
-</net.noliaware.yumi.feature_message.presentation.views.MailView>
+</net.noliaware.yumi.feature_message.presentation.views.MessagingView>

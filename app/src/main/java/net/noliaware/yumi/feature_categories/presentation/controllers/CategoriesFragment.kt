@@ -5,16 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.CATEGORIES_DATA
 import net.noliaware.yumi.commun.VOUCHERS_LIST_FRAGMENT_TAG
-import net.noliaware.yumi.commun.util.ViewModelState
-import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.inflate
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewCallback
@@ -24,11 +22,12 @@ import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView
 class CategoriesFragment : Fragment() {
 
     companion object {
-        fun newInstance(): CategoriesFragment = CategoriesFragment()
+        fun newInstance(categories: List<Category>?) =
+            CategoriesFragment().withArgs(CATEGORIES_DATA to categories)
     }
 
     private var categoriesView: CategoriesView? = null
-    private val viewModel by activityViewModels<HomeFragmentViewModel>()
+    private val viewModel by viewModels<CategoriesFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,7 +44,7 @@ class CategoriesFragment : Fragment() {
         object : CategoriesViewCallback {
             override fun onItemClickedAtIndex(index: Int) {
 
-                viewModel.accountData?.categories?.get(index)?.let { category ->
+                viewModel.categories[index].let { category ->
                     VouchersListFragment.newInstance(
                         category.categoryId,
                         category.categoryLabel
@@ -94,7 +93,7 @@ class CategoriesFragment : Fragment() {
     private fun mapCategory(category: Category) =
         CategoryItemViewAdapter(
             count = category.availableVoucherCount ?: 0,
-            iconName = category.categoryIcon ?: "ic_food",
+            iconName = category.categoryIcon.orEmpty(),
             title = category.categoryLabel
         )
 
@@ -102,9 +101,9 @@ class CategoriesFragment : Fragment() {
 
         CategoriesView.CategoriesViewAdapter(
             description = getString(R.string.categories_list),
-            categoryItemViewAdapters = viewModel.accountData?.categories?.map { category ->
+            categoryItemViewAdapters = viewModel.categories.map { category ->
                 mapCategory(category)
-            }.orEmpty()
+            }
         ).apply {
             categoriesView?.fillViewWithData(this)
         }

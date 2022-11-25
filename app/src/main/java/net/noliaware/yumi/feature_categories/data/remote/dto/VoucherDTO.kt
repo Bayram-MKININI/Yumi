@@ -55,9 +55,9 @@ data class VoucherDTO(
     @Json(name = "partnerInfoURL")
     val partnerInfoURL: String?,
     @Json(name = "voucherRank")
-    val voucherRank: Int,
+    val voucherRank: Int?,
     @Json(name = "voucherCount")
-    val voucherCount: Int
+    val voucherCount: Int?
 ) {
     fun toVoucher(sessionId: String? = null) = Voucher(
         voucherId = voucherId,

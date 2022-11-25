@@ -5,7 +5,5 @@ data class Alert(
     val alertDate: String,
     val alertTime: String,
     val alertLevel: Int,
-    val alertRank: Int,
     val alertText: String,
-    val alertTotal: Int
 )

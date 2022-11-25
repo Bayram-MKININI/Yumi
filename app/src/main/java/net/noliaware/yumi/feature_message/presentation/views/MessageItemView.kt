@@ -9,13 +9,13 @@ import net.noliaware.yumi.commun.util.convertDpToPx
 import net.noliaware.yumi.commun.util.layoutToTopLeft
 import net.noliaware.yumi.commun.util.measureWrapContent
 
-class MailItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
+class MessageItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
     private lateinit var subjectTextView: TextView
     private lateinit var timeTextView: TextView
     private lateinit var bodyTextView: TextView
 
-    data class MailItemViewAdapter(
+    data class MessageItemViewAdapter(
         val subject: String = "",
         val time: String = "",
         val body: String = ""
@@ -32,10 +32,10 @@ class MailItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         bodyTextView = findViewById(R.id.body_text_view)
     }
 
-    fun fillViewWithData(mailItemViewAdapter: MailItemViewAdapter) {
-        subjectTextView.text = mailItemViewAdapter.subject
-        timeTextView.text = mailItemViewAdapter.time
-        bodyTextView.text = mailItemViewAdapter.body
+    fun fillViewWithData(messageItemViewAdapter: MessageItemViewAdapter) {
+        subjectTextView.text = messageItemViewAdapter.subject
+        timeTextView.text = messageItemViewAdapter.time
+        bodyTextView.text = messageItemViewAdapter.body
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

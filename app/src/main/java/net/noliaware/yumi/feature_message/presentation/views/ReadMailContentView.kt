@@ -8,7 +8,6 @@ import android.widget.TextView
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.*
 
-
 class ReadMailContentView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
     private lateinit var backgroundView: View

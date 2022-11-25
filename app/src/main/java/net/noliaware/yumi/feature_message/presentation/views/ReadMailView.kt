@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.*
 
@@ -26,7 +27,8 @@ class ReadMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
     data class ReadMailViewAdapter(
         val subject: String = "",
         val time: String = "",
-        val message: String = ""
+        val message: String = "",
+        val replyPossible: Boolean = false
     )
 
     override fun onFinishInflate() {
@@ -55,6 +57,7 @@ class ReadMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         titleTextView.text = readMailViewAdapter.subject
         readMailContentView.timeTextView.text = readMailViewAdapter.time
         readMailContentView.messageTextView.text = readMailViewAdapter.message
+        composeButton.isVisible = readMailViewAdapter.replyPossible
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

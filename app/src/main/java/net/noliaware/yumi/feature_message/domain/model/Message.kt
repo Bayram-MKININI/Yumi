@@ -9,8 +9,6 @@ data class Message(
     val messageDate: String,
     val messageTime: String,
     val messageSubject: String,
-    val messageRank: Int?,
-    val messageTotal: Int?,
     val messageToRecipients: String?,
     val messageType: String?,
     val messageReadStatus: Int?,

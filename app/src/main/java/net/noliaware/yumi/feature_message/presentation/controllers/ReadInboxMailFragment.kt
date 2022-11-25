@@ -12,6 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.MESSAGE_ID
+import net.noliaware.yumi.commun.SEND_MESSAGES_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_message.domain.model.Message
 import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
@@ -20,8 +21,9 @@ import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
 class ReadInboxMailFragment : AppCompatDialogFragment() {
 
     companion object {
-        fun newInstance(messageId: String): ReadInboxMailFragment =
-            ReadInboxMailFragment().withArgs(MESSAGE_ID to messageId)
+        fun newInstance(messageId: String) = ReadInboxMailFragment().withArgs(
+            MESSAGE_ID to messageId
+        )
     }
 
     private var readMailView: ReadMailView? = null
@@ -49,7 +51,17 @@ class ReadInboxMailFragment : AppCompatDialogFragment() {
                 dismissAllowingStateLoss()
             }
 
-            override fun onComposeButtonClicked() = Unit
+            override fun onComposeButtonClicked() {
+                SendMailFragment.newInstance(
+                    messageId = viewModel.messageId
+                ).apply {
+                    onMessageSent = {
+                        //viewModel.callGetInboxMessageList()
+                    }
+                }.show(
+                    childFragmentManager.beginTransaction(), SEND_MESSAGES_FRAGMENT_TAG
+                )
+            }
         }
     }
 
@@ -87,7 +99,8 @@ class ReadInboxMailFragment : AppCompatDialogFragment() {
                 parseToLongDate(message.messageDate),
                 parseTimeString(message.messageTime)
             ),
-            message = message.messageBody.orEmpty()
+            message = message.messageBody.orEmpty(),
+            replyPossible = true
         ).also {
             readMailView?.fillViewWithData(it)
         }

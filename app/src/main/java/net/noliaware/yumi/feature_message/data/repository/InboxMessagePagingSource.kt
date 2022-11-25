@@ -1,48 +1,48 @@
-package net.noliaware.yumi.feature_categories.data.repository
+package net.noliaware.yumi.feature_message.data.repository
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import net.noliaware.yumi.commun.*
+import net.noliaware.yumi.commun.GET_INBOX_MESSAGE_LIST
+import net.noliaware.yumi.commun.LIMIT
+import net.noliaware.yumi.commun.LIST_PAGE_SIZE
+import net.noliaware.yumi.commun.OFFSET
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.ErrorType
 import net.noliaware.yumi.commun.util.generateToken
 import net.noliaware.yumi.commun.util.getCommonWSParams
-import net.noliaware.yumi.feature_categories.domain.model.Voucher
+import net.noliaware.yumi.feature_message.domain.model.Message
 import java.util.*
 import javax.inject.Inject
 
-class VoucherPagingSource @Inject constructor(
+class InboxMessagePagingSource @Inject constructor(
     private val api: RemoteApi,
     private val sessionData: SessionData
-) : PagingSource<Int, Voucher>() {
+) : PagingSource<Int, Message>() {
 
-    lateinit var categoryId: String
-
-    override fun getRefreshKey(state: PagingState<Int, Voucher>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, Message>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Voucher> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Message> {
         try {
-            // Start refresh at page 1 if undefined.
             val nextPage = params.key ?: 0
 
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            val remoteData = api.fetchVouchersForCategory(
+            val remoteData = api.fetchInboxMessages(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
                     timestamp,
-                    GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY,
+                    GET_INBOX_MESSAGE_LIST,
                     randomString
                 ),
-                params = generateWSParams(categoryId, nextPage)
+                params = generateGetMessagesListParams(nextPage)
             )
 
             val errorType = remoteData.session?.let { sessionDTO ->
@@ -56,11 +56,11 @@ class VoucherPagingSource @Inject constructor(
                 ErrorType.SYSTEM_ERROR
             }
 
-            val voucherRank = remoteData.data?.voucherDTOList?.last()?.voucherRank ?: nextPage
+            val messageRank = remoteData.data?.messageDTOList?.last()?.messageRank ?: nextPage
 
-            val moreItemsAvailable = remoteData.data?.voucherDTOList?.last()?.let { voucherDTO ->
-                if (voucherDTO.voucherRank != null && voucherDTO.voucherCount != null) {
-                    voucherDTO.voucherRank < voucherDTO.voucherCount
+            val moreItemsAvailable = remoteData.data?.messageDTOList?.last()?.let { messageDTO ->
+                if (messageDTO.messageRank != null && messageDTO.messageCount != null) {
+                    messageDTO.messageRank < messageDTO.messageCount
                 } else {
                     false
                 }
@@ -69,17 +69,16 @@ class VoucherPagingSource @Inject constructor(
             val canLoadMore = moreItemsAvailable == true && errorType != ErrorType.SYSTEM_ERROR
 
             return LoadResult.Page(
-                data = remoteData.data?.voucherDTOList?.map { it.toVoucher() }.orEmpty(),
+                data = remoteData.data?.messageDTOList?.map { it.toMessage() }.orEmpty(),
                 prevKey = null,// Only paging forward.
-                nextKey = if (canLoadMore) voucherRank else null
+                nextKey = if (canLoadMore) messageRank else null
             )
         } catch (e: Exception) {
             return LoadResult.Error(e)
         }
     }
 
-    private fun generateWSParams(categoryId: String, offset: Int) = mutableMapOf(
-        CATEGORY_ID to categoryId,
+    private fun generateGetMessagesListParams(offset: Int) = mutableMapOf(
         LIMIT to LIST_PAGE_SIZE.toString(),
         OFFSET to offset.toString()
     ).also {

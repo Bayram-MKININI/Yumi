@@ -6,11 +6,14 @@ import net.noliaware.yumi.feature_message.domain.model.Message
 
 interface MessageRepository {
 
-    suspend fun getMessageList(): Resource<List<Message>>
-
     fun getInboxMessageForId(messageId: String): Flow<Resource<Message>>
 
     fun getOutboxMessageForId(messageId: String): Flow<Resource<Message>>
 
-    fun sendMessage(messageSubjectId: String, messageBody: String): Flow<Resource<Boolean>>
+    fun sendMessage(
+        messagePriority: Int,
+        messageId: String?,
+        messageSubjectId: String?,
+        messageBody: String
+    ): Flow<Resource<Boolean>>
 }

@@ -21,9 +21,7 @@ class ProfileRepositoryImpl(
     private val sessionData: SessionData
 ) : ProfileRepository {
 
-    override suspend fun getUserProfile(): Resource<UserProfile> {
-
-        var errorType: ErrorType = ErrorType.SYSTEM_ERROR
+    override fun getUserProfile(): Flow<Resource<UserProfile>> = flow {
 
         try {
 
@@ -41,41 +39,40 @@ class ProfileRepositoryImpl(
                 params = getCommonWSParams(sessionData)
             )
 
-            remoteData.error?.let { errorDTO ->
+            val sessionNoFailure = handleSessionWithNoFailure(
+                remoteData.session,
+                sessionData,
+                remoteData.message,
+                remoteData.error
+            )
 
-                return Resource.Error(
-                    errorType = ErrorType.SYSTEM_ERROR,
-                    errorMessage = errorDTO.errorMessage
-                )
-
-            } ?: run {
-
-                remoteData.session?.let { sessionDTO ->
-                    sessionData.apply {
-                        sessionId = sessionDTO.sessionId
-                        sessionToken = sessionDTO.sessionToken
-                    }
-                }
+            if (sessionNoFailure) {
 
                 remoteData.data?.userProfileDTO?.toUserProfile()?.let { userProfile ->
 
-                    if (userProfile.usedVoucherCount > 0) {
-                        getUsedCategories().data?.let { categories ->
-                            userProfile.categories = categories
+                    when (val result = getUsedCategories()) {
+                        is Resource.Error -> emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
+                        is Resource.Loading -> Unit
+                        is Resource.Success -> {
+                            result.data?.let { categories ->
+                                userProfile.categories = categories
+                            }
+                            emit(
+                                Resource.Success(
+                                    data = userProfile,
+                                    appMessage = remoteData.message?.toAppMessage()
+                                )
+                            )
                         }
                     }
-
-                    return Resource.Success(data = userProfile)
                 }
             }
 
         } catch (ex: HttpException) {
-            errorType = ErrorType.SYSTEM_ERROR
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
         } catch (ex: IOException) {
-            errorType = ErrorType.NETWORK_ERROR
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
-
-        return Resource.Error(errorType = errorType)
     }
 
     private suspend fun getUsedCategories(): Resource<List<Category>> {

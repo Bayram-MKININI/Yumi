@@ -15,7 +15,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.MESSAGE_ID
 import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
+import net.noliaware.yumi.commun.MESSAGE_SUBJECT_LABEL
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreen
 import net.noliaware.yumi.commun.util.withArgs
@@ -27,8 +29,14 @@ class SendMailFragment : AppCompatDialogFragment() {
 
     companion object {
         fun newInstance(
-            messageSubjects: List<MessageSubject>
-        ) = SendMailFragment().withArgs(MESSAGE_SUBJECTS_DATA to messageSubjects)
+            messageSubjects: List<MessageSubject>? = null,
+            messageId: String? = null,
+            messageSubjectLabel: String? = null
+        ) = SendMailFragment().withArgs(
+            MESSAGE_SUBJECTS_DATA to messageSubjects,
+            MESSAGE_ID to messageId,
+            MESSAGE_SUBJECT_LABEL to messageSubjectLabel
+        )
     }
 
     private var sendMailView: SendMailView? = null
@@ -55,11 +63,11 @@ class SendMailFragment : AppCompatDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.messageSubjectLabel?.let { sendMailView?.setSubjectFixed(it) }
         collectFlows()
     }
 
     private fun collectFlows() {
-
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
@@ -105,8 +113,20 @@ class SendMailFragment : AppCompatDialogFragment() {
             }
 
             override fun onSendMailClicked(text: String) {
-                viewModel.messageSubjects?.get(selectedMessageIndex)?.let {
-                    viewModel.callSendMessage(it.subjectId.toString(), text)
+                viewModel.messageSubjects?.get(selectedMessageIndex)?.let { messageSubject ->
+                    viewModel.callSendMessage(
+                        messagePriority = 1,
+                        messageSubjectId = messageSubject.subjectId.toString(),
+                        messageBody = text
+                    )
+                }
+
+                viewModel.messageId?.let { messageId ->
+                    viewModel.callSendMessage(
+                        messagePriority = 1,
+                        messageId = messageId,
+                        messageBody = text
+                    )
                 }
             }
         }

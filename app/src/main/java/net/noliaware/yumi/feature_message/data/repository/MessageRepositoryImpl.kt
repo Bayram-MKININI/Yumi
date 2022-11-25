@@ -8,7 +8,6 @@ import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_message.domain.model.Message
-import net.noliaware.yumi.feature_message.domain.model.MessageOrigin
 import okio.IOException
 import retrofit2.HttpException
 import java.util.*
@@ -17,101 +16,6 @@ class MessageRepositoryImpl(
     private val api: RemoteApi,
     private val sessionData: SessionData
 ) : MessageRepository {
-
-    override suspend fun getMessageList(): Resource<List<Message>> {
-
-        var errorType: ErrorType = ErrorType.SYSTEM_ERROR
-
-        try {
-
-            val timestamp = System.currentTimeMillis().toString()
-            val randomString = UUID.randomUUID().toString()
-
-            val remoteData = api.fetchInboxMessages(
-                timestamp = timestamp,
-                saltString = randomString,
-                token = generateToken(
-                    timestamp,
-                    GET_INBOX_MESSAGE_LIST,
-                    randomString
-                ),
-                params = generateGetMessagesListParams()
-            )
-
-            handleSessionWithError<List<Message>>(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
-            )?.let {
-                return it
-            }
-
-            remoteData.data?.let { inboxMessagesDTO ->
-
-                val mutableList: MutableList<Message> = mutableListOf()
-
-                mutableList.addAll(inboxMessagesDTO.messageList.map {
-                    it.toMessage().apply {
-                        messageOrigin = MessageOrigin.INBOX
-                    }
-                })
-
-                getOutboxMessages().data?.let { outboxMessageList ->
-                    mutableList.addAll(outboxMessageList)
-                }
-
-                return Resource.Success(data = mutableList)
-            }
-
-        } catch (ex: HttpException) {
-            errorType = ErrorType.SYSTEM_ERROR
-        } catch (ex: IOException) {
-            errorType = ErrorType.NETWORK_ERROR
-        }
-
-        return Resource.Error(errorType = errorType)
-    }
-
-    private fun generateGetMessagesListParams() = mutableMapOf(
-        LIMIT to "0",
-        OFFSET to "0"
-    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
-
-    private suspend fun getOutboxMessages(): Resource<List<Message>> {
-
-        val timestamp = System.currentTimeMillis().toString()
-        val randomString = UUID.randomUUID().toString()
-
-        val remoteCategoriesData = api.fetchOutboxMessages(
-            timestamp = timestamp,
-            saltString = randomString,
-            token = generateToken(
-                timestamp,
-                GET_OUTBOX_MESSAGE_LIST,
-                randomString
-            ),
-            params = generateGetMessagesListParams()
-        )
-
-        remoteCategoriesData.data?.let { messagesDTO ->
-
-            remoteCategoriesData.session?.let { sessionDTO ->
-                sessionData.apply {
-                    sessionId = sessionDTO.sessionId
-                    sessionToken = sessionDTO.sessionToken
-                }
-            }
-
-            return Resource.Success(data = messagesDTO.messageList.map {
-                it.toMessage().apply {
-                    messageOrigin = MessageOrigin.OUTBOX
-                }
-            })
-        }
-
-        return Resource.Error(errorType = ErrorType.SYSTEM_ERROR)
-    }
 
     override fun getInboxMessageForId(messageId: String): Flow<Resource<Message>> = flow {
 
@@ -210,7 +114,9 @@ class MessageRepositoryImpl(
     }
 
     override fun sendMessage(
-        messageSubjectId: String,
+        messagePriority: Int,
+        messageId: String?,
+        messageSubjectId: String?,
         messageBody: String
     ): Flow<Resource<Boolean>> = flow {
 
@@ -221,7 +127,15 @@ class MessageRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            Log.e("params", generateSendMessageParams(messageSubjectId, messageBody).toString())
+            Log.e(
+                "params",
+                generateSendMessageParams(
+                    messagePriority = messagePriority,
+                    messageId = messageId,
+                    messageSubjectId = messageSubjectId,
+                    messageBody = messageBody
+                ).toString()
+            )
 
             val remoteData = api.sendMessage(
                 timestamp = timestamp,
@@ -231,7 +145,12 @@ class MessageRepositoryImpl(
                     SEND_MESSAGE,
                     randomString
                 ),
-                params = generateSendMessageParams(messageSubjectId, messageBody)
+                params = generateSendMessageParams(
+                    messagePriority = messagePriority,
+                    messageId = messageId,
+                    messageSubjectId = messageSubjectId,
+                    messageBody = messageBody
+                )
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
@@ -257,9 +176,17 @@ class MessageRepositoryImpl(
         }
     }
 
-    private fun generateSendMessageParams(messageSubjectId: String, messageBody: String) =
-        mutableMapOf(
-            MESSAGE_SUBJECT to messageSubjectId,
-            MESSAGE_BODY to messageBody
-        ).also { it.plusAssign(getCommonWSParams(sessionData)) }
+    private fun generateSendMessageParams(
+        messagePriority: Int,
+        messageSubjectId: String? = null,
+        messageId: String? = null,
+        messageBody: String
+    ) = mutableMapOf(
+        MESSAGE_PRIORITY to messagePriority.toString(),
+        MESSAGE_BODY to messageBody
+    ).also { map ->
+        messageSubjectId?.let { map[MESSAGE_SUBJECT_ID] = messageSubjectId }
+        messageId?.let { map[MESSAGE_ID] = messageId }
+        map.plusAssign(getCommonWSParams(sessionData))
+    }.toMap()
 }

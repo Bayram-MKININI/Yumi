@@ -25,6 +25,7 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
     private lateinit var nestedScrollView: View
     private lateinit var mailEditText: EditText
     private lateinit var sendButton: View
+    private var isSubjectFixed: Boolean = false
     private val visibleRect = Rect()
 
     var callback: SendMailViewCallback? by weak()
@@ -53,7 +54,9 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         subjectEditText = findViewById(R.id.subject_edit_text)
         subjectEditText.setRawInputType(InputType.TYPE_NULL)
         subjectEditText.setOnConsistentClickListener {
-            callback?.onSubjectEditTextClicked()
+            if (!isSubjectFixed) {
+                callback?.onSubjectEditTextClicked()
+            }
         }
 
         /*subjectEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -77,22 +80,16 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
     private val buttonClickListener: OnClickListener by lazy {
         OnClickListener {
             when (it.id) {
-                R.id.back_view -> {
-                    callback?.onBackButtonClicked()
-                }
-                R.id.send_fab -> {
-                    callback?.onSendMailClicked(
-                        mailEditText.text.toString()
-                    )
-                }
+                R.id.back_view -> callback?.onBackButtonClicked()
+                R.id.send_fab -> callback?.onSendMailClicked(mailEditText.text.toString())
             }
         }
     }
 
-    fun EditText.setOnConsistentClickListener(doOnClick: (View) -> Unit) {
+    private fun EditText.setOnConsistentClickListener(doOnClick: (View) -> Unit) {
         val gestureDetector =
             GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onSingleTapUp(event: MotionEvent): Boolean {
+                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                     doOnClick(this@setOnConsistentClickListener)
                     return false
                 }
@@ -104,6 +101,11 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
     fun setSubject(subject: String) {
         subjectEditText.text.clear()
         subjectEditText.setText(subject)
+    }
+
+    fun setSubjectFixed(subject: String) {
+        setSubject(subject)
+        isSubjectFixed = true
     }
 
     fun computeMailView() {

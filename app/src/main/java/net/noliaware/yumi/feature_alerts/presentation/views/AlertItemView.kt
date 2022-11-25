@@ -13,8 +13,6 @@ import net.noliaware.yumi.commun.util.convertDpToPx
 import net.noliaware.yumi.commun.util.layoutToTopLeft
 import net.noliaware.yumi.commun.util.measureWrapContent
 import net.noliaware.yumi.feature_alerts.domain.model.AlertPriority
-import net.noliaware.yumi.feature_alerts.domain.model.AlertPriority.CRITICAL
-import net.noliaware.yumi.feature_alerts.domain.model.AlertPriority.IMPORTANT
 
 class AlertItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
@@ -47,12 +45,12 @@ class AlertItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context,
         bodyTextView.text = alertItemViewAdapter.body
 
         when (alertItemViewAdapter.priority) {
-            IMPORTANT -> {
+            AlertPriority.IMPORTANT -> {
                 priorityImageView.isVisible = true
                 priorityImageView.setBackgroundResource(R.drawable.ring_filled_orange)
                 priorityImageView.setImageResource(R.drawable.ic_warning)
             }
-            CRITICAL -> {
+            AlertPriority.CRITICAL -> {
                 priorityImageView.isVisible = true
                 priorityImageView.setBackgroundResource(R.drawable.ring_filled_red)
                 priorityImageView.setImageResource(R.drawable.ic_danger)

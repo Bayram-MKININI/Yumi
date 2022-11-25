@@ -5,26 +5,25 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.presentation.adapters.BaseAdapter
-import net.noliaware.yumi.commun.util.MarginItemDecoration
 import net.noliaware.yumi.commun.util.*
-import net.noliaware.yumi.feature_message.presentation.views.MailItemView.MailItemViewAdapter
 
-class MailView(context: Context, attrs: AttributeSet?) : CoordinatorLayout(context, attrs) {
+class MessagingView(context: Context, attrs: AttributeSet?) : CoordinatorLayout(context, attrs) {
 
     private lateinit var titleTextView: TextView
     private lateinit var descriptionTextView: TextView
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var tabLayout: TabLayout
+    private lateinit var viewPager: ViewPager2
     private lateinit var composeButton: View
 
-    private val mailItemViewAdapters = mutableListOf<MailItemViewAdapter>()
     var callback: MailViewCallback? by weak()
 
+    val getTabLayout get() = tabLayout
+    val getViewPager get() = viewPager
+
     interface MailViewCallback {
-        fun onItemClickedAtIndex(index: Int)
         fun onComposeButtonClicked()
     }
 
@@ -37,40 +36,13 @@ class MailView(context: Context, attrs: AttributeSet?) : CoordinatorLayout(conte
 
         titleTextView = findViewById(R.id.title_text_view)
         descriptionTextView = findViewById(R.id.description_text_view)
-        recyclerView = findViewById(R.id.recycler_view)
+        tabLayout = findViewById(R.id.tab_layout)
+        viewPager = findViewById(R.id.pager)
 
         composeButton = findViewById(R.id.compose_fab)
         composeButton.setOnClickListener {
             callback?.onComposeButtonClicked()
         }
-
-        val adapter = BaseAdapter(mailItemViewAdapters)
-
-        adapter.expressionViewHolderBinding = { eachItem, view ->
-            (view as MailItemView).fillViewWithData(eachItem)
-        }
-
-        adapter.expressionOnCreateViewHolder = { viewGroup ->
-            viewGroup.inflate(R.layout.mail_item_layout, false)
-        }
-
-        recyclerView.also {
-            it.layoutManager = LinearLayoutManager(context)
-            it.addItemDecoration(MarginItemDecoration(convertDpToPx(20)))
-            it.adapter = adapter
-            it.onItemClicked(onClick = { position, _ ->
-                callback?.onItemClickedAtIndex(position)
-            })
-        }
-    }
-
-    fun fillViewWithData(adaptersList: List<MailItemViewAdapter>) {
-
-        if (mailItemViewAdapters.isNotEmpty())
-            mailItemViewAdapters.clear()
-
-        mailItemViewAdapters.addAll(adaptersList)
-        recyclerView.adapter?.notifyDataSetChanged()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -84,12 +56,17 @@ class MailView(context: Context, attrs: AttributeSet?) : CoordinatorLayout(conte
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
+        tabLayout.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        )
+
         val recyclerViewHeight =
-            viewHeight - (titleTextView.measuredHeight + descriptionTextView.measuredHeight + getStatusBarHeight() + convertDpToPx(
+            viewHeight - (titleTextView.measuredHeight + descriptionTextView.measuredHeight + tabLayout.measuredHeight + getStatusBarHeight() + convertDpToPx(
                 35
             ))
 
-        recyclerView.measure(
+        viewPager.measure(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(recyclerViewHeight, MeasureSpec.EXACTLY)
         )
@@ -119,7 +96,9 @@ class MailView(context: Context, attrs: AttributeSet?) : CoordinatorLayout(conte
             titleTextView.bottom + convertDpToPx(10)
         )
 
-        recyclerView.layoutToBottomLeft(0, viewHeight)
+        viewPager.layoutToBottomLeft(0, viewHeight)
+
+        tabLayout.layoutToBottomLeft(0, viewPager.top)
 
         composeButton.layoutToBottomRight(
             viewWidth - convertDpToPx(20),

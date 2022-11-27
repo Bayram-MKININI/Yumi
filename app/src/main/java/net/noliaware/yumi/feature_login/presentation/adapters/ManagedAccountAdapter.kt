@@ -33,11 +33,13 @@ class ManagedAccountAdapter(
         ),
         lastLogin = userProfile.login.orEmpty()
     ).also { accountItemViewAdapter ->
-        userProfile.categories.map { category ->
+        userProfile.categories.filter {
+            it.availableVoucherCount > 0
+        }.map { category ->
             AccountCategoryView.AccountCategoryViewAdapter(
                 iconName = category.categoryIcon.orEmpty(),
                 title = category.categoryShortLabel,
-                count = category.availableVoucherCount ?: 0
+                count = category.availableVoucherCount
             )
         }.also {
             accountItemViewAdapter.accountCategoryViewAdapters.addAll(it)

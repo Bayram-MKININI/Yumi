@@ -15,6 +15,7 @@ import net.noliaware.yumi.commun.VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
+import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewAdapter
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewCallback
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
 
@@ -60,7 +61,7 @@ class CategoriesFragment : Fragment() {
                 when (vmState) {
                     is ViewModelState.LoadingState -> Unit
                     is ViewModelState.DataState -> vmState.data?.let { categoryList ->
-                        categoriesView?.refreshCategoryList(categoryList.map { category ->
+                        categoriesView?.refreshCategoryList(filterEmptyCategories(categoryList).map { category ->
                             mapCategory(category)
                         })
                     }
@@ -69,20 +70,17 @@ class CategoriesFragment : Fragment() {
         }
     }
 
-    private fun mapCategory(category: Category) =
-        CategoryItemViewAdapter(
-            count = category.availableVoucherCount ?: 0,
-            iconName = category.categoryIcon,
-            title = category.categoryShortLabel
-        )
+    private fun mapCategory(category: Category) = CategoryItemViewAdapter(
+        count = category.availableVoucherCount,
+        iconName = category.categoryIcon,
+        title = category.categoryShortLabel
+    )
 
     private fun bindViewToData() {
-        CategoriesView.CategoriesViewAdapter(
-            description = getString(R.string.categories_list),
-            categoryItemViewAdapters = viewModel.categories.map { category ->
+        CategoriesViewAdapter(description = getString(R.string.categories_list),
+            categoryItemViewAdapters = filterEmptyCategories(viewModel.categories).map { category ->
                 mapCategory(category)
-            }
-        ).apply {
+            }).apply {
             categoriesView?.fillViewWithData(this)
         }
     }
@@ -90,21 +88,25 @@ class CategoriesFragment : Fragment() {
     private val categoriesViewCallback: CategoriesViewCallback by lazy {
         object : CategoriesViewCallback {
             override fun onItemClickedAtIndex(index: Int) {
-                viewModel.categories[index].let { category ->
-                    VouchersListFragment.newInstance(
-                        category.categoryId,
-                        category.categoryLabel
-                    ).apply {
-                        this.onDataRefreshed = {
-                            viewModel.callGetAvailableCategories()
-                        }
-                    }.show(
-                        childFragmentManager.beginTransaction(),
-                        VOUCHERS_LIST_FRAGMENT_TAG
-                    )
-                }
+                filterEmptyCategories(viewModel.categories)[index]
+                    .let { category ->
+                        VouchersListFragment.newInstance(
+                            category.categoryId, category.categoryLabel
+                        ).apply {
+                            this.onDataRefreshed = {
+                                viewModel.callGetAvailableCategories()
+                            }
+                        }.show(
+                            childFragmentManager.beginTransaction(),
+                            VOUCHERS_LIST_FRAGMENT_TAG
+                        )
+                    }
             }
         }
+    }
+
+    private fun filterEmptyCategories(categoryList: List<Category>) = categoryList.filter {
+        it.availableVoucherCount > 0
     }
 
     override fun onDestroyView() {

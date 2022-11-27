@@ -30,7 +30,7 @@ data class CategoryDTO(
         categoryLabel = categoryLabel,
         categoryShortLabel = categoryShortLabel,
         categoryDescription = categoryDescription,
-        availableVoucherCount = availableVoucherCount,
-        usedVoucherCount = usedVoucherCount
+        availableVoucherCount = availableVoucherCount ?: 0,
+        usedVoucherCount = usedVoucherCount ?: 0
     )
 }

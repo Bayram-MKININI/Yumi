@@ -50,21 +50,25 @@ class ProfileRepositoryImpl(
 
                 remoteData.data?.userProfileDTO?.toUserProfile()?.let { userProfile ->
 
-                    when (val result = getUsedCategories()) {
-                        is Resource.Error -> emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-                        is Resource.Loading -> Unit
-                        is Resource.Success -> {
-                            result.data?.let { categories ->
-                                userProfile.categories = categories
+                    if (userProfile.usedVoucherCount > 0) {
+
+                        when (val result = getUsedCategories()) {
+                            is Resource.Error -> emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
+                            is Resource.Loading -> Unit
+                            is Resource.Success -> {
+                                result.data?.let { categories ->
+                                    userProfile.categories = categories
+                                }
                             }
-                            emit(
-                                Resource.Success(
-                                    data = userProfile,
-                                    appMessage = remoteData.message?.toAppMessage()
-                                )
-                            )
                         }
                     }
+
+                    emit(
+                        Resource.Success(
+                            data = userProfile,
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
                 }
             }
 

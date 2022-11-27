@@ -42,7 +42,7 @@ class SendMailFragment : AppCompatDialogFragment() {
     private var sendMailView: SendMailView? = null
     private val viewModel by viewModels<SendMailFragmentViewModel>()
     private var dialog: AlertDialog? = null
-    private var selectedMessageIndex: Int = 0
+    private var selectedSubjectIndex: Int = 0
     var onMessageSent: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +69,7 @@ class SendMailFragment : AppCompatDialogFragment() {
 
     private fun collectFlows() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
+            viewModel.messageSentEventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreen(sharedEvent)
             }
@@ -99,7 +99,7 @@ class SendMailFragment : AppCompatDialogFragment() {
                     it.subjectLabel
                 }?.toTypedArray()?.let { messageSubjects ->
                     builder.setItems(messageSubjects) { _, which ->
-                        selectedMessageIndex = which
+                        selectedSubjectIndex = which
                         sendMailView?.setSubject(messageSubjects[which])
                     }
                 }
@@ -113,7 +113,7 @@ class SendMailFragment : AppCompatDialogFragment() {
             }
 
             override fun onSendMailClicked(text: String) {
-                viewModel.messageSubjects?.get(selectedMessageIndex)?.let { messageSubject ->
+                viewModel.messageSubjects?.get(selectedSubjectIndex)?.let { messageSubject ->
                     viewModel.callSendMessage(
                         messagePriority = 1,
                         messageSubjectId = messageSubject.subjectId.toString(),
@@ -139,8 +139,8 @@ class SendMailFragment : AppCompatDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        viewModel.eventsHelper.stateData?.let { dataRefreshed ->
-            if (dataRefreshed) {
+        viewModel.messageSentEventsHelper.stateData?.let { messageSent ->
+            if (messageSent) {
                 onMessageSent?.invoke()
             }
         }

@@ -10,6 +10,8 @@ data class CategoryDTO(
     val categoryId: String,
     @Json(name = "categoryLabel")
     val categoryLabel: String,
+    @Json(name = "categoryShortLabel")
+    val categoryShortLabel: String,
     @Json(name = "categoryDescription")
     val categoryDescription: String,
     @Json(name = "categoryColor")
@@ -26,6 +28,7 @@ data class CategoryDTO(
         categoryColor = categoryColor,
         categoryIcon = categoryIcon,
         categoryLabel = categoryLabel,
+        categoryShortLabel = categoryShortLabel,
         categoryDescription = categoryDescription,
         availableVoucherCount = availableVoucherCount,
         usedVoucherCount = usedVoucherCount

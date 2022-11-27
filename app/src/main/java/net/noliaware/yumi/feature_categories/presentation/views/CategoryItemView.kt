@@ -19,7 +19,7 @@ class CategoryItemView(context: Context, attrs: AttributeSet?) : ViewGroup(conte
 
     data class CategoryItemViewAdapter(
         val count: Int = 0,
-        val iconName: String = "",
+        val iconName: String?,
         val title: String = ""
     )
 

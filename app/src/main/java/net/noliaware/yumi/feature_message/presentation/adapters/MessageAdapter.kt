@@ -25,9 +25,9 @@ class MessageAdapter(
     private fun mapAdapter(
         message: Message
     ) = MessageItemView.MessageItemViewAdapter(
-        subject = message.messageFrom.orEmpty(),
+        subject = message.messageSubject,
         time = parseToShortDate(message.messageDate),
-        body = message.messageSubject
+        body = message.messagePreview.orEmpty()
     )
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =

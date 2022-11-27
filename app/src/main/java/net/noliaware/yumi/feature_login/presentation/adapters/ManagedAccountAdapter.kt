@@ -36,7 +36,7 @@ class ManagedAccountAdapter(
         userProfile.categories.map { category ->
             AccountCategoryView.AccountCategoryViewAdapter(
                 iconName = category.categoryIcon.orEmpty(),
-                title = category.categoryLabel,
+                title = category.categoryShortLabel,
                 count = category.availableVoucherCount ?: 0
             )
         }.also {

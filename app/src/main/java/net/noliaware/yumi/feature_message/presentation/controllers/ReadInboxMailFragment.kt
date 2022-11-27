@@ -1,5 +1,6 @@
 package net.noliaware.yumi.feature_message.presentation.controllers
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.MESSAGE_ID
+import net.noliaware.yumi.commun.MESSAGE_SUBJECT_LABEL
 import net.noliaware.yumi.commun.SEND_MESSAGES_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_message.domain.model.Message
@@ -21,13 +23,18 @@ import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
 class ReadInboxMailFragment : AppCompatDialogFragment() {
 
     companion object {
-        fun newInstance(messageId: String) = ReadInboxMailFragment().withArgs(
-            MESSAGE_ID to messageId
+        fun newInstance(
+            messageId: String,
+            messageSubjectLabel: String? = null
+        ) = ReadInboxMailFragment().withArgs(
+            MESSAGE_ID to messageId,
+            MESSAGE_SUBJECT_LABEL to messageSubjectLabel
         )
     }
 
     private var readMailView: ReadMailView? = null
     private val viewModel by viewModels<ReadInboxMailFragmentViewModel>()
+    var onReceivedMessageListRefreshed: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,11 +60,10 @@ class ReadInboxMailFragment : AppCompatDialogFragment() {
 
             override fun onComposeButtonClicked() {
                 SendMailFragment.newInstance(
-                    messageId = viewModel.messageId
+                    messageId = viewModel.messageId,
+                    messageSubjectLabel = viewModel.messageSubjectLabel
                 ).apply {
-                    onMessageSent = {
-                        //viewModel.callGetInboxMessageList()
-                    }
+                    onMessageSent = { viewModel.receivedMessageListShouldRefresh = true }
                 }.show(
                     childFragmentManager.beginTransaction(), SEND_MESSAGES_FRAGMENT_TAG
                 )
@@ -103,6 +109,13 @@ class ReadInboxMailFragment : AppCompatDialogFragment() {
             replyPossible = true
         ).also {
             readMailView?.fillViewWithData(it)
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if (viewModel.receivedMessageListShouldRefresh == true) {
+            onReceivedMessageListRefreshed?.invoke()
         }
     }
 

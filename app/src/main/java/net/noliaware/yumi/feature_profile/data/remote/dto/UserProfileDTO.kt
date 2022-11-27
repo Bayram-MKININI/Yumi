@@ -17,7 +17,7 @@ data class UserProfileDTO(
     val usedVoucherCount: Int = 0,
     @Json(name = "availableVoucherCount")
     val availableVoucherCount: Int = 0,
-    @Json(name = "voucherCountPerCategory")
+    @Json(name = "availableVoucherCountPerCategory")
     val categories: List<CategoryDTO> = listOf(),
     @Json(name = "canceledVoucherCount")
     val canceledVoucherCount: Int = 0,

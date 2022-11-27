@@ -164,8 +164,8 @@ class UserProfileFragment : Fragment() {
         userProfile.categories.map { category ->
             CategoryItemViewAdapter(
                 count = category.usedVoucherCount ?: 0,
-                iconName = category.categoryIcon ?: "ic_food",
-                title = category.categoryLabel
+                iconName = category.categoryIcon.orEmpty(),
+                title = category.categoryShortLabel
             ).also {
                 profileViewAdapter.categoryItemViewAdapters.add(it)
             }

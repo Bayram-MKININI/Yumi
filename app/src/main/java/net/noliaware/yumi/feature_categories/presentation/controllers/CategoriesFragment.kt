@@ -40,27 +40,6 @@ class CategoriesFragment : Fragment() {
         }
     }
 
-    private val categoriesViewCallback: CategoriesViewCallback by lazy {
-        object : CategoriesViewCallback {
-            override fun onItemClickedAtIndex(index: Int) {
-
-                viewModel.categories[index].let { category ->
-                    VouchersListFragment.newInstance(
-                        category.categoryId,
-                        category.categoryLabel
-                    ).apply {
-                        this.onDataRefreshed = {
-                            viewModel.callGetAvailableCategories()
-                        }
-                    }.show(
-                        childFragmentManager.beginTransaction(),
-                        VOUCHERS_LIST_FRAGMENT_TAG
-                    )
-                }
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         collectFlows()
@@ -93,12 +72,11 @@ class CategoriesFragment : Fragment() {
     private fun mapCategory(category: Category) =
         CategoryItemViewAdapter(
             count = category.availableVoucherCount ?: 0,
-            iconName = category.categoryIcon.orEmpty(),
-            title = category.categoryLabel
+            iconName = category.categoryIcon,
+            title = category.categoryShortLabel
         )
 
     private fun bindViewToData() {
-
         CategoriesView.CategoriesViewAdapter(
             description = getString(R.string.categories_list),
             categoryItemViewAdapters = viewModel.categories.map { category ->
@@ -106,6 +84,26 @@ class CategoriesFragment : Fragment() {
             }
         ).apply {
             categoriesView?.fillViewWithData(this)
+        }
+    }
+
+    private val categoriesViewCallback: CategoriesViewCallback by lazy {
+        object : CategoriesViewCallback {
+            override fun onItemClickedAtIndex(index: Int) {
+                viewModel.categories[index].let { category ->
+                    VouchersListFragment.newInstance(
+                        category.categoryId,
+                        category.categoryLabel
+                    ).apply {
+                        this.onDataRefreshed = {
+                            viewModel.callGetAvailableCategories()
+                        }
+                    }.show(
+                        childFragmentManager.beginTransaction(),
+                        VOUCHERS_LIST_FRAGMENT_TAG
+                    )
+                }
+            }
         }
     }
 

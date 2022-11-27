@@ -40,6 +40,11 @@ class HomeFragment : Fragment() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        displayCategoriesFragment()
+    }
+
     private val homeMenuViewCallback: HomeMenuView.HomeMenuViewCallback by lazy {
         object : HomeMenuView.HomeMenuViewCallback {
             override fun onCategoryButtonClicked() {
@@ -81,11 +86,6 @@ class HomeFragment : Fragment() {
             commitAllowingStateLoss()
             homeView?.selectHomeButton()
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        displayCategoriesFragment()
     }
 
     override fun onDestroyView() {

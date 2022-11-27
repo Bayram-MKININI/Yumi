@@ -29,11 +29,17 @@ class ReceivedMessagesFragment : Fragment() {
         return inflater.inflate(R.layout.messages_list_layout, container, false).apply {
             messagesListView = this as MessagesListView
             messagesListView?.adapter = MessageAdapter { message ->
-                ReadInboxMailFragment.newInstance(message.messageId)
-                    .show(
-                        childFragmentManager.beginTransaction(),
-                        READ_MESSAGE_FRAGMENT_TAG
-                    )
+                ReadInboxMailFragment.newInstance(
+                    message.messageId,
+                    message.messageSubject
+                ).apply {
+                    onReceivedMessageListRefreshed = {
+                        messagesListView?.getMessageAdapter?.refresh()
+                    }
+                }.show(
+                    childFragmentManager.beginTransaction(),
+                    READ_MESSAGE_FRAGMENT_TAG
+                )
             }
         }
     }

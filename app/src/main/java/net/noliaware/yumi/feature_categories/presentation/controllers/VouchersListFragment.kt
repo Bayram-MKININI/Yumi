@@ -53,7 +53,7 @@ class VouchersListFragment : AppCompatDialogFragment() {
                 ).apply {
                     this.onDataRefreshed = {
                         viewModel.dataShouldRefresh = true
-                        viewModel.invalidateDataSource()
+                        vouchersListView?.voucherAdapter?.refresh()
                     }
                 }.show(
                     childFragmentManager.beginTransaction(),

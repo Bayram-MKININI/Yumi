@@ -39,6 +39,4 @@ class VouchersListFragmentViewModel @Inject constructor(
             this.categoryId = selectedCategoryId
         }
     }.flow.cachedIn(viewModelScope)
-
-    fun invalidateDataSource() = voucherPagingSource.invalidate()
 }

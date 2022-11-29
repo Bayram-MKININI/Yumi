@@ -1,5 +1,8 @@
 package net.noliaware.yumi.feature_categories.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.noliaware.yumi.commun.*
@@ -65,54 +68,14 @@ class CategoryRepositoryImpl(
         }
     }
 
-    override fun getVoucherList(categoryId: String): Flow<Resource<List<Voucher>>> = flow {
-
-        emit(Resource.Loading())
-
-        try {
-
-            val timestamp = System.currentTimeMillis().toString()
-            val randomString = UUID.randomUUID().toString()
-
-            val remoteData = api.fetchVouchersForCategory(
-                timestamp = timestamp,
-                saltString = randomString,
-                token = generateToken(
-                    timestamp,
-                    GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY,
-                    randomString
-                ),
-                params = generateVoucherListParams(categoryId)
-            )
-
-            val sessionNoFailure = handleSessionWithNoFailure(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
-            )
-
-            if (sessionNoFailure) {
-                remoteData.data?.let { vouchersDTO ->
-                    emit(
-                        Resource.Success(
-                            data = vouchersDTO.voucherDTOList.map { it.toVoucher() },
-                            appMessage = remoteData.message?.toAppMessage()
-                        )
-                    )
-                }
-            }
-
-        } catch (ex: HttpException) {
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-        } catch (ex: IOException) {
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
-        }
-    }
-
-    private fun generateVoucherListParams(categoryId: String) = mutableMapOf(
-        CATEGORY_ID to categoryId
-    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
+    override fun getVoucherList(categoryId: String): Flow<PagingData<Voucher>> = Pager(
+        PagingConfig(
+            pageSize = LIST_PAGE_SIZE,
+            enablePlaceholders = false
+        )
+    ) {
+        VoucherPagingSource(api, sessionData, categoryId)
+    }.flow
 
     override fun getVoucherById(voucherId: String): Flow<Resource<Voucher>> = flow {
 

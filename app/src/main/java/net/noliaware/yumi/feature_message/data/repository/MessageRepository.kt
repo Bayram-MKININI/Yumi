@@ -1,10 +1,15 @@
 package net.noliaware.yumi.feature_message.data.repository
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.feature_message.domain.model.Message
 
 interface MessageRepository {
+
+    fun getReceivedMessageList(): Flow<PagingData<Message>>
+
+    fun getSentMessageList(): Flow<PagingData<Message>>
 
     fun getInboxMessageForId(messageId: String): Flow<Resource<Message>>
 

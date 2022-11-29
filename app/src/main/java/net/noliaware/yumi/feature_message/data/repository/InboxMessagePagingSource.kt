@@ -13,9 +13,8 @@ import net.noliaware.yumi.commun.util.generateToken
 import net.noliaware.yumi.commun.util.getCommonWSParams
 import net.noliaware.yumi.feature_message.domain.model.Message
 import java.util.*
-import javax.inject.Inject
 
-class InboxMessagePagingSource @Inject constructor(
+class InboxMessagePagingSource(
     private val api: RemoteApi,
     private val sessionData: SessionData
 ) : PagingSource<Int, Message>() {

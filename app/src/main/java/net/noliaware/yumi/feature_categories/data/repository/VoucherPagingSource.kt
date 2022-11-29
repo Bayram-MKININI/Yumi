@@ -10,14 +10,12 @@ import net.noliaware.yumi.commun.util.generateToken
 import net.noliaware.yumi.commun.util.getCommonWSParams
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import java.util.*
-import javax.inject.Inject
 
-class VoucherPagingSource @Inject constructor(
+class VoucherPagingSource(
     private val api: RemoteApi,
-    private val sessionData: SessionData
+    private val sessionData: SessionData,
+    private val categoryId: String
 ) : PagingSource<Int, Voucher>() {
-
-    lateinit var categoryId: String
 
     override fun getRefreshKey(state: PagingState<Int, Voucher>): Int? {
         return state.anchorPosition?.let { anchorPosition ->

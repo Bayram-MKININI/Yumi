@@ -13,9 +13,8 @@ import net.noliaware.yumi.commun.util.generateToken
 import net.noliaware.yumi.commun.util.getCommonWSParams
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import java.util.*
-import javax.inject.Inject
 
-class ManagedAccountPagingSource @Inject constructor(
+class ManagedAccountPagingSource(
     private val api: RemoteApi,
     private val sessionData: SessionData
 ) : PagingSource<Int, UserProfile>() {

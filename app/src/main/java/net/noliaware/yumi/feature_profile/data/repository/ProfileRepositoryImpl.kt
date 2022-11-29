@@ -1,11 +1,13 @@
 package net.noliaware.yumi.feature_profile.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import net.noliaware.yumi.commun.CATEGORY_ID
 import net.noliaware.yumi.commun.GET_ACCOUNT
 import net.noliaware.yumi.commun.GET_DATA_PER_CATEGORY
-import net.noliaware.yumi.commun.GET_USED_VOUCHER_LIST_BY_CATEGORY
+import net.noliaware.yumi.commun.LIST_PAGE_SIZE
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.*
@@ -112,52 +114,12 @@ class ProfileRepositoryImpl(
         return Resource.Error(errorType = ErrorType.SYSTEM_ERROR)
     }
 
-    override fun getUsedVoucherList(categoryId: String): Flow<Resource<List<Voucher>>> = flow {
-
-        emit(Resource.Loading())
-
-        try {
-
-            val timestamp = System.currentTimeMillis().toString()
-            val randomString = UUID.randomUUID().toString()
-
-            val remoteData = api.fetchUsedVouchersForCategory(
-                timestamp = timestamp,
-                saltString = randomString,
-                token = generateToken(
-                    timestamp,
-                    GET_USED_VOUCHER_LIST_BY_CATEGORY,
-                    randomString
-                ),
-                params = generateUsedVoucherListParams(categoryId)
-            )
-
-            val sessionNoFailure = handleSessionWithNoFailure(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
-            )
-
-            if (sessionNoFailure) {
-                remoteData.data?.let { vouchersDTO ->
-                    emit(
-                        Resource.Success(
-                            data = vouchersDTO.voucherDTOList.map { it.toVoucher() },
-                            appMessage = remoteData.message?.toAppMessage()
-                        )
-                    )
-                }
-            }
-
-        } catch (ex: HttpException) {
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-        } catch (ex: IOException) {
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
-        }
-    }
-
-    private fun generateUsedVoucherListParams(categoryId: String) = mutableMapOf(
-        CATEGORY_ID to categoryId
-    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
+    override fun getUsedVoucherList(categoryId: String): Flow<PagingData<Voucher>> = Pager(
+        PagingConfig(
+            pageSize = LIST_PAGE_SIZE,
+            enablePlaceholders = false
+        )
+    ) {
+        UsedVoucherPagingSource(api, sessionData, categoryId)
+    }.flow
 }

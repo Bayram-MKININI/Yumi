@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CategoriesFragmentViewModel @Inject constructor(
-    private val repository: CategoryRepository,
+    private val categoryRepository: CategoryRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     val categories get() = savedStateHandle.get<List<Category>>(CATEGORIES_DATA).orEmpty()
@@ -23,7 +23,7 @@ class CategoriesFragmentViewModel @Inject constructor(
 
     fun callGetAvailableCategories() {
         viewModelScope.launch {
-            repository.getAvailableCategories().onEach { result ->
+            categoryRepository.getAvailableCategories().onEach { result ->
                 availableCategoriesEventsHelper.handleResponse(result)
             }.launchIn(this)
         }

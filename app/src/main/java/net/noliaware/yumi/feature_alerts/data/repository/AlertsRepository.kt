@@ -1,8 +1,9 @@
 package net.noliaware.yumi.feature_alerts.data.repository
 
-import net.noliaware.yumi.commun.util.Resource
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
 
 interface AlertsRepository {
-    suspend fun getAlertList(): Resource<List<Alert>>
+    fun getAlertList(): Flow<PagingData<Alert>>
 }

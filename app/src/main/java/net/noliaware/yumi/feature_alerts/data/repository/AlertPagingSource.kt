@@ -13,9 +13,8 @@ import net.noliaware.yumi.commun.util.generateToken
 import net.noliaware.yumi.commun.util.getCommonWSParams
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
 import java.util.*
-import javax.inject.Inject
 
-class AlertPagingSource @Inject constructor(
+class AlertPagingSource(
     private val api: RemoteApi,
     private val sessionData: SessionData
 ) : PagingSource<Long, Alert>() {
@@ -52,7 +51,8 @@ class AlertPagingSource @Inject constructor(
                 ErrorType.SYSTEM_ERROR
             }
 
-            val alertTimestamp = remoteData.data?.alertDTOList?.last()?.alertTimestamp ?: nextTimestamp
+            val alertTimestamp =
+                remoteData.data?.alertDTOList?.last()?.alertTimestamp ?: nextTimestamp
 
             val moreItemsAvailable = remoteData.data?.alertDTOList?.last()?.let { alertDTO ->
                 alertDTO.alertRank < alertDTO.alertCount

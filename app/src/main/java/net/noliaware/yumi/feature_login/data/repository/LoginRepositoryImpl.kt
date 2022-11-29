@@ -3,7 +3,6 @@ package net.noliaware.yumi.feature_login.data.repository
 import android.os.Build
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.noliaware.yumi.BuildConfig
@@ -13,7 +12,6 @@ import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_login.domain.model.AccountData
 import net.noliaware.yumi.feature_login.domain.model.InitData
-import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import okio.IOException
 import retrofit2.HttpException
 import java.util.*
@@ -100,7 +98,7 @@ class LoginRepositoryImpl @Inject constructor(
         return parameters
     }
 
-    override fun getManagedProfileList(): Flow<PagingData<UserProfile>> = Pager(
+    override fun getManagedProfileList() = Pager(
         PagingConfig(
             pageSize = LIST_PAGE_SIZE,
             enablePlaceholders = false

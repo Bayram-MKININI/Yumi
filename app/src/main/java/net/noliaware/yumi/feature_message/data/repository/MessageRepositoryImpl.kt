@@ -3,7 +3,6 @@ package net.noliaware.yumi.feature_message.data.repository
 import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.noliaware.yumi.commun.*
@@ -20,7 +19,7 @@ class MessageRepositoryImpl(
     private val sessionData: SessionData
 ) : MessageRepository {
 
-    override fun getReceivedMessageList(): Flow<PagingData<Message>> = Pager(
+    override fun getReceivedMessageList() = Pager(
         PagingConfig(
             pageSize = LIST_PAGE_SIZE,
             enablePlaceholders = false
@@ -29,7 +28,7 @@ class MessageRepositoryImpl(
         InboxMessagePagingSource(api, sessionData)
     }.flow
 
-    override fun getSentMessageList(): Flow<PagingData<Message>> = Pager(
+    override fun getSentMessageList() = Pager(
         PagingConfig(
             pageSize = LIST_PAGE_SIZE,
             enablePlaceholders = false

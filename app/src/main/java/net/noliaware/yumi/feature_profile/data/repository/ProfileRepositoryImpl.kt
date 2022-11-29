@@ -2,7 +2,6 @@ package net.noliaware.yumi.feature_profile.data.repository
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.noliaware.yumi.commun.GET_ACCOUNT
@@ -12,7 +11,6 @@ import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Category
-import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import okio.IOException
 import retrofit2.HttpException
@@ -114,7 +112,7 @@ class ProfileRepositoryImpl(
         return Resource.Error(errorType = ErrorType.SYSTEM_ERROR)
     }
 
-    override fun getUsedVoucherList(categoryId: String): Flow<PagingData<Voucher>> = Pager(
+    override fun getUsedVoucherList(categoryId: String) = Pager(
         PagingConfig(
             pageSize = LIST_PAGE_SIZE,
             enablePlaceholders = false

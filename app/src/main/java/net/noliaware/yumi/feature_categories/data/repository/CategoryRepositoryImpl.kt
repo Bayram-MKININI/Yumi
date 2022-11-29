@@ -2,7 +2,6 @@ package net.noliaware.yumi.feature_categories.data.repository
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.noliaware.yumi.commun.*
@@ -68,7 +67,7 @@ class CategoryRepositoryImpl(
         }
     }
 
-    override fun getVoucherList(categoryId: String): Flow<PagingData<Voucher>> = Pager(
+    override fun getVoucherList(categoryId: String) = Pager(
         PagingConfig(
             pageSize = LIST_PAGE_SIZE,
             enablePlaceholders = false

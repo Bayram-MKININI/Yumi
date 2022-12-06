@@ -53,6 +53,7 @@ class LoginRepositoryImpl @Inject constructor(
 
             if (sessionNoFailure) {
                 remoteData.data?.let { initDTO ->
+                    sessionData.login = login
                     sessionData.deviceId = initDTO.deviceId
                     emit(Resource.Success(data = initDTO.toInitData()))
                 }

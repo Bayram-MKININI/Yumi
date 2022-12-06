@@ -19,7 +19,7 @@ import net.noliaware.yumi.commun.MESSAGE_ID
 import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
 import net.noliaware.yumi.commun.MESSAGE_SUBJECT_LABEL
 import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
+import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.presentation.views.SendMailView
@@ -71,7 +71,7 @@ class SendMailFragment : AppCompatDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.messageSentEventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
-                redirectToLoginScreen(sharedEvent)
+                redirectToLoginScreenFromSharedEvent(sharedEvent)
             }
         }
     }

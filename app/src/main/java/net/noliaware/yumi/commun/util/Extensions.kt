@@ -28,6 +28,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -52,17 +54,18 @@ fun generateToken(timestamp: String, methodName: String, randomString: String): 
     return "noliaware|$timestamp|${methodName}|${timestamp.reversed()}|$randomString".sha256()
 }
 
-fun getCommonWSParams(sessionData: SessionData) = mapOf(
+fun getCommonWSParams(sessionData: SessionData, tokenKey: String) = mapOf(
     LOGIN to sessionData.login,
     APP_VERSION to BuildConfig.VERSION_NAME,
     DEVICE_ID to sessionData.deviceId,
     SESSION_ID to sessionData.sessionId,
-    SESSION_TOKEN to sessionData.sessionToken
+    SESSION_TOKEN to sessionData.sessionTokens[tokenKey].toString()
 )
 
 suspend fun <T> FlowCollector<Resource<T>>.handleSessionWithNoFailure(
     session: SessionDTO?,
     sessionData: SessionData,
+    tokenKey: String,
     appMessage: AppMessageDTO?,
     error: ErrorDTO?
 ): Boolean {
@@ -70,7 +73,7 @@ suspend fun <T> FlowCollector<Resource<T>>.handleSessionWithNoFailure(
     val errorType = session?.let { sessionDTO ->
         sessionData.apply {
             sessionId = sessionDTO.sessionId
-            sessionToken = sessionDTO.sessionToken
+            sessionTokens[tokenKey] = sessionDTO.sessionToken
         }
 
         ErrorType.RECOVERABLE_ERROR
@@ -92,31 +95,21 @@ suspend fun <T> FlowCollector<Resource<T>>.handleSessionWithNoFailure(
     }
 }
 
-fun <T> handleSessionWithError(
+fun handlePaginatedListErrorIfAny(
     session: SessionDTO?,
     sessionData: SessionData,
-    appMessage: AppMessageDTO?,
-    error: ErrorDTO?
-): Resource<T>? {
-
+    tokenKey: String
+): ErrorType {
     val errorType = session?.let { sessionDTO ->
         sessionData.apply {
             sessionId = sessionDTO.sessionId
-            sessionToken = sessionDTO.sessionToken
+            sessionTokens[tokenKey] = sessionDTO.sessionToken
         }
-
         ErrorType.RECOVERABLE_ERROR
     } ?: run {
         ErrorType.SYSTEM_ERROR
     }
-
-    return error?.let { errorDTO ->
-        Resource.Error(
-            errorType = errorType,
-            errorMessage = errorDTO.errorMessage,
-            appMessage = appMessage?.toAppMessage()
-        )
-    }
+    return errorType
 }
 
 fun parseToShortDate(dateStr: String?) = dateStr?.let {
@@ -188,13 +181,29 @@ fun Fragment.handleSharedEvent(sharedEvent: UIEvent) = context?.let {
     }
 }
 
-fun Fragment.redirectToLoginScreen(sharedEvent: UIEvent) {
+fun Fragment.redirectToLoginScreenFromSharedEvent(sharedEvent: UIEvent) {
     if (sharedEvent is UIEvent.ShowError) {
         if (sharedEvent.errorType == ErrorType.SYSTEM_ERROR) {
-            activity?.finish()
-            startActivity(Intent(requireActivity(), LoginActivity::class.java))
+            redirectToLoginScreenInternal()
         }
     }
+}
+
+fun Fragment.handlePaginationError(loadState: CombinedLoadStates) {
+    when (val currentState = loadState.refresh) {
+        is LoadState.Loading -> Unit
+        is LoadState.Error -> {
+            if (currentState.error is PaginationException && (currentState.error as PaginationException).errorType == ErrorType.SYSTEM_ERROR) {
+                redirectToLoginScreenInternal()
+            }
+        }
+        else -> Unit
+    }
+}
+
+private fun Fragment.redirectToLoginScreenInternal() {
+    activity?.finish()
+    startActivity(Intent(requireActivity(), LoginActivity::class.java))
 }
 
 fun <T : Fragment> T.withArgs(vararg pairs: Pair<String, Any?>) =

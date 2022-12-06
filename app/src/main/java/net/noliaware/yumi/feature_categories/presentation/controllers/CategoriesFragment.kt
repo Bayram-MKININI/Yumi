@@ -52,7 +52,7 @@ class CategoriesFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.availableCategoriesEventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
-                redirectToLoginScreen(sharedEvent)
+                redirectToLoginScreenFromSharedEvent(sharedEvent)
             }
         }
 

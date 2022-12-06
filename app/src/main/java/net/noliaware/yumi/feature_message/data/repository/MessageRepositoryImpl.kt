@@ -46,24 +46,25 @@ class MessageRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            Log.e("params", generateGetMessageParams(messageId).toString())
+            Log.e("params", generateGetMessageParams(messageId, GET_INBOX_MESSAGE).toString())
 
             val remoteData = api.fetchInboxMessageForId(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
-                    timestamp,
-                    GET_INBOX_MESSAGE,
-                    randomString
+                    timestamp = timestamp,
+                    methodName = GET_INBOX_MESSAGE,
+                    randomString = randomString
                 ),
-                params = generateGetMessageParams(messageId)
+                params = generateGetMessageParams(messageId, GET_INBOX_MESSAGE)
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_INBOX_MESSAGE,
+                appMessage = remoteData.message,
+                error = remoteData.error
             )
 
             if (sessionNoFailure) {
@@ -84,9 +85,9 @@ class MessageRepositoryImpl(
         }
     }
 
-    private fun generateGetMessageParams(messageId: String) = mutableMapOf(
+    private fun generateGetMessageParams(messageId: String, tokenKey: String) = mutableMapOf(
         MESSAGE_ID to messageId
-    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
+    ).also { it.plusAssign(getCommonWSParams(sessionData, tokenKey)) }
 
     override fun getOutboxMessageForId(messageId: String): Flow<Resource<Message>> = flow {
 
@@ -101,18 +102,19 @@ class MessageRepositoryImpl(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
-                    timestamp,
-                    GET_OUTBOX_MESSAGE,
-                    randomString
+                    timestamp = timestamp,
+                    methodName = GET_OUTBOX_MESSAGE,
+                    randomString = randomString
                 ),
-                params = generateGetMessageParams(messageId)
+                params = generateGetMessageParams(messageId, GET_OUTBOX_MESSAGE)
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_OUTBOX_MESSAGE,
+                appMessage = remoteData.message,
+                error = remoteData.error
             )
 
             if (sessionNoFailure) {
@@ -153,7 +155,8 @@ class MessageRepositoryImpl(
                     messagePriority = messagePriority,
                     messageId = messageId,
                     messageSubjectId = messageSubjectId,
-                    messageBody = messageBody
+                    messageBody = messageBody,
+                    tokenKey = SEND_MESSAGE
                 ).toString()
             )
 
@@ -161,23 +164,25 @@ class MessageRepositoryImpl(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
-                    timestamp,
-                    SEND_MESSAGE,
-                    randomString
+                    timestamp = timestamp,
+                    methodName = SEND_MESSAGE,
+                    randomString = randomString
                 ),
                 params = generateSendMessageParams(
                     messagePriority = messagePriority,
                     messageId = messageId,
                     messageSubjectId = messageSubjectId,
-                    messageBody = messageBody
+                    messageBody = messageBody,
+                    tokenKey = SEND_MESSAGE
                 )
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = SEND_MESSAGE,
+                appMessage = remoteData.message,
+                error = remoteData.error
             )
 
             if (sessionNoFailure) {
@@ -200,13 +205,14 @@ class MessageRepositoryImpl(
         messagePriority: Int,
         messageSubjectId: String? = null,
         messageId: String? = null,
-        messageBody: String
+        messageBody: String,
+        tokenKey: String
     ) = mutableMapOf(
         MESSAGE_PRIORITY to messagePriority.toString(),
         MESSAGE_BODY to messageBody
     ).also { map ->
         messageSubjectId?.let { map[MESSAGE_SUBJECT_ID] = messageSubjectId }
         messageId?.let { map[MESSAGE_ID] = messageId }
-        map.plusAssign(getCommonWSParams(sessionData))
+        map.plusAssign(getCommonWSParams(sessionData, tokenKey))
     }.toMap()
 }

@@ -8,9 +8,7 @@ import net.noliaware.yumi.commun.LIST_PAGE_SIZE
 import net.noliaware.yumi.commun.OFFSET
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.ErrorType
-import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import java.util.*
 
@@ -38,22 +36,21 @@ class ManagedAccountPagingSource(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
-                    timestamp,
-                    GET_MANAGED_ACCOUNT_LIST,
-                    randomString
+                    timestamp = timestamp,
+                    methodName = GET_MANAGED_ACCOUNT_LIST,
+                    randomString = randomString
                 ),
-                params = generateWSParams(nextPage)
+                params = generateWSParams(nextPage, GET_MANAGED_ACCOUNT_LIST)
             )
 
-            val errorType = remoteData.session?.let { sessionDTO ->
-                sessionData.apply {
-                    sessionId = sessionDTO.sessionId
-                    sessionToken = sessionDTO.sessionToken
-                }
+            val errorType = handlePaginatedListErrorIfAny(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_MANAGED_ACCOUNT_LIST
+            )
 
-                ErrorType.RECOVERABLE_ERROR
-            } ?: run {
-                ErrorType.SYSTEM_ERROR
+            if (errorType != ErrorType.RECOVERABLE_ERROR) {
+                throw PaginationException(errorType)
             }
 
             val profileRank =
@@ -68,7 +65,7 @@ class ManagedAccountPagingSource(
                     }
                 }
 
-            val canLoadMore = moreItemsAvailable == true && errorType != ErrorType.SYSTEM_ERROR
+            val canLoadMore = moreItemsAvailable == true
 
             return LoadResult.Page(
                 data = remoteData.data?.managedAccountProfileDTOS?.map { it.toUserProfile() }
@@ -81,10 +78,10 @@ class ManagedAccountPagingSource(
         }
     }
 
-    private fun generateWSParams(offset: Int) = mutableMapOf(
+    private fun generateWSParams(offset: Int, tokenKey: String) = mutableMapOf(
         LIMIT to LIST_PAGE_SIZE.toString(),
         OFFSET to offset.toString()
     ).also {
-        it.plusAssign(getCommonWSParams(sessionData))
+        it.plusAssign(getCommonWSParams(sessionData, tokenKey))
     }.toMap()
 }

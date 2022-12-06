@@ -8,9 +8,7 @@ import net.noliaware.yumi.commun.LIST_PAGE_SIZE
 import net.noliaware.yumi.commun.TIMESTAMP_OFFSET
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.ErrorType
-import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
 import java.util.*
 
@@ -33,22 +31,21 @@ class AlertPagingSource(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
-                    timestamp,
-                    GET_ALERT_LIST,
-                    randomString
+                    timestamp = timestamp,
+                    methodName = GET_ALERT_LIST,
+                    randomString = randomString
                 ),
-                params = generateGetAlertsListParams(nextTimestamp)
+                params = generateGetAlertsListParams(nextTimestamp, GET_ALERT_LIST)
             )
 
-            val errorType = remoteData.session?.let { sessionDTO ->
-                sessionData.apply {
-                    sessionId = sessionDTO.sessionId
-                    sessionToken = sessionDTO.sessionToken
-                }
+            val errorType = handlePaginatedListErrorIfAny(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_ALERT_LIST
+            )
 
-                ErrorType.RECOVERABLE_ERROR
-            } ?: run {
-                ErrorType.SYSTEM_ERROR
+            if (errorType != ErrorType.RECOVERABLE_ERROR) {
+                throw PaginationException(errorType)
             }
 
             val alertTimestamp =
@@ -58,7 +55,7 @@ class AlertPagingSource(
                 alertDTO.alertRank < alertDTO.alertCount
             }
 
-            val canLoadMore = moreItemsAvailable == true && errorType != ErrorType.SYSTEM_ERROR
+            val canLoadMore = moreItemsAvailable == true
 
             return LoadResult.Page(
                 data = remoteData.data?.alertDTOList?.map { it.toAlert() }.orEmpty(),
@@ -70,10 +67,10 @@ class AlertPagingSource(
         }
     }
 
-    private fun generateGetAlertsListParams(timestamp: Long) = mutableMapOf(
+    private fun generateGetAlertsListParams(timestamp: Long, tokenKey: String) = mutableMapOf(
         TIMESTAMP_OFFSET to timestamp.toString(),
         LIMIT to LIST_PAGE_SIZE.toString()
     ).also {
-        it.plusAssign(getCommonWSParams(sessionData))
+        it.plusAssign(getCommonWSParams(sessionData, tokenKey))
     }.toMap()
 }

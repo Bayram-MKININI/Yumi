@@ -16,6 +16,7 @@ import net.noliaware.yumi.commun.CATEGORY_ID
 import net.noliaware.yumi.commun.CATEGORY_LABEL
 import net.noliaware.yumi.commun.VOUCHER_DETAILS_FRAGMENT_TAG
 import net.noliaware.yumi.commun.presentation.adapters.ListLoadStateAdapter
+import net.noliaware.yumi.commun.util.handlePaginationError
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.adapters.VoucherAdapter
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
@@ -70,6 +71,12 @@ class VouchersListFragment : AppCompatDialogFragment() {
     }
 
     private fun collectFlows() {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            vouchersListView?.voucherAdapter?.loadStateFlow?.collectLatest { loadState ->
+                handlePaginationError(loadState)
+            }
+        }
+
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.vouchers.collectLatest {
                 vouchersListView?.voucherAdapter?.withLoadStateFooter(

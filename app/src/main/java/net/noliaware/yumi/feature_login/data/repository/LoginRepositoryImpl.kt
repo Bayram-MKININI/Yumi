@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flow
 import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.data.remote.RemoteApi
+import net.noliaware.yumi.commun.data.remote.dto.SessionDTO
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_login.domain.model.AccountData
@@ -42,26 +43,15 @@ class LoginRepositoryImpl @Inject constructor(
                 params = generateInitParams(androidId, deviceId, login)
             )
 
-            remoteData.error?.let { errorDTO ->
+            val sessionNoFailure = handleSessionWithNoFailure(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = CONNECT,
+                appMessage = remoteData.message,
+                error = remoteData.error
+            )
 
-                emit(
-                    Resource.Error(
-                        errorType = ErrorType.SYSTEM_ERROR,
-                        errorMessage = errorDTO.errorMessage
-                    )
-                )
-
-            } ?: run {
-
-                remoteData.session?.let { sessionDTO ->
-
-                    sessionData.apply {
-                        this.login = login
-                        this.sessionId = sessionDTO.sessionId
-                        this.sessionToken = sessionDTO.sessionToken
-                    }
-                }
-
+            if (sessionNoFailure) {
                 remoteData.data?.let { initDTO ->
                     sessionData.deviceId = initDTO.deviceId
                     emit(Resource.Success(data = initDTO.toInitData()))
@@ -120,17 +110,23 @@ class LoginRepositoryImpl @Inject constructor(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(timestamp, CONNECT, randomString),
-                params = generateGetAccountParams(password)
+                params = generateGetAccountParams(password, CONNECT)
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = CONNECT,
+                appMessage = remoteData.message,
+                error = remoteData.error
             )
 
             if (sessionNoFailure) {
+
+                remoteData.session?.let { sessionDTO ->
+                    sessionData.fillMapWithInitialToken(sessionDTO)
+                }
+
                 remoteData.data?.let { accountDataDTO ->
                     emit(
                         Resource.Success(
@@ -148,9 +144,26 @@ class LoginRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun generateGetAccountParams(password: String) = mutableMapOf(
+    private fun generateGetAccountParams(password: String, tokenKey: String) = mutableMapOf(
         PASSWORD to password
-    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
+    ).also { it.plusAssign(getCommonWSParams(sessionData, tokenKey)) }
+
+    private fun SessionData.fillMapWithInitialToken(sessionDTO: SessionDTO) {
+        this.sessionTokens[GET_MANAGED_ACCOUNT_LIST] = sessionDTO.sessionToken
+        this.sessionTokens[SELECT_ACCOUNT] = sessionDTO.sessionToken
+        this.sessionTokens[GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY] = sessionDTO.sessionToken
+        this.sessionTokens[GET_VOUCHER] = sessionDTO.sessionToken
+        this.sessionTokens[GET_VOUCHER_STATUS] = sessionDTO.sessionToken
+        this.sessionTokens[GET_ACCOUNT] = sessionDTO.sessionToken
+        this.sessionTokens[GET_DATA_PER_CATEGORY] = sessionDTO.sessionToken
+        this.sessionTokens[GET_USED_VOUCHER_LIST_BY_CATEGORY] = sessionDTO.sessionToken
+        this.sessionTokens[GET_ALERT_LIST] = sessionDTO.sessionToken
+        this.sessionTokens[GET_INBOX_MESSAGE_LIST] = sessionDTO.sessionToken
+        this.sessionTokens[GET_INBOX_MESSAGE] = sessionDTO.sessionToken
+        this.sessionTokens[GET_OUTBOX_MESSAGE_LIST] = sessionDTO.sessionToken
+        this.sessionTokens[GET_OUTBOX_MESSAGE] = sessionDTO.sessionToken
+        this.sessionTokens[SEND_MESSAGE] = sessionDTO.sessionToken
+    }
 
     override fun selectAccountForId(accountId: String): Flow<Resource<AccountData>> = flow {
 
@@ -165,14 +178,15 @@ class LoginRepositoryImpl @Inject constructor(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(timestamp, SELECT_ACCOUNT, randomString),
-                params = generateSelectAccountParams(accountId)
+                params = generateSelectAccountParams(accountId, SELECT_ACCOUNT)
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = SELECT_ACCOUNT,
+                appMessage = remoteData.message,
+                error = remoteData.error
             )
 
             if (sessionNoFailure) {
@@ -193,7 +207,7 @@ class LoginRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun generateSelectAccountParams(accountId: String) = mutableMapOf(
+    private fun generateSelectAccountParams(accountId: String, tokenKey: String) = mutableMapOf(
         MANAGED_ACCOUNT to accountId
-    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
+    ).also { it.plusAssign(getCommonWSParams(sessionData, tokenKey)) }
 }

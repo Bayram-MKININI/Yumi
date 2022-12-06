@@ -15,8 +15,9 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
 import net.noliaware.yumi.commun.presentation.adapters.ListLoadStateAdapter
 import net.noliaware.yumi.commun.util.ViewModelState
+import net.noliaware.yumi.commun.util.handlePaginationError
 import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.redirectToLoginScreen
+import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
 import net.noliaware.yumi.feature_categories.presentation.controllers.MainActivity
 import net.noliaware.yumi.feature_login.presentation.adapters.ManagedAccountAdapter
 import net.noliaware.yumi.feature_login.presentation.views.AccountsListView
@@ -59,7 +60,7 @@ class AccountsListFragment : AppCompatDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
-                redirectToLoginScreen(sharedEvent)
+                redirectToLoginScreenFromSharedEvent(sharedEvent)
             }
         }
 
@@ -74,6 +75,12 @@ class AccountsListFragment : AppCompatDialogFragment() {
                         startActivity(intent)
                     }
                 }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            accountsListView?.managedAccountAdapter?.loadStateFlow?.collectLatest { loadState ->
+                handlePaginationError(loadState)
             }
         }
 

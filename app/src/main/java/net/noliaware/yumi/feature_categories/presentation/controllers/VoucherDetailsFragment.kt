@@ -69,7 +69,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 viewModel.getVoucherStatusEventsHelper.eventFlow
             ).collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
-                redirectToLoginScreen(sharedEvent)
+                redirectToLoginScreenFromSharedEvent(sharedEvent)
             }
         }
 

@@ -46,7 +46,7 @@ class UserProfileFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.userProfileEventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
-                redirectToLoginScreen(sharedEvent)
+                redirectToLoginScreenFromSharedEvent(sharedEvent)
             }
         }
 

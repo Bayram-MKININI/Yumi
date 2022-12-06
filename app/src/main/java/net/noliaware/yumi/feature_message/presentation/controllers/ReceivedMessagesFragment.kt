@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.READ_MESSAGE_FRAGMENT_TAG
 import net.noliaware.yumi.commun.presentation.adapters.ListLoadStateAdapter
+import net.noliaware.yumi.commun.util.handlePaginationError
 import net.noliaware.yumi.feature_message.presentation.adapters.MessageAdapter
 import net.noliaware.yumi.feature_message.presentation.views.MessagesListView
 
@@ -50,6 +51,12 @@ class ReceivedMessagesFragment : Fragment() {
     }
 
     private fun collectFlows() {
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            messagesListView?.getMessageAdapter?.loadStateFlow?.collectLatest { loadState ->
+                handlePaginationError(loadState)
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.messages.collectLatest {

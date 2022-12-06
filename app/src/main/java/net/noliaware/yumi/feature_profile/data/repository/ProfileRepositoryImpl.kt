@@ -32,18 +32,19 @@ class ProfileRepositoryImpl(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
-                    timestamp,
-                    GET_ACCOUNT,
-                    randomString
+                    timestamp = timestamp,
+                    methodName = GET_ACCOUNT,
+                    randomString = randomString
                 ),
-                params = getCommonWSParams(sessionData)
+                params = getCommonWSParams(sessionData, GET_ACCOUNT)
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_ACCOUNT,
+                appMessage = remoteData.message,
+                error = remoteData.error
             )
 
             if (sessionNoFailure) {
@@ -88,11 +89,11 @@ class ProfileRepositoryImpl(
             timestamp = timestamp,
             saltString = randomString,
             token = generateToken(
-                timestamp,
-                GET_DATA_PER_CATEGORY,
-                randomString
+                timestamp = timestamp,
+                methodName = GET_DATA_PER_CATEGORY,
+                randomString = randomString
             ),
-            params = getCommonWSParams(sessionData)
+            params = getCommonWSParams(sessionData, GET_DATA_PER_CATEGORY)
         )
 
         remoteCategoriesData.data?.let { voucherCategoriesDTO ->
@@ -100,7 +101,7 @@ class ProfileRepositoryImpl(
             remoteCategoriesData.session?.let { sessionDTO ->
                 sessionData.apply {
                     sessionId = sessionDTO.sessionId
-                    sessionToken = sessionDTO.sessionToken
+                    sessionTokens[GET_DATA_PER_CATEGORY] = sessionDTO.sessionToken
                 }
             }
 

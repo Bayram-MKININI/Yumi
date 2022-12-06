@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.READ_MESSAGE_FRAGMENT_TAG
 import net.noliaware.yumi.commun.presentation.adapters.ListLoadStateAdapter
+import net.noliaware.yumi.commun.util.handlePaginationError
 import net.noliaware.yumi.feature_message.presentation.adapters.MessageAdapter
 import net.noliaware.yumi.feature_message.presentation.views.MessagesListView
 
@@ -46,6 +47,12 @@ class SentMessagesFragment : Fragment() {
     private fun collectFlows() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            messagesListView?.getMessageAdapter?.loadStateFlow?.collectLatest { loadState ->
+                handlePaginationError(loadState)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.messages.collectLatest {
                 messagesListView?.getMessageAdapter?.withLoadStateFooter(
                     footer = ListLoadStateAdapter()
@@ -53,6 +60,10 @@ class SentMessagesFragment : Fragment() {
                 messagesListView?.getMessageAdapter?.submitData(it)
             }
         }
+    }
+
+    fun refreshAdapter() {
+        messagesListView?.getMessageAdapter?.refresh()
     }
 
     override fun onDestroyView() {

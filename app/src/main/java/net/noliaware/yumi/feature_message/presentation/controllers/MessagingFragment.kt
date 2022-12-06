@@ -63,7 +63,7 @@ class MessagingFragment : Fragment() {
                     viewModel.messageSubjects ?: listOf()
                 ).apply {
                     onMessageSent = {
-                        //viewModel.callGetInboxMessageList()
+                        (messagingView?.getViewPager?.adapter as MessageFragmentStateAdapter).refreshSentFragment()
                     }
                 }.show(
                     childFragmentManager.beginTransaction(), SEND_MESSAGES_FRAGMENT_TAG
@@ -82,13 +82,24 @@ class MessageFragmentStateAdapter(
     fragmentManager: FragmentManager,
     lifecycle: Lifecycle
 ) : FragmentStateAdapter(fragmentManager, lifecycle) {
+    var fragments = Array<Fragment?>(2) { null }
 
     override fun getItemCount() = 2
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> ReceivedMessagesFragment()
-            else -> SentMessagesFragment()
+            0 -> {
+                fragments[0] = ReceivedMessagesFragment()
+                fragments[0]!!
+            }
+            else -> {
+                fragments[1] = SentMessagesFragment()
+                fragments[1]!!
+            }
         }
+    }
+
+    fun refreshSentFragment() {
+        (fragments[1] as SentMessagesFragment).refreshAdapter()
     }
 }

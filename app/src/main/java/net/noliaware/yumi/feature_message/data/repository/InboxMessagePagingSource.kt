@@ -8,9 +8,7 @@ import net.noliaware.yumi.commun.LIST_PAGE_SIZE
 import net.noliaware.yumi.commun.OFFSET
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.ErrorType
-import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_message.domain.model.Message
 import java.util.*
 
@@ -37,22 +35,21 @@ class InboxMessagePagingSource(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
-                    timestamp,
-                    GET_INBOX_MESSAGE_LIST,
-                    randomString
+                    timestamp = timestamp,
+                    methodName = GET_INBOX_MESSAGE_LIST,
+                    randomString = randomString
                 ),
-                params = generateGetMessagesListParams(nextPage)
+                params = generateGetMessagesListParams(nextPage, GET_INBOX_MESSAGE_LIST)
             )
 
-            val errorType = remoteData.session?.let { sessionDTO ->
-                sessionData.apply {
-                    sessionId = sessionDTO.sessionId
-                    sessionToken = sessionDTO.sessionToken
-                }
+            val errorType = handlePaginatedListErrorIfAny(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_INBOX_MESSAGE_LIST
+            )
 
-                ErrorType.RECOVERABLE_ERROR
-            } ?: run {
-                ErrorType.SYSTEM_ERROR
+            if (errorType != ErrorType.RECOVERABLE_ERROR) {
+                throw PaginationException(errorType)
             }
 
             val messageRank = remoteData.data?.messageDTOList?.last()?.messageRank ?: nextPage
@@ -65,7 +62,7 @@ class InboxMessagePagingSource(
                 }
             }
 
-            val canLoadMore = moreItemsAvailable == true && errorType != ErrorType.SYSTEM_ERROR
+            val canLoadMore = moreItemsAvailable == true
 
             return LoadResult.Page(
                 data = remoteData.data?.messageDTOList?.map { it.toMessage() }.orEmpty(),
@@ -77,10 +74,10 @@ class InboxMessagePagingSource(
         }
     }
 
-    private fun generateGetMessagesListParams(offset: Int) = mutableMapOf(
+    private fun generateGetMessagesListParams(offset: Int, tokenKey: String) = mutableMapOf(
         LIMIT to LIST_PAGE_SIZE.toString(),
         OFFSET to offset.toString()
     ).also {
-        it.plusAssign(getCommonWSParams(sessionData))
+        it.plusAssign(getCommonWSParams(sessionData, tokenKey))
     }.toMap()
 }

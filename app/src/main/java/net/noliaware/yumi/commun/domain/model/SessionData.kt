@@ -4,6 +4,6 @@ data class SessionData(
     var login: String = "",
     var sessionId: String = "",
     var deviceId: String = "",
-    var sessionToken: String = "",
+    val sessionTokens: MutableMap<String, String> = mutableMapOf(),
     var encryptionVector: String = ""
 )

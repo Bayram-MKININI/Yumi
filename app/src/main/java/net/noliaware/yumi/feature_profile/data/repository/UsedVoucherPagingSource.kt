@@ -5,9 +5,7 @@ import androidx.paging.PagingState
 import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.ErrorType
-import net.noliaware.yumi.commun.util.generateToken
-import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import java.util.*
 
@@ -36,22 +34,21 @@ class UsedVoucherPagingSource(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
-                    timestamp,
-                    GET_USED_VOUCHER_LIST_BY_CATEGORY,
-                    randomString
+                    timestamp = timestamp,
+                    methodName = GET_USED_VOUCHER_LIST_BY_CATEGORY,
+                    randomString = randomString
                 ),
-                params = generateWSParams(categoryId, nextPage)
+                params = generateWSParams(categoryId, nextPage, GET_USED_VOUCHER_LIST_BY_CATEGORY)
             )
 
-            val errorType = remoteData.session?.let { sessionDTO ->
-                sessionData.apply {
-                    sessionId = sessionDTO.sessionId
-                    sessionToken = sessionDTO.sessionToken
-                }
+            val errorType = handlePaginatedListErrorIfAny(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_USED_VOUCHER_LIST_BY_CATEGORY
+            )
 
-                ErrorType.RECOVERABLE_ERROR
-            } ?: run {
-                ErrorType.SYSTEM_ERROR
+            if (errorType != ErrorType.RECOVERABLE_ERROR) {
+                throw PaginationException(errorType)
             }
 
             val voucherRank = remoteData.data?.voucherDTOList?.last()?.voucherRank ?: nextPage
@@ -64,7 +61,7 @@ class UsedVoucherPagingSource(
                 }
             }
 
-            val canLoadMore = moreItemsAvailable == true && errorType != ErrorType.SYSTEM_ERROR
+            val canLoadMore = moreItemsAvailable == true
 
             return LoadResult.Page(
                 data = remoteData.data?.voucherDTOList?.map { it.toVoucher() }.orEmpty(),
@@ -76,11 +73,11 @@ class UsedVoucherPagingSource(
         }
     }
 
-    private fun generateWSParams(categoryId: String, offset: Int) = mutableMapOf(
+    private fun generateWSParams(categoryId: String, offset: Int, tokenKey: String) = mutableMapOf(
         CATEGORY_ID to categoryId,
         LIMIT to LIST_PAGE_SIZE.toString(),
         OFFSET to offset.toString()
     ).also {
-        it.plusAssign(getCommonWSParams(sessionData))
+        it.plusAssign(getCommonWSParams(sessionData, tokenKey))
     }.toMap()
 }

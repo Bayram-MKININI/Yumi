@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.adapters.ListLoadStateAdapter
+import net.noliaware.yumi.commun.util.handlePaginationError
 import net.noliaware.yumi.feature_alerts.presentation.adapters.AlertAdapter
 import net.noliaware.yumi.feature_alerts.presentation.views.AlertsView
 
@@ -37,6 +38,12 @@ class AlertsFragment : Fragment() {
     }
 
     private fun collectFlows() {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            alertsView?.alertAdapter?.loadStateFlow?.collectLatest { loadState ->
+                handlePaginationError(loadState)
+            }
+        }
+
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.alerts.collectLatest {
                 alertsView?.alertAdapter?.withLoadStateFooter(

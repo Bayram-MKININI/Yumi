@@ -33,18 +33,19 @@ class CategoryRepositoryImpl(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
-                    timestamp,
-                    GET_DATA_PER_CATEGORY,
-                    randomString
+                    timestamp = timestamp,
+                    methodName = GET_DATA_PER_CATEGORY,
+                    randomString = randomString
                 ),
-                params = getCommonWSParams(sessionData)
+                params = getCommonWSParams(sessionData, GET_DATA_PER_CATEGORY)
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_DATA_PER_CATEGORY,
+                appMessage = remoteData.message,
+                error = remoteData.error
             )
 
             if (sessionNoFailure) {
@@ -89,18 +90,19 @@ class CategoryRepositoryImpl(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
-                    timestamp,
-                    GET_VOUCHER,
-                    randomString
+                    timestamp = timestamp,
+                    methodName = GET_VOUCHER,
+                    randomString = randomString
                 ),
-                params = generateVoucherByIdParams(voucherId)
+                params = generateVoucherByIdParams(voucherId, GET_VOUCHER)
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_VOUCHER,
+                appMessage = remoteData.message,
+                error = remoteData.error
             )
 
             if (sessionNoFailure) {
@@ -134,18 +136,19 @@ class CategoryRepositoryImpl(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
-                    timestamp,
-                    GET_VOUCHER_STATUS,
-                    randomString
+                    timestamp = timestamp,
+                    methodName = GET_VOUCHER_STATUS,
+                    randomString = randomString
                 ),
-                params = generateVoucherByIdParams(voucherId)
+                params = generateVoucherByIdParams(voucherId, GET_VOUCHER_STATUS)
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
-                remoteData.session,
-                sessionData,
-                remoteData.message,
-                remoteData.error
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_VOUCHER_STATUS,
+                appMessage = remoteData.message,
+                error = remoteData.error
             )
 
             if (sessionNoFailure) {
@@ -166,7 +169,7 @@ class CategoryRepositoryImpl(
         }
     }
 
-    private fun generateVoucherByIdParams(voucherId: String) = mutableMapOf(
+    private fun generateVoucherByIdParams(voucherId: String, tokenKey: String) = mutableMapOf(
         VOUCHER_ID to voucherId
-    ).also { it.plusAssign(getCommonWSParams(sessionData)) }
+    ).also { it.plusAssign(getCommonWSParams(sessionData, tokenKey)) }
 }

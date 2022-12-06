@@ -63,7 +63,7 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
-                redirectToLoginScreen(sharedEvent)
+                redirectToLoginScreenFromSharedEvent(sharedEvent)
             }
         }
 

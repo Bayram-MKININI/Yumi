@@ -45,6 +45,7 @@ import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.feature_login.presentation.controllers.LoginActivity
 import java.io.Serializable
 import java.math.BigInteger
+import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.text.SimpleDateFormat
@@ -131,6 +132,11 @@ fun parseTimeString(dateStr: String?) = dateStr?.let {
     val date = sourceFormatter.parse(dateStr)
     val destFormatter = SimpleDateFormat("HH:mm", Locale.FRANCE)
     destFormatter.format(date)
+}.orEmpty()
+
+fun parseTimestampToString(periodInSeconds: Int?) = periodInSeconds?.let {
+    val simpleDateFormat = SimpleDateFormat("mm:ss", Locale.FRANCE)
+    simpleDateFormat.format(periodInSeconds * 1000L)
 }.orEmpty()
 
 fun Fragment.handleSharedEvent(sharedEvent: UIEvent) = context?.let {
@@ -318,13 +324,14 @@ inline fun <reified T : View> RecyclerView.ViewHolder.findOptional(id: Int): T? 
 fun String.sha256(): String {
     return try {
         val md = MessageDigest.getInstance("SHA-256")
-        val messageDigest = md.digest(this.toByteArray())
-        val no = BigInteger(1, messageDigest)
-        var hashtext = no.toString(16)
-        while (hashtext.length < 32) {
-            hashtext = "0$hashtext"
+        val messageDigest = md.digest(this.toByteArray(StandardCharsets.UTF_8))
+        val number = BigInteger(1, messageDigest)
+        val hexString = StringBuilder(number.toString(16))
+        while (hexString.length < 64) {
+            hexString.insert(0, '0')
         }
-        hashtext
+        hexString.toString()
+
     } catch (e: NoSuchAlgorithmException) {
         throw RuntimeException(e)
     }

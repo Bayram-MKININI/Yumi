@@ -22,6 +22,7 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
     private lateinit var myDataLinearLayout: LinearLayoutCompat
     private lateinit var complementaryDataTextView: TextView
     private lateinit var complementaryDataLinearLayout: LinearLayoutCompat
+    private lateinit var getCodeTextView: TextView
     private lateinit var myHistoryTextView: TextView
     private lateinit var recyclerView: RecyclerView
     private val categoryItemViewAdapters = mutableListOf<CategoryItemViewAdapter>()
@@ -34,6 +35,7 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
     )
 
     interface ProfileViewCallback {
+        fun onGetCodeButtonClicked()
         fun onCategoryClickedAtIndex(index: Int)
     }
 
@@ -47,6 +49,8 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         myDataLinearLayout = findViewById(R.id.my_data_linear_layout)
         complementaryDataTextView = findViewById(R.id.complementary_data_text_view)
         complementaryDataLinearLayout = findViewById(R.id.complementary_data_linear_layout)
+        getCodeTextView = findViewById(R.id.get_code_text_view)
+        getCodeTextView.setOnClickListener { callback?.onGetCodeButtonClicked() }
         myHistoryTextView = findViewById(R.id.my_history_text_view)
 
         recyclerView = findViewById(R.id.recycler_view)
@@ -137,6 +141,11 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
+        getCodeTextView.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth * 7 / 10, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY)
+        )
+
         myHistoryTextView.measureWrapContent()
 
         recyclerView.measure(
@@ -144,10 +153,9 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
-        viewHeight =
-            myDataTextView.measuredHeight + myDataLinearLayout.measuredHeight + complementaryDataTextView.measuredHeight + complementaryDataLinearLayout.measuredHeight + myHistoryTextView.measuredHeight + recyclerView.measuredHeight + convertDpToPx(
-                80
-            )
+        viewHeight = myDataTextView.measuredHeight + myDataLinearLayout.measuredHeight + complementaryDataTextView.measuredHeight +
+                    complementaryDataLinearLayout.measuredHeight + getCodeTextView.measuredHeight + myHistoryTextView.measuredHeight +
+                    recyclerView.measuredHeight + convertDpToPx(100)
 
         setMeasuredDimension(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
@@ -179,9 +187,14 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             complementaryDataTextView.bottom + convertDpToPx(10)
         )
 
+        getCodeTextView.layoutToTopLeft(
+            (viewWidth - getCodeTextView.measuredWidth) / 2,
+            complementaryDataLinearLayout.bottom + convertDpToPx(10)
+        )
+
         myHistoryTextView.layoutToTopLeft(
             convertDpToPx(20),
-            complementaryDataLinearLayout.bottom + convertDpToPx(10)
+            getCodeTextView.bottom + convertDpToPx(10)
         )
 
         recyclerView.layoutToTopLeft(

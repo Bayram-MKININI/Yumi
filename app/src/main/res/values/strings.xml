@@ -57,6 +57,10 @@
     <string name="new_line">\n</string>
     <string name="phone_numbers">N° de tél:</string>
     <string name="occupation">Occupation:</string>
+    <string name="get_code">Obtenir un code</string>
+    <string name="bo_sign_in_description">Veuillez utiliser ce code pour vous connecter sur votre compte back office</string>
+    <string name="bo_code_expiration">Ce code expire dans:</string>
+    <string name="empty_time">--:--</string>
     <string name="usage_date">Date d\'utilisation: %s à %s</string>
 
     //Messages

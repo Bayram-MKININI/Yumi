@@ -10,6 +10,7 @@ import net.noliaware.yumi.feature_login.data.remote.dto.ManagedAccountsDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.MessagesDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.SentMessageDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.SingleMessageDTO
+import net.noliaware.yumi.feature_profile.data.remote.dto.BOSignInDTO
 import net.noliaware.yumi.feature_profile.data.remote.dto.UsedVouchersDTO
 import net.noliaware.yumi.feature_profile.data.remote.dto.UserAccountDTO
 import retrofit2.http.FieldMap
@@ -99,6 +100,15 @@ interface RemoteApi {
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
     ): ResponseDTO<UserAccountDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_BACK_OFFICE_SIGN_IN_CODE/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchBackOfficeSignInCode(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<BOSignInDTO>
 
     @FormUrlEncoded
     @POST("$GET_USED_VOUCHER_LIST_BY_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")

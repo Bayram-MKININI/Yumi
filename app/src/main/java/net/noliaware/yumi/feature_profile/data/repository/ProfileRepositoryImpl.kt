@@ -5,12 +5,14 @@ import androidx.paging.PagingConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.noliaware.yumi.commun.GET_ACCOUNT
+import net.noliaware.yumi.commun.GET_BACK_OFFICE_SIGN_IN_CODE
 import net.noliaware.yumi.commun.GET_DATA_PER_CATEGORY
 import net.noliaware.yumi.commun.LIST_PAGE_SIZE
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Category
+import net.noliaware.yumi.feature_profile.domain.model.BOSignIn
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import okio.IOException
 import retrofit2.HttpException
@@ -67,6 +69,51 @@ class ProfileRepositoryImpl(
                     emit(
                         Resource.Success(
                             data = userProfile,
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
+                }
+            }
+
+        } catch (ex: HttpException) {
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
+        } catch (ex: IOException) {
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        }
+    }
+
+    override fun getBackOfficeSignInCode(): Flow<Resource<BOSignIn>> = flow {
+
+        try {
+
+            val timestamp = System.currentTimeMillis().toString()
+            val randomString = UUID.randomUUID().toString()
+
+            val remoteData = api.fetchBackOfficeSignInCode(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(
+                    timestamp = timestamp,
+                    methodName = GET_BACK_OFFICE_SIGN_IN_CODE,
+                    randomString = randomString
+                ),
+                params = getCommonWSParams(sessionData, GET_BACK_OFFICE_SIGN_IN_CODE)
+            )
+
+            val sessionNoFailure = handleSessionWithNoFailure(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_BACK_OFFICE_SIGN_IN_CODE,
+                appMessage = remoteData.message,
+                error = remoteData.error
+            )
+
+            if (sessionNoFailure) {
+
+                remoteData.data?.toBOSignIn()?.let { boSignIn ->
+                    emit(
+                        Resource.Success(
+                            data = boSignIn,
                             appMessage = remoteData.message?.toAppMessage()
                         )
                     )

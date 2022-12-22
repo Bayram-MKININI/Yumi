@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ReadInboxMailFragmentViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: MessageRepository,
+    private val repository: MessageRepository
 ) : ViewModel() {
 
     val eventsHelper = EventsHelper<Message>()

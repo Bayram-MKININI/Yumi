@@ -58,6 +58,19 @@
                 android:orientation="vertical" />
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/get_code_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_filled_rounded_primary"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/sf_pro_text_semibold"
+                android:gravity="center"
+                android:text="@string/get_code"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
+
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/my_history_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

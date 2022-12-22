@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.BO_SIGN_IN_FRAGMENT_TAG
 import net.noliaware.yumi.commun.USED_VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.presentation.views.DataValueView
 import net.noliaware.yumi.commun.util.*
@@ -174,6 +175,12 @@ class UserProfileFragment : Fragment() {
 
     private val profileViewCallback: ProfileViewCallback by lazy {
         object : ProfileViewCallback {
+            override fun onGetCodeButtonClicked() {
+                BOSignInFragment.newInstance().show(
+                    childFragmentManager.beginTransaction(),
+                    BO_SIGN_IN_FRAGMENT_TAG
+                )
+            }
 
             override fun onCategoryClickedAtIndex(index: Int) {
 

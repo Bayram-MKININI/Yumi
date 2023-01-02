@@ -169,6 +169,50 @@ class CategoryRepositoryImpl(
         }
     }
 
+    override fun useVoucherById(voucherId: String): Flow<Resource<Boolean>> = flow {
+
+        emit(Resource.Loading())
+
+        try {
+
+            val timestamp = System.currentTimeMillis().toString()
+            val randomString = UUID.randomUUID().toString()
+
+            val remoteData = api.useVoucher(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(
+                    timestamp,
+                    USE_VOUCHER,
+                    randomString
+                ),
+                params = generateVoucherByIdParams(voucherId, USE_VOUCHER)
+            )
+
+            val sessionNoFailure = handleSessionWithNoFailure(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = USE_VOUCHER,
+                appMessage = remoteData.message,
+                error = remoteData.error
+            )
+
+            if (sessionNoFailure) {
+                emit(
+                    Resource.Success(
+                        data = remoteData.data != null,
+                        appMessage = remoteData.message?.toAppMessage()
+                    )
+                )
+            }
+
+        } catch (ex: HttpException) {
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
+        } catch (ex: IOException) {
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        }
+    }
+
     private fun generateVoucherByIdParams(voucherId: String, tokenKey: String) = mutableMapOf(
         VOUCHER_ID to voucherId
     ).also { it.plusAssign(getCommonWSParams(sessionData, tokenKey)) }

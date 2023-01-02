@@ -16,4 +16,6 @@ interface CategoryRepository {
     fun getVoucherById(voucherId: String): Flow<Resource<Voucher>>
 
     fun getVoucherStatusById(voucherId: String): Flow<Resource<VoucherStatus>>
+
+    fun useVoucherById(voucherId: String): Flow<Resource<Boolean>>
 }

@@ -93,6 +93,15 @@ interface RemoteApi {
     ): ResponseDTO<GetVoucherStatusDTO>
 
     @FormUrlEncoded
+    @POST("$USE_VOUCHER/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun useVoucher(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<UseVoucherResponseDTO>
+
+    @FormUrlEncoded
     @POST("$GET_ACCOUNT/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
     suspend fun fetchAccount(
         @Path(TIMESTAMP) timestamp: String,

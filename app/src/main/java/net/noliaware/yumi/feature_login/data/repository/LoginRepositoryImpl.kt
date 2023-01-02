@@ -155,6 +155,7 @@ class LoginRepositoryImpl @Inject constructor(
         this.sessionTokens[GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY] = sessionDTO.sessionToken
         this.sessionTokens[GET_VOUCHER] = sessionDTO.sessionToken
         this.sessionTokens[GET_VOUCHER_STATUS] = sessionDTO.sessionToken
+        this.sessionTokens[USE_VOUCHER] = sessionDTO.sessionToken
         this.sessionTokens[GET_ACCOUNT] = sessionDTO.sessionToken
         this.sessionTokens[GET_BACK_OFFICE_SIGN_IN_CODE] = sessionDTO.sessionToken
         this.sessionTokens[GET_DATA_PER_CATEGORY] = sessionDTO.sessionToken

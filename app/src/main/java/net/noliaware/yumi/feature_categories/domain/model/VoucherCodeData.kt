@@ -3,6 +3,7 @@ package net.noliaware.yumi.feature_categories.domain.model
 import java.io.Serializable
 
 data class VoucherCodeData(
+    val voucherId: String?,
     val productLabel: String?,
     val voucherDate: String?,
     val voucherExpiryDate: String?,

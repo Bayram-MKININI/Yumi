@@ -22,7 +22,7 @@
     <string name="back">Retour</string>
     <string name="expiry_date">Date d\'expiration: %s</string>
     <string name="retailer">Fournisseur: %s</string>
-    <string name="display_voucher">Afficher ce coupon</string>
+    <string name="display_voucher">Accéder au coupon</string>
     <string name="use_voucher">Utiliser ce coupon</string>
 
     //Vouchers

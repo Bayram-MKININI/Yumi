@@ -236,6 +236,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 viewModel.getVoucherEventsHelper.stateData?.let { voucher ->
                     QrCodeFragment.newInstance(
                         VoucherCodeData(
+                            voucherId = voucher.voucherId,
                             productLabel = voucher.productLabel,
                             voucherDate = voucher.voucherDate,
                             voucherExpiryDate = voucher.voucherExpiryDate,

@@ -45,7 +45,7 @@ class AlertsFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.alerts.collectLatest {
+            viewModel.getAlerts().collectLatest {
                 alertsView?.alertAdapter?.withLoadStateFooter(
                     footer = ListLoadStateAdapter()
                 )

@@ -18,6 +18,7 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.MESSAGE_ID
 import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
 import net.noliaware.yumi.commun.MESSAGE_SUBJECT_LABEL
+import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
 import net.noliaware.yumi.commun.util.withArgs
@@ -72,6 +73,19 @@ class SendMailFragment : AppCompatDialogFragment() {
             viewModel.messageSentEventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreenFromSharedEvent(sharedEvent)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.messageSentEventsHelper.stateFlow.collectLatest { vmState ->
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { result ->
+                        if (result) {
+                            dismiss()
+                        }
+                    }
+                }
             }
         }
     }

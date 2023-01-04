@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VouchersListFragmentViewModel @Inject constructor(
-    categoryRepository: CategoryRepository,
+    private val categoryRepository: CategoryRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -23,5 +23,5 @@ class VouchersListFragmentViewModel @Inject constructor(
         get() = savedStateHandle.get<Boolean>(DATA_SHOULD_REFRESH)
         set(value) = savedStateHandle.set(DATA_SHOULD_REFRESH, value)
 
-    val vouchers = categoryRepository.getVoucherList(selectedCategoryId).cachedIn(viewModelScope)
+    fun getVouchers() = categoryRepository.getVoucherList(selectedCategoryId).cachedIn(viewModelScope)
 }

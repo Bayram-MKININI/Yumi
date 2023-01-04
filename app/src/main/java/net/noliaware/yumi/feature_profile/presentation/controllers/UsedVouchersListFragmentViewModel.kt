@@ -12,12 +12,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UsedVouchersListFragmentViewModel @Inject constructor(
-    profileRepository: ProfileRepository,
+    private val profileRepository: ProfileRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val selectedCategoryId get() = savedStateHandle.get<String>(CATEGORY_ID).orEmpty()
     val categoryLabel get() = savedStateHandle.get<String>(CATEGORY_LABEL).orEmpty()
 
-    val vouchers = profileRepository.getUsedVoucherList(selectedCategoryId).cachedIn(viewModelScope)
+    fun getVouchers() = profileRepository.getUsedVoucherList(selectedCategoryId).cachedIn(viewModelScope)
 }

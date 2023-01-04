@@ -37,6 +37,12 @@ class EventsHelper<S> {
                 _stateFlow.value = LoadingState()
             }
             is Resource.Error -> {
+
+                result.appMessage?.let {
+                    _eventFlow.emit(UIEvent.ShowAppMessage(it))
+                    return
+                }
+
                 when (result.errorType) {
                     ErrorType.NETWORK_ERROR -> {
                         _eventFlow.emit(
@@ -54,11 +60,7 @@ class EventsHelper<S> {
                             )
                         )
                     }
-                    else -> {
-                        result.appMessage?.let {
-                            _eventFlow.emit(UIEvent.ShowAppMessage(it))
-                        }
-                    }
+                    else -> Unit
                 }
             }
         }.exhaustive

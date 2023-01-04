@@ -59,7 +59,7 @@ class ReceivedMessagesFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.messages.collectLatest {
+            viewModel.getMessages().collectLatest {
                 messagesListView?.getMessageAdapter?.withLoadStateFooter(
                     footer = ListLoadStateAdapter()
                 )

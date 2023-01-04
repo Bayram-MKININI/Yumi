@@ -18,7 +18,7 @@ class AccountsListFragmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     val eventsHelper = EventsHelper<AccountData>()
-    val managedProfiles = loginRepository.getManagedProfileList().cachedIn(viewModelScope)
+    fun getManagedProfiles() = loginRepository.getManagedProfileList().cachedIn(viewModelScope)
 
     fun callSelectAccountForLogin(login: String) {
         viewModelScope.launch {

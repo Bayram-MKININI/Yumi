@@ -149,17 +149,6 @@ class MessageRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            Log.e(
-                "params",
-                generateSendMessageParams(
-                    messagePriority = messagePriority,
-                    messageId = messageId,
-                    messageSubjectId = messageSubjectId,
-                    messageBody = messageBody,
-                    tokenKey = SEND_MESSAGE
-                ).toString()
-            )
-
             val remoteData = api.sendMessage(
                 timestamp = timestamp,
                 saltString = randomString,

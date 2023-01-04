@@ -100,6 +100,6 @@ class MessageFragmentStateAdapter(
     }
 
     fun refreshSentFragment() {
-        (fragments[1] as SentMessagesFragment).refreshAdapter()
+        (fragments[1] as? SentMessagesFragment)?.refreshAdapter()
     }
 }

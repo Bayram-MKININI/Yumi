@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlertsFragmentViewModel @Inject constructor(
-    alertsRepository: AlertsRepository
+    private val alertsRepository: AlertsRepository
 ) : ViewModel() {
-    val alerts = alertsRepository.getAlertList().cachedIn(viewModelScope)
+    fun getAlerts() = alertsRepository.getAlertList().cachedIn(viewModelScope)
 }

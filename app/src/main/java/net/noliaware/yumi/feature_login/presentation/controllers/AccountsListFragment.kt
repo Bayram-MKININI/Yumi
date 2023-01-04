@@ -85,7 +85,7 @@ class AccountsListFragment : AppCompatDialogFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.managedProfiles.collectLatest {
+            viewModel.getManagedProfiles().collectLatest {
                 accountsListView?.managedAccountAdapter?.withLoadStateFooter(
                     footer = ListLoadStateAdapter()
                 )

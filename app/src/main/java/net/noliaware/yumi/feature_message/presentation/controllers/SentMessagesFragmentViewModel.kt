@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SentMessagesFragmentViewModel @Inject constructor(
-    messageRepository: MessageRepository
+    private val messageRepository: MessageRepository
 ) : ViewModel() {
-    val messages = messageRepository.getSentMessageList().cachedIn(viewModelScope)
+    fun getMessages() = messageRepository.getSentMessageList().cachedIn(viewModelScope)
 }

@@ -30,11 +30,12 @@ class SentMessagesFragment : Fragment() {
         return inflater.inflate(R.layout.messages_list_layout, container, false).apply {
             messagesListView = this as MessagesListView
             messagesListView?.adapter = MessageAdapter { message ->
-                ReadOutboxMailFragment.newInstance(message.messageId)
-                    .show(
-                        childFragmentManager.beginTransaction(),
-                        READ_MESSAGE_FRAGMENT_TAG
-                    )
+                ReadOutboxMailFragment.newInstance(
+                    message.messageId
+                ).show(
+                    childFragmentManager.beginTransaction(),
+                    READ_MESSAGE_FRAGMENT_TAG
+                )
             }
         }
     }
@@ -53,7 +54,7 @@ class SentMessagesFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.messages.collectLatest {
+            viewModel.getMessages().collectLatest {
                 messagesListView?.getMessageAdapter?.withLoadStateFooter(
                     footer = ListLoadStateAdapter()
                 )

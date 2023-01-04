@@ -74,7 +74,7 @@ class UsedVouchersListFragment : AppCompatDialogFragment() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.vouchers.collectLatest {
+            viewModel.getVouchers().collectLatest {
                 vouchersListView?.voucherAdapter?.withLoadStateFooter(
                     footer = ListLoadStateAdapter()
                 )

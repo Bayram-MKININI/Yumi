@@ -51,10 +51,8 @@ data class UserProfileDTO(
     val cellPhoneNumber: String?,
     @Json(name = "email")
     val email: String?,
-    @Json(name = "profileRank")
-    val profileRank: Int?,
-    @Json(name = "profileCount")
-    val profileCount: Int?
+    @Json(name = "messageBoxUsagePercentage")
+    val messageBoxUsagePercentage: Int
 ) {
     fun toUserProfile() = UserProfile(
         login = login,
@@ -78,6 +76,7 @@ data class UserProfileDTO(
         country = country,
         phoneNumber = phoneNumber,
         cellPhoneNumber = cellPhoneNumber,
-        email = email
+        email = email,
+        messageBoxUsagePercentage = messageBoxUsagePercentage,
     )
 }

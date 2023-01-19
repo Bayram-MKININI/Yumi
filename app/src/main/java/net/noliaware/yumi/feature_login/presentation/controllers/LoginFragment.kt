@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.ACCOUNTS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.ACCOUNT_DATA
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
@@ -124,16 +123,10 @@ class LoginFragment : Fragment() {
                 when (vmState) {
                     is ViewModelState.LoadingState -> Unit
                     is ViewModelState.DataState -> vmState.data?.let { accountData ->
-                        if (accountData.isAccountManager) {
-                            AccountsListFragment.newInstance().show(
-                                childFragmentManager.beginTransaction(),
-                                ACCOUNTS_LIST_FRAGMENT_TAG
-                            )
-                        } else {
-                            activity?.finish()
-                            val intent = Intent(requireActivity(), MainActivity::class.java)
-                            intent.putExtra(ACCOUNT_DATA, accountData)
-                            startActivity(intent)
+                        activity?.finish()
+                        Intent(requireActivity(), MainActivity::class.java).apply {
+                            putExtra(ACCOUNT_DATA, accountData)
+                            startActivity(this)
                         }
                     }
                 }

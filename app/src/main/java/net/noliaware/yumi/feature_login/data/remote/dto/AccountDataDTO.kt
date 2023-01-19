@@ -16,15 +16,12 @@ data class AccountDataDTO(
     @Json(name = "newMessageCount")
     val newMessageCount: Int = 0,
     @Json(name = "availableVoucherCountPerCategory")
-    val categoryDTOs: List<CategoryDTO>? = listOf(),
-    @Json(name = "accountManager")
-    val accountManager: Int?
+    val categoryDTOs: List<CategoryDTO>? = listOf()
 ) {
     fun toAccountData() = AccountData(
         messageSubjects = messageSubjectDTOs.map { it.toMessageSubject() },
         newAlertCount = newAlertCount,
         newMessageCount = newMessageCount,
-        categories = categoryDTOs?.map { it.toCategory() },
-        isAccountManager = accountManager == 1
+        categories = categoryDTOs?.map { it.toCategory() }
     )
 }

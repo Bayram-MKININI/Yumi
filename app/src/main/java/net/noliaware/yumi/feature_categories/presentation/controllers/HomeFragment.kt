@@ -81,7 +81,7 @@ class HomeFragment : Fragment() {
         childFragmentManager.beginTransaction().run {
             replace(
                 R.id.main_fragment_container,
-                CategoriesFragment.newInstance(viewModel.accountData?.categories)
+                CategoriesFragment.newInstance()
             )
             commitAllowingStateLoss()
             homeView?.selectHomeButton()

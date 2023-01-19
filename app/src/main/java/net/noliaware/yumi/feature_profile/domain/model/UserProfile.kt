@@ -25,5 +25,6 @@ data class UserProfile(
     val country: String?,
     val phoneNumber: String?,
     val cellPhoneNumber: String?,
-    val email: String?
+    val email: String?,
+    val messageBoxUsagePercentage: Int
 ) : Serializable

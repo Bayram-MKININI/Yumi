@@ -14,9 +14,17 @@ class ListLoadStateAdapter(
     //private val retry: () -> Unit
 ) : LoadStateAdapter<ListLoadStateAdapter.LoadStateViewHolder>() {
 
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        loadState: LoadState
+    ) = LoadStateViewHolder(
+        LayoutInflater.from(parent.context).inflate(R.layout.load_state_layout, parent, false)
+    )
+
     override fun onBindViewHolder(holder: LoadStateViewHolder, loadState: LoadState) {
 
-        val progress = holder.itemView.findViewById<CircularProgressIndicator>(R.id.load_state_progress)
+        val progress =
+            holder.itemView.findViewById<CircularProgressIndicator>(R.id.load_state_progress)
         //val btnRetry = holder.itemView.load_state_retry
         //val txtErrorMessage = holder.itemView.load_state_errorMessage
 
@@ -33,12 +41,6 @@ class ListLoadStateAdapter(
         }
 
          */
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LoadStateViewHolder {
-        return LoadStateViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.load_state_layout, parent, false)
-        )
     }
 
     class LoadStateViewHolder(private val view: View) : RecyclerView.ViewHolder(view)

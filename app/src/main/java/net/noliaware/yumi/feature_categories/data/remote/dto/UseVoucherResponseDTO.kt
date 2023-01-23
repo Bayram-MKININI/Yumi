@@ -5,6 +5,6 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class UseVoucherResponseDTO(
-    @Json(name = "result")
+    @Json(name = "voucherUseResult")
     val result: String
 )

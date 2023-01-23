@@ -15,6 +15,15 @@ class VoucherAdapter(
     private val onItemClicked: (Voucher) -> Unit
 ) : PagingDataAdapter<Voucher, ItemViewHolder<VoucherItemView>>(VoucherComparator) {
 
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ) = ItemViewHolder<VoucherItemView>(
+        LayoutInflater.from(parent.context).inflate(R.layout.voucher_item_layout, parent, false)
+    ) { position ->
+        getItem(position)?.let { onItemClicked(it) }
+    }
+
     override fun onBindViewHolder(holder: ItemViewHolder<VoucherItemView>, position: Int) {
         getItem(position)?.let { voucher ->
             holder.heldItemView.fillViewWithData(
@@ -22,13 +31,6 @@ class VoucherAdapter(
             )
         }
     }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        ItemViewHolder<VoucherItemView>(
-            LayoutInflater.from(parent.context).inflate(R.layout.voucher_item_layout, parent, false)
-        ) { position ->
-            getItem(position)?.let { onItemClicked(it) }
-        }
 
     object VoucherComparator : DiffUtil.ItemCallback<Voucher>() {
         override fun areItemsTheSame(

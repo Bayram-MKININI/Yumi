@@ -21,9 +21,11 @@ class ReadInboxMailFragmentViewModel @Inject constructor(
     private val repository: MessageRepository
 ) : ViewModel() {
 
-    val eventsHelper = EventsHelper<Message>()
+    val getMessageEventsHelper = EventsHelper<Message>()
+    val deleteMessageEventsHelper = EventsHelper<Boolean>()
     val messageId get() = savedStateHandle.get<String>(MESSAGE_ID)
     val messageSubjectLabel get() = savedStateHandle.get<String>(MESSAGE_SUBJECT_LABEL)
+
     var receivedMessageListShouldRefresh
         get() = savedStateHandle.get<Boolean>(DATA_SHOULD_REFRESH)
         set(value) = savedStateHandle.set(DATA_SHOULD_REFRESH, value)
@@ -37,8 +39,18 @@ class ReadInboxMailFragmentViewModel @Inject constructor(
     private fun callGetMessageForId(messageId: String) {
         viewModelScope.launch {
             repository.getInboxMessageForId(messageId).onEach { result ->
-                eventsHelper.handleResponse(result)
+                getMessageEventsHelper.handleResponse(result)
             }.launchIn(this)
+        }
+    }
+
+    fun callDeleteInboxMessageForId() {
+        messageId?.let { messageId ->
+            viewModelScope.launch {
+                repository.deleteInboxMessageForId(messageId).onEach { result ->
+                    deleteMessageEventsHelper.handleResponse(result)
+                }.launchIn(this)
+            }
         }
     }
 }

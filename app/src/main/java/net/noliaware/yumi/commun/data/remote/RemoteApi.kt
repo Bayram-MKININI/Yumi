@@ -6,6 +6,7 @@ import net.noliaware.yumi.feature_alerts.data.remote.dto.AlertsDTO
 import net.noliaware.yumi.feature_categories.data.remote.dto.*
 import net.noliaware.yumi.feature_login.data.remote.dto.AccountDataDTO
 import net.noliaware.yumi.feature_login.data.remote.dto.InitDTO
+import net.noliaware.yumi.feature_message.data.remote.dto.DeleteMessageDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.MessagesDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.SentMessageDTO
 import net.noliaware.yumi.feature_message.data.remote.dto.SingleMessageDTO
@@ -153,6 +154,24 @@ interface RemoteApi {
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
     ): ResponseDTO<SentMessageDTO>
+
+    @FormUrlEncoded
+    @POST("$DELETE_INBOX_MESSAGE/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun deleteInboxMessageForId(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<DeleteMessageDTO>
+
+    @FormUrlEncoded
+    @POST("$DELETE_OUTBOX_MESSAGE/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun deleteOutboxMessageForId(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<DeleteMessageDTO>
 
     @FormUrlEncoded
     @POST("$GET_ALERT_LIST/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")

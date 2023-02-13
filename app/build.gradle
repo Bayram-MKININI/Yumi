@@ -8,7 +8,7 @@ plugins {
 android {
     namespace 'net.noliaware.yumi'
     compileSdk 33
-    buildToolsVersion "33.0.1"
+    buildToolsVersion "33.0.2"
 
     defaultConfig {
         applicationId "net.noliaware.yumi"
@@ -64,7 +64,7 @@ dependencies {
     implementation 'androidx.datastore:datastore-preferences:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.appcompat:appcompat:1.6.0'
-    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'com.google.android.material:material:1.8.0'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
 

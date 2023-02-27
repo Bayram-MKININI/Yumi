@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import net.noliaware.yumi.commun.CATEGORY_ID
-import net.noliaware.yumi.commun.CATEGORY_LABEL
+import net.noliaware.yumi.commun.CATEGORY
+import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_profile.data.repository.ProfileRepository
 import javax.inject.Inject
 
@@ -16,8 +16,9 @@ class UsedVouchersListFragmentViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val selectedCategoryId get() = savedStateHandle.get<String>(CATEGORY_ID).orEmpty()
-    val categoryLabel get() = savedStateHandle.get<String>(CATEGORY_LABEL).orEmpty()
+    val selectedCategory get() = savedStateHandle.get<Category>(CATEGORY)
 
-    fun getVouchers() = profileRepository.getUsedVoucherList(selectedCategoryId).cachedIn(viewModelScope)
+    fun getVouchers() = selectedCategory?.categoryId?.let {
+        profileRepository.getUsedVoucherList(it).cachedIn(viewModelScope)
+    }
 }

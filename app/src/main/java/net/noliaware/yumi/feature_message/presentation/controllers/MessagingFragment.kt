@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
@@ -23,8 +22,9 @@ import net.noliaware.yumi.feature_message.presentation.views.MessagingView
 class MessagingFragment : Fragment() {
 
     companion object {
-        fun newInstance(messageSubjects: List<MessageSubject>?) =
-            MessagingFragment().withArgs(MESSAGE_SUBJECTS_DATA to messageSubjects)
+        fun newInstance(
+            messageSubjects: List<MessageSubject>?
+        ) = MessagingFragment().withArgs(MESSAGE_SUBJECTS_DATA to messageSubjects)
     }
 
     private var messagingView: MessagingView? = null
@@ -42,18 +42,10 @@ class MessagingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         val viewPager = messagingView?.getViewPager
-        val tabLayout = messagingView?.getTabLayout
 
         MessageFragmentStateAdapter(childFragmentManager, lifecycle).apply {
             viewPager?.adapter = this
         }
-
-        TabLayoutMediator(tabLayout!!, viewPager!!) { tab, position ->
-            tab.text = when (position) {
-                0 -> getString(R.string.received)
-                else -> getString(R.string.sent)
-            }
-        }.attach()
     }
 
     private val messagingViewCallback: MessagingView.MailViewCallback by lazy {

@@ -11,6 +11,7 @@ import net.noliaware.yumi.feature_categories.presentation.controllers.VoucherMap
 import net.noliaware.yumi.feature_categories.presentation.views.VoucherItemView
 
 class VoucherAdapter(
+    private val color: Int,
     private val voucherMapper: VoucherMapper,
     private val onItemClicked: (Voucher) -> Unit
 ) : PagingDataAdapter<Voucher, ItemViewHolder<VoucherItemView>>(VoucherComparator) {
@@ -27,7 +28,7 @@ class VoucherAdapter(
     override fun onBindViewHolder(holder: ItemViewHolder<VoucherItemView>, position: Int) {
         getItem(position)?.let { voucher ->
             holder.heldItemView.fillViewWithData(
-                voucherMapper.mapVoucher(holder.heldItemView.context, voucher)
+                voucherMapper.mapVoucher(holder.heldItemView.context, color, voucher)
             )
         }
     }

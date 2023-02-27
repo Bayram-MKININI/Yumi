@@ -22,8 +22,9 @@ import net.noliaware.yumi.feature_profile.presentation.controllers.UserProfileFr
 class HomeFragment : Fragment() {
 
     companion object {
-        fun newInstance(accountData: AccountData) =
-            HomeFragment().withArgs(ACCOUNT_DATA to accountData)
+        fun newInstance(
+            accountData: AccountData
+        ) = HomeFragment().withArgs(ACCOUNT_DATA to accountData)
     }
 
     private var homeView: HomeView? = null
@@ -43,6 +44,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         displayCategoriesFragment()
+        viewModel.accountData?.let { accountData ->
+            homeView?.homeMenuView?.let { homeMenuView ->
+                if (accountData.newMessageCount > 0) {
+                    homeMenuView.setBadgeForMailButton(accountData.newMessageCount)
+                }
+                if (accountData.newAlertCount > 0) {
+                    homeMenuView.setBadgeForNotificationButton(accountData.newAlertCount)
+                }
+            }
+        }
     }
 
     private val homeMenuViewCallback: HomeMenuView.HomeMenuViewCallback by lazy {
@@ -59,6 +70,7 @@ class HomeFragment : Fragment() {
             }
 
             override fun onMailButtonClicked() {
+                homeView?.homeMenuView?.hideMailButtonBadge()
                 childFragmentManager.beginTransaction().run {
                     replace(
                         R.id.main_fragment_container,
@@ -69,6 +81,7 @@ class HomeFragment : Fragment() {
             }
 
             override fun onNotificationButtonClicked() {
+                homeView?.homeMenuView?.hideNotificationButtonBadge()
                 childFragmentManager.beginTransaction().run {
                     replace(R.id.main_fragment_container, AlertsFragment())
                     commitAllowingStateLoss()
@@ -81,7 +94,7 @@ class HomeFragment : Fragment() {
         childFragmentManager.beginTransaction().run {
             replace(
                 R.id.main_fragment_container,
-                CategoriesFragment.newInstance()
+                CategoriesFragment.newInstance(viewModel.accountData)
             )
             commitAllowingStateLoss()
             homeView?.selectHomeButton()

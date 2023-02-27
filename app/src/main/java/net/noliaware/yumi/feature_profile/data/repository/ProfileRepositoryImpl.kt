@@ -52,20 +52,6 @@ class ProfileRepositoryImpl(
             if (sessionNoFailure) {
 
                 remoteData.data?.userProfileDTO?.toUserProfile()?.let { userProfile ->
-
-                    if (userProfile.usedVoucherCount > 0) {
-
-                        when (val result = getUsedCategories()) {
-                            is Resource.Error -> emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-                            is Resource.Loading -> Unit
-                            is Resource.Success -> {
-                                result.data?.let { categories ->
-                                    userProfile.categories = categories
-                                }
-                            }
-                        }
-                    }
-
                     emit(
                         Resource.Success(
                             data = userProfile,
@@ -127,37 +113,47 @@ class ProfileRepositoryImpl(
         }
     }
 
-    private suspend fun getUsedCategories(): Resource<List<Category>> {
+    override fun getUsedCategories(): Flow<Resource<List<Category>>> = flow {
 
-        val timestamp = System.currentTimeMillis().toString()
-        val randomString = UUID.randomUUID().toString()
+        try {
+            val timestamp = System.currentTimeMillis().toString()
+            val randomString = UUID.randomUUID().toString()
 
-        val remoteCategoriesData = api.fetchDataByCategory(
-            timestamp = timestamp,
-            saltString = randomString,
-            token = generateToken(
+            val remoteData = api.fetchDataByCategory(
                 timestamp = timestamp,
-                methodName = GET_DATA_PER_CATEGORY,
-                randomString = randomString
-            ),
-            params = getCommonWSParams(sessionData, GET_DATA_PER_CATEGORY)
-        )
+                saltString = randomString,
+                token = generateToken(
+                    timestamp = timestamp,
+                    methodName = GET_DATA_PER_CATEGORY,
+                    randomString = randomString
+                ),
+                params = getCommonWSParams(sessionData, GET_DATA_PER_CATEGORY)
+            )
 
-        remoteCategoriesData.data?.let { voucherCategoriesDTO ->
+            val sessionNoFailure = handleSessionWithNoFailure(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_DATA_PER_CATEGORY,
+                appMessage = remoteData.message,
+                error = remoteData.error
+            )
 
-            remoteCategoriesData.session?.let { sessionDTO ->
-                sessionData.apply {
-                    sessionId = sessionDTO.sessionId
-                    sessionTokens[GET_DATA_PER_CATEGORY] = sessionDTO.sessionToken
+            if (sessionNoFailure) {
+                remoteData.data?.categoryDTOs?.let { categoriesDTO ->
+                    emit(
+                        Resource.Success(
+                            data = categoriesDTO.map { it.toCategory() },
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
                 }
             }
 
-            voucherCategoriesDTO.categoryDTOs?.let { categoriesDTO ->
-                return Resource.Success(data = categoriesDTO.map { it.toCategory() })
-            }
+        } catch (ex: HttpException) {
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
+        } catch (ex: IOException) {
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
         }
-
-        return Resource.Error(errorType = ErrorType.SYSTEM_ERROR)
     }
 
     override fun getUsedVoucherList(categoryId: String) = Pager(

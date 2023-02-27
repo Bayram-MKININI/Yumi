@@ -7,12 +7,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import net.noliaware.yumi.commun.CATEGORY_UI
 import net.noliaware.yumi.commun.VOUCHER_ID
 import net.noliaware.yumi.commun.VOUCHER_VALIDATED
 import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.feature_categories.data.repository.CategoryRepository
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStatus
+import net.noliaware.yumi.feature_categories.presentation.views.CategoryUI
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,6 +24,7 @@ class VoucherDetailsFragmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     val voucherValidated get() = savedStateHandle.get<Boolean>(VOUCHER_VALIDATED)
+    val categoryUI get() = savedStateHandle.get<CategoryUI>(CATEGORY_UI)
 
     val getVoucherEventsHelper = EventsHelper<Voucher>()
     val getVoucherStatusEventsHelper = EventsHelper<VoucherStatus>()

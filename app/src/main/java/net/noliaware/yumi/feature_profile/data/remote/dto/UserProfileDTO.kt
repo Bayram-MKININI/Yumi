@@ -2,7 +2,6 @@ package net.noliaware.yumi.feature_profile.data.remote.dto
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import net.noliaware.yumi.feature_categories.data.remote.dto.CategoryDTO
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 
 @JsonClass(generateAdapter = true)
@@ -11,16 +10,6 @@ data class UserProfileDTO(
     val login: String?,
     @Json(name = "userRef")
     val userRef: String?,
-    @Json(name = "issuedVoucherCount")
-    val issuedVoucherCount: Int = 0,
-    @Json(name = "usedVoucherCount")
-    val usedVoucherCount: Int = 0,
-    @Json(name = "availableVoucherCount")
-    val availableVoucherCount: Int = 0,
-    @Json(name = "availableVoucherCountPerCategory")
-    val categories: List<CategoryDTO> = listOf(),
-    @Json(name = "canceledVoucherCount")
-    val canceledVoucherCount: Int = 0,
     @Json(name = "userJob")
     val userJob: String?,
     @Json(name = "title")
@@ -57,11 +46,6 @@ data class UserProfileDTO(
     fun toUserProfile() = UserProfile(
         login = login,
         userReferent = userRef,
-        issuedVoucherCount = issuedVoucherCount,
-        usedVoucherCount = usedVoucherCount,
-        availableVoucherCount = availableVoucherCount,
-        categories = categories.map { it.toCategory() },
-        canceledVoucherCount = canceledVoucherCount,
         userJob = userJob,
         title = title,
         firstName = firstName,

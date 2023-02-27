@@ -1,26 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/title_text_view"
+    <View
+        android:id="@+id/header_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/sf_pro_display_semibold"
-        android:text="@string/categories"
-        android:textColor="@color/black_font"
-        android:textSize="24sp" />
+        android:background="@color/colorPrimary" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/description_text_view"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hello_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/sf_pro_text_regular"
-        android:textColor="@color/grey_1"
-        android:textSize="18sp" />
+        android:fontFamily="@font/omnes_regular"
+        android:textColor="@android:color/white"
+        android:textSize="36sp"
+        tools:text="Bonjour" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/name_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/omnes_medium"
+        android:textColor="@android:color/white"
+        android:textSize="30sp"
+        tools:text="Bayram !" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/voucher_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="@drawable/circle_primary_light"
+        android:padding="14dp"
+        android:src="@drawable/ic_voucher" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/voucher_badge_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rectangle_rounded_yellow"
+        android:fontFamily="@font/omnes_semibold_regular"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:minWidth="18dp"
+        android:minHeight="18dp"
+        android:paddingHorizontal="4dp"
+        android:textColor="@android:color/black"
+        android:textSize="13sp"
+        android:visibility="gone"
+        tools:text="5"
+        tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

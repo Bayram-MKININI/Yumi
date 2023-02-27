@@ -2,42 +2,29 @@ package net.noliaware.yumi.feature_profile.presentation.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.core.view.isNotEmpty
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.presentation.adapters.BaseAdapter
-import net.noliaware.yumi.commun.presentation.views.DataValueView
-import net.noliaware.yumi.commun.util.*
-import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView
-import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
+import net.noliaware.yumi.commun.presentation.views.ClipartTabView
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.getStatusBarHeight
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.measureWrapContent
 
 class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
-    private lateinit var myDataTextView: TextView
-    private lateinit var myDataLinearLayout: LinearLayoutCompat
-    private lateinit var complementaryDataTextView: TextView
-    private lateinit var complementaryDataLinearLayout: LinearLayoutCompat
-    private lateinit var getCodeTextView: TextView
-    private lateinit var myHistoryTextView: TextView
-    private lateinit var recyclerView: RecyclerView
-    private val categoryItemViewAdapters = mutableListOf<CategoryItemViewAdapter>()
-    var callback: ProfileViewCallback? by weak()
+    private lateinit var headerView: View
+    private lateinit var titleTextView: TextView
+    private lateinit var profileIconView: View
+    private lateinit var myDataTabView: ClipartTabView
+    private lateinit var myVouchersTabView: ClipartTabView
+    private lateinit var contentView: View
+    private lateinit var viewPager: ViewPager2
 
-    data class ProfileViewAdapter(
-        val myDataAdapters: MutableList<DataValueView.DataValueViewAdapter> = mutableListOf(),
-        val complementaryDataAdapters: MutableList<DataValueView.DataValueViewAdapter> = mutableListOf(),
-        val categoryItemViewAdapters: MutableList<CategoryItemViewAdapter> = mutableListOf()
-    )
-
-    interface ProfileViewCallback {
-        fun onGetCodeButtonClicked()
-        fun onCategoryClickedAtIndex(index: Int)
-    }
+    val getViewPager get() = viewPager
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -45,117 +32,99 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
     }
 
     private fun initView() {
-        myDataTextView = findViewById(R.id.my_data_text_view)
-        myDataLinearLayout = findViewById(R.id.my_data_linear_layout)
-        complementaryDataTextView = findViewById(R.id.complementary_data_text_view)
-        complementaryDataLinearLayout = findViewById(R.id.complementary_data_linear_layout)
-        getCodeTextView = findViewById(R.id.get_code_text_view)
-        getCodeTextView.setOnClickListener { callback?.onGetCodeButtonClicked() }
-        myHistoryTextView = findViewById(R.id.my_history_text_view)
-
-        recyclerView = findViewById(R.id.recycler_view)
-
-        val adapter = BaseAdapter(categoryItemViewAdapters)
-
-        adapter.expressionViewHolderBinding = { eachItem, view ->
-            (view as CategoryItemView).fillViewWithData(eachItem)
+        headerView = findViewById(R.id.header_view)
+        titleTextView = findViewById(R.id.title_text_view)
+        profileIconView = findViewById(R.id.profile_icon_view)
+        myDataTabView = findViewById(R.id.my_data_tab_layout)
+        myDataTabView.setTitle(context.getString(R.string.my_data).uppercase())
+        myDataTabView.setOnClickListener {
+            setFirstTabSelected()
+            viewPager.setCurrentItem(0, true)
         }
-
-        adapter.expressionOnCreateViewHolder = { viewGroup ->
-            viewGroup.inflate(R.layout.category_item_layout, false)
+        myVouchersTabView = findViewById(R.id.my_vouchers_tab_layout)
+        myVouchersTabView.setTitle(context.getString(R.string.my_vouchers).uppercase())
+        myVouchersTabView.setOnClickListener {
+            setSecondTabSelected()
+            viewPager.setCurrentItem(1, true)
         }
-
-        recyclerView.also {
-
-            it.layoutManager = GridLayoutManager(
-                context,
-                context.resources.getInteger(R.integer.number_of_columns_for_categories)
-            )
-
-            val spacing = convertDpToPx(10)
-
-            it.setPadding(spacing, spacing, spacing, spacing)
-            it.clipToPadding = false
-            it.clipChildren = false
-            it.addItemDecoration(MarginItemDecoration(spacing, GRID))
-
-            it.adapter = adapter
-
-            it.onItemClicked(onClick = { position, _ ->
-                callback?.onCategoryClickedAtIndex(position)
-            })
-        }
+        contentView = findViewById(R.id.content_layout)
+        viewPager = contentView.findViewById(R.id.pager)
+        viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                if (position == 0) {
+                    setFirstTabSelected()
+                } else {
+                    setSecondTabSelected()
+                }
+            }
+        })
     }
 
-    fun fillViewWithData(profileViewAdapter: ProfileViewAdapter) {
+    private fun setFirstTabSelected() {
+        myVouchersTabView.setTabSelected(false)
+        myDataTabView.setTabSelected(true)
+    }
 
-        if (myDataLinearLayout.isNotEmpty()) {
-            myDataLinearLayout.removeAllViews()
-        }
-
-        profileViewAdapter.myDataAdapters.forEach { profileDataViewAdapter ->
-            DataValueView(context).also {
-                it.fillViewWithData(profileDataViewAdapter)
-                myDataLinearLayout.addView(it)
-            }
-        }
-
-        if (complementaryDataLinearLayout.isNotEmpty()) {
-            complementaryDataLinearLayout.removeAllViews()
-        }
-
-        profileViewAdapter.complementaryDataAdapters.forEach { profileDataViewAdapter ->
-            DataValueView(context).also {
-                it.fillViewWithData(profileDataViewAdapter)
-                complementaryDataLinearLayout.addView(it)
-            }
-        }
-
-        myHistoryTextView.isVisible = profileViewAdapter.categoryItemViewAdapters.isNotEmpty()
-
-        if (profileViewAdapter.categoryItemViewAdapters.isNotEmpty()) {
-
-            if (categoryItemViewAdapters.isNotEmpty())
-                categoryItemViewAdapters.clear()
-
-            categoryItemViewAdapters.addAll(profileViewAdapter.categoryItemViewAdapters)
-            recyclerView.adapter?.notifyDataSetChanged()
-        }
+    private fun setSecondTabSelected() {
+        myDataTabView.setTabSelected(false)
+        myVouchersTabView.setTabSelected(true)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val viewWidth = MeasureSpec.getSize(widthMeasureSpec)
-        var viewHeight = MeasureSpec.getSize(heightMeasureSpec)
+        val viewHeight = MeasureSpec.getSize(heightMeasureSpec)
 
-        myDataTextView.measureWrapContent()
-
-        myDataLinearLayout.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth - convertDpToPx(40), MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        )
-
-        complementaryDataTextView.measureWrapContent()
-
-        complementaryDataLinearLayout.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth - convertDpToPx(40), MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        )
-
-        getCodeTextView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth * 7 / 10, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY)
-        )
-
-        myHistoryTextView.measureWrapContent()
-
-        recyclerView.measure(
+        headerView.measure(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(
+                getStatusBarHeight() + convertDpToPx(75),
+                MeasureSpec.EXACTLY
+            )
+        )
+
+        titleTextView.measureWrapContent()
+        profileIconView.measure(
+            MeasureSpec.makeMeasureSpec(convertDpToPx(50), MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(50), MeasureSpec.EXACTLY)
+        )
+
+        val contentViewWidth = viewWidth * 9 / 10
+
+        myDataTabView.measureWrapContent()
+        myVouchersTabView.measureWrapContent()
+
+        val tabWidthExtra = (contentViewWidth - (myDataTabView.measuredWidth + myVouchersTabView.measuredWidth + convertDpToPx(
+                8
+            ))) / 2
+
+        myDataTabView.measure(
+            MeasureSpec.makeMeasureSpec(
+                myDataTabView.measuredWidth + tabWidthExtra,
+                MeasureSpec.EXACTLY
+            ),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
-        viewHeight = myDataTextView.measuredHeight + myDataLinearLayout.measuredHeight + complementaryDataTextView.measuredHeight +
-                    complementaryDataLinearLayout.measuredHeight + getCodeTextView.measuredHeight + myHistoryTextView.measuredHeight +
-                    recyclerView.measuredHeight + convertDpToPx(100)
+        myVouchersTabView.measure(
+            MeasureSpec.makeMeasureSpec(
+                myVouchersTabView.measuredWidth + tabWidthExtra,
+                MeasureSpec.EXACTLY
+            ),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        )
+
+        val contentViewHeight = viewHeight - (headerView.measuredHeight + profileIconView.measuredHeight / 2 +
+                    myDataTabView.measuredHeight + convertDpToPx(35))
+
+        contentView.measure(
+            MeasureSpec.makeMeasureSpec(contentViewWidth, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(contentViewHeight, MeasureSpec.EXACTLY)
+        )
+
+        viewPager.measure(
+            MeasureSpec.makeMeasureSpec(contentView.measuredWidth, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(contentView.measuredHeight, MeasureSpec.EXACTLY)
+        )
 
         setMeasuredDimension(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
@@ -167,39 +136,34 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         val viewWidth = right - left
         val viewHeight = bottom - top
 
-        myDataTextView.layoutToTopLeft(
-            convertDpToPx(20),
-            convertDpToPx(10)
+        headerView.layoutToTopLeft(0, 0)
+
+        titleTextView.layoutToTopLeft(
+            (viewWidth - titleTextView.measuredWidth) / 2,
+            getStatusBarHeight() + convertDpToPx(15)
         )
 
-        myDataLinearLayout.layoutToTopLeft(
-            convertDpToPx(20),
-            myDataTextView.bottom + convertDpToPx(10)
+        profileIconView.layoutToTopLeft(
+            (viewWidth - profileIconView.measuredWidth) / 2,
+            headerView.bottom - profileIconView.measuredHeight / 2
         )
 
-        complementaryDataTextView.layoutToTopLeft(
-            convertDpToPx(20),
-            myDataLinearLayout.bottom + convertDpToPx(10)
+        val contentViewLeft = (viewWidth - contentView.measuredWidth) / 2
+        myDataTabView.layoutToTopLeft(
+            contentViewLeft,
+            profileIconView.bottom + convertDpToPx(15)
         )
 
-        complementaryDataLinearLayout.layoutToTopLeft(
-            convertDpToPx(20),
-            complementaryDataTextView.bottom + convertDpToPx(10)
+        myVouchersTabView.layoutToTopLeft(
+            myDataTabView.right + convertDpToPx(8),
+            myDataTabView.top
         )
 
-        getCodeTextView.layoutToTopLeft(
-            (viewWidth - getCodeTextView.measuredWidth) / 2,
-            complementaryDataLinearLayout.bottom + convertDpToPx(10)
+        contentView.layoutToTopLeft(
+            (viewWidth - contentView.measuredWidth) / 2,
+            myDataTabView.bottom - convertDpToPx(20)
         )
 
-        myHistoryTextView.layoutToTopLeft(
-            convertDpToPx(20),
-            getCodeTextView.bottom + convertDpToPx(10)
-        )
-
-        recyclerView.layoutToTopLeft(
-            0,
-            myHistoryTextView.bottom + convertDpToPx(10)
-        )
+        viewPager.layoutToTopLeft(0, 0)
     }
 }

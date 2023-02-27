@@ -55,6 +55,8 @@ const val ACCOUNT_DATA = "account_data"
 const val MESSAGE_SUBJECTS_DATA = "message_subjects_data"
 const val CATEGORY_ID = "categoryId"
 const val CATEGORY_LABEL = "categoryLabel"
+const val CATEGORY = "category"
+const val CATEGORY_UI = "categoryUI"
 
 const val MESSAGE_INBOX_DAT = "message_inbox_dat"
 const val MESSAGE_OUTBOX_DAT = "message_outbox_dat"

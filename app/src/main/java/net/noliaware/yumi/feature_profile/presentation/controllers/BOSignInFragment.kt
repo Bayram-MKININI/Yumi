@@ -80,10 +80,15 @@ class BOSignInFragment : AppCompatDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.timerStateFlow.collect { timerState ->
                 boSignInView?.displayRemainingTime(
-                    timerState.secondsRemaining?.let {
-                        parseTimestampToString(it)
+                    timerState.secondsRemaining?.let { secondsRemaining ->
+                        parseTimestampToString(secondsRemaining)
                     } ?: getString(R.string.empty_time)
                 )
+                timerState.secondsRemaining?.let { secondsRemaining ->
+                    if (secondsRemaining <= 0) {
+                        dismissAllowingStateLoss()
+                    }
+                }
             }
         }
     }

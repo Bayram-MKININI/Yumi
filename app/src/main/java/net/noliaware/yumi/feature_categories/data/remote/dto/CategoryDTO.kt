@@ -2,6 +2,7 @@ package net.noliaware.yumi.feature_categories.data.remote.dto
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import net.noliaware.yumi.commun.util.parseHexColor
 import net.noliaware.yumi.feature_categories.domain.model.Category
 
 @JsonClass(generateAdapter = true)
@@ -25,7 +26,7 @@ data class CategoryDTO(
 ) {
     fun toCategory() = Category(
         categoryId = categoryId,
-        categoryColor = categoryColor,
+        categoryColor = categoryColor.parseHexColor(),
         categoryIcon = categoryIcon,
         categoryLabel = categoryLabel,
         categoryShortLabel = categoryShortLabel,

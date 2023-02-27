@@ -1,8 +1,6 @@
 package net.noliaware.yumi.feature_login.presentation.controllers
 
 import android.os.Bundle
-import android.view.View
-import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,12 +13,16 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         setContentView(R.layout.activity_login)
+        supportFragmentManager.beginTransaction().run {
+            replace(R.id.main_fragment_container, LoginFragment())
+            commitAllowingStateLoss()
+        }
 
-        val content: View = findViewById(android.R.id.content)
+        /*val content: View = findViewById(android.R.id.content)
 
         var delay = false
 
-        content.postDelayed({ delay = true }, 1000)
+        content.postDelayed({ delay = true }, 20000)
 
         content.viewTreeObserver.addOnPreDrawListener(
             object : ViewTreeObserver.OnPreDrawListener {
@@ -35,6 +37,8 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         )
+
+         */
     }
 
     private val showLoginFragment = {

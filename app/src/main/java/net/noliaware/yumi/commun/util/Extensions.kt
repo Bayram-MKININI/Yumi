@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -15,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.MeasureSpec
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.*
 import androidx.appcompat.content.res.AppCompatResources
@@ -48,8 +50,10 @@ import java.math.BigInteger
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 fun generateToken(timestamp: String, methodName: String, randomString: String): String {
     return "noliaware|$timestamp|${methodName}|${timestamp.reversed()}|$randomString".sha256()
@@ -342,6 +346,15 @@ fun Context.getColorCompat(@ColorRes colorRes: Int): Int {
     return ContextCompat.getColor(this, colorRes)
 }
 
+@ColorInt
+fun String.parseHexColor(): Int {
+    return if (isEmpty()) {
+        Color.TRANSPARENT
+    } else {
+        Color.parseColor(this)
+    }
+}
+
 fun Context.getDrawableCompat(@DrawableRes drawableRes: Int): Drawable {
     return AppCompatResources.getDrawable(this, drawableRes)!!
 }
@@ -356,6 +369,36 @@ fun Drawable.tint(@ColorInt color: Int): Drawable {
 @CheckResult
 fun Drawable.tint(context: Context, @ColorRes color: Int): Drawable {
     return tint(context.getColorCompat(color))
+}
+
+fun Number.formatNumber(): String = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
+
+fun ImageView.endCrop() {
+
+    /* val imageRectF = RectF(0f, 0f, d.getIntrinsicWidth(), d.getIntrinsicHeight())
+     val viewRectF = RectF(0f, 0f, imageView.getWidth(), imageView.getHeight())
+     matrix.setRectToRect(imageRectF, viewRectF, ScaleToFit.CENTER)
+     imageMatrix = matrix
+    */
+
+    val drawable = drawable ?: return
+    val viewWidth = measuredWidth
+    val viewHeight = measuredHeight
+    val drawableWidth = drawable.intrinsicWidth
+    val drawableHeight = drawable.intrinsicHeight
+
+    val widthScale = viewWidth / drawableWidth
+    val heightScale = viewHeight / drawableHeight
+    val scale: Float = widthScale.coerceAtLeast(heightScale).toFloat()
+
+    // End Crop
+    matrix.reset()
+    matrix.postScale(scale, scale)
+    matrix.postTranslate(
+        (viewWidth - drawableWidth * scale),
+        (viewHeight - drawableHeight * scale)
+    )
+    imageMatrix = matrix
 }
 
 fun <T> unsafeLazy(initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)

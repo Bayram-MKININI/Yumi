@@ -2,23 +2,21 @@ package net.noliaware.yumi.feature_categories.presentation.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.ViewGroup
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.util.convertDpToPx
-import net.noliaware.yumi.commun.util.drawableIdByName
-import net.noliaware.yumi.commun.util.layoutToTopLeft
-import net.noliaware.yumi.commun.util.layoutToTopRight
+import net.noliaware.yumi.commun.presentation.views.ElevatedCardView
+import net.noliaware.yumi.commun.util.*
 
-class CategoryItemView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
+class CategoryItemView(context: Context, attrs: AttributeSet?) : ElevatedCardView(context, attrs) {
 
     private lateinit var countTextView: TextView
     private lateinit var iconImageView: ImageView
     private lateinit var titleTextView: TextView
 
     data class CategoryItemViewAdapter(
-        val count: Int = 0,
+        val count: String = "",
         val iconName: String?,
         val title: String = ""
     )
@@ -35,23 +33,20 @@ class CategoryItemView(context: Context, attrs: AttributeSet?) : ViewGroup(conte
     }
 
     fun fillViewWithData(categoryItemViewAdapter: CategoryItemViewAdapter) {
-        countTextView.text = categoryItemViewAdapter.count.toString()
+        countTextView.text = categoryItemViewAdapter.count
         iconImageView.setImageResource(context.drawableIdByName(categoryItemViewAdapter.iconName))
         titleTextView.text = categoryItemViewAdapter.title
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val viewWidth = MeasureSpec.getSize(widthMeasureSpec)
+        val viewWidth = View.MeasureSpec.getSize(widthMeasureSpec)
         val viewHeight = MeasureSpec.getSize(heightMeasureSpec)
 
-        countTextView.measure(
-            MeasureSpec.makeMeasureSpec(convertDpToPx(34), MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(convertDpToPx(34), MeasureSpec.EXACTLY)
-        )
+        countTextView.measureWrapContent()
 
         iconImageView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth / 3, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(viewWidth / 3, MeasureSpec.EXACTLY)
+            MeasureSpec.makeMeasureSpec(viewWidth / 2, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(viewWidth / 2, MeasureSpec.EXACTLY)
         )
 
         titleTextView.measure(

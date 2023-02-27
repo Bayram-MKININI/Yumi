@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.ACCOUNT_DATA
 import net.noliaware.yumi.commun.VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Category
@@ -17,12 +18,15 @@ import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewAdapter
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewCallback
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
+import net.noliaware.yumi.feature_login.domain.model.AccountData
 
 @AndroidEntryPoint
 class CategoriesFragment : Fragment() {
 
     companion object {
-        fun newInstance() = CategoriesFragment().withArgs()
+        fun newInstance(
+            accountData: AccountData?
+        ) = CategoriesFragment().withArgs(ACCOUNT_DATA to accountData)
     }
 
     private var categoriesView: CategoriesView? = null
@@ -43,10 +47,16 @@ class CategoriesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         collectFlows()
         bindViewToData()
+        viewModel.accountData?.let {
+            categoriesView?.setUserData(
+                it.helloMessage,
+                it.userName,
+                it.availableVoucherCountSinceLast.formatNumber()
+            )
+        }
     }
 
     private fun collectFlows() {
-
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
@@ -59,9 +69,11 @@ class CategoriesFragment : Fragment() {
                 when (vmState) {
                     is ViewModelState.LoadingState -> Unit
                     is ViewModelState.DataState -> vmState.data?.let { categoryList ->
-                        categoriesView?.refreshCategoryList(filterEmptyCategories(categoryList).map { category ->
-                            mapCategory(category)
-                        })
+                        categoriesView?.refreshCategoryList(
+                            filterEmptyCategories(categoryList).map { category ->
+                                mapCategory(category)
+                            }
+                        )
                     }
                 }
             }
@@ -69,17 +81,18 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun mapCategory(category: Category) = CategoryItemViewAdapter(
-        count = category.availableVoucherCount,
+        count = category.availableVoucherCount.formatNumber(),
         iconName = category.categoryIcon,
         title = category.categoryShortLabel
     )
 
     private fun bindViewToData() {
         viewModel.eventsHelper.stateData?.let { categories ->
-            CategoriesViewAdapter(description = getString(R.string.categories_list),
-                categoryItemViewAdapters = filterEmptyCategories(categories).map { category ->
+            CategoriesViewAdapter(
+                filterEmptyCategories(categories).map { category ->
                     mapCategory(category)
-                }).apply {
+                }
+            ).apply {
                 categoriesView?.fillViewWithData(this)
             }
         }
@@ -92,7 +105,7 @@ class CategoriesFragment : Fragment() {
                     filterEmptyCategories(categories)[index]
                         .let { category ->
                             VouchersListFragment.newInstance(
-                                category.categoryId, category.categoryLabel
+                                category
                             ).apply {
                                 this.onDataRefreshed = {
                                     viewModel.callGetAvailableCategories()

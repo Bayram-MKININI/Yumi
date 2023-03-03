@@ -23,6 +23,7 @@ import net.noliaware.yumi.commun.util.handlePaginationError
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.presentation.adapters.VoucherAdapter
+import net.noliaware.yumi.feature_categories.presentation.mappers.AvailableVoucherMapper
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryUI
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView.VouchersListViewAdapter
@@ -30,14 +31,14 @@ import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
 
 
 @AndroidEntryPoint
-class VouchersListFragment : AppCompatDialogFragment() {
+class AvailableVouchersListFragment : AppCompatDialogFragment() {
 
     companion object {
-        fun newInstance(category: Category) = VouchersListFragment().withArgs(CATEGORY to category)
+        fun newInstance(category: Category) = AvailableVouchersListFragment().withArgs(CATEGORY to category)
     }
 
     private var vouchersListView: VouchersListView? = null
-    private val viewModel by viewModels<VouchersListFragmentViewModel>()
+    private val viewModel by viewModels<AvailableVouchersListFragmentViewModel>()
     var onDataRefreshed: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,10 +126,8 @@ class VouchersListFragment : AppCompatDialogFragment() {
     }
 
     private val readMailViewCallback: VouchersListViewCallback by lazy {
-        object : VouchersListViewCallback {
-            override fun onBackButtonClicked() {
-                dismissAllowingStateLoss()
-            }
+        VouchersListViewCallback {
+            dismissAllowingStateLoss()
         }
     }
 

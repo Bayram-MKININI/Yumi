@@ -2,10 +2,6 @@ package net.noliaware.yumi.commun.util
 
 import android.content.Context
 import android.util.Base64
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.FileInputStream

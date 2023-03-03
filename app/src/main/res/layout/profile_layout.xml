@@ -38,12 +38,17 @@
         android:textSize="22sp" />
 
     <net.noliaware.yumi.commun.presentation.views.ClipartTabView
-        android:id="@+id/my_data_tab_layout"
+        android:id="@+id/user_data_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <net.noliaware.yumi.commun.presentation.views.ClipartTabView
-        android:id="@+id/my_vouchers_tab_layout"
+        android:id="@+id/used_tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <net.noliaware.yumi.commun.presentation.views.ClipartTabView
+        android:id="@+id/cancelled_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

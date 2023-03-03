@@ -31,7 +31,7 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
     private lateinit var locationBackgroundView: View
     private lateinit var retailerTextView: TextView
     private lateinit var addressTextView: TextView
-    private lateinit var phoneImageView: ImageView
+    lateinit var phoneImageView: ImageView
     private lateinit var phoneTextView: TextView
     private lateinit var mailImageView: ImageView
     private lateinit var mailTextView: TextView
@@ -113,8 +113,9 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
                 MeasureSpec.makeMeasureSpec(convertDpToPx(20), MeasureSpec.EXACTLY)
             )
 
-            val sponsorTextViewWidth = sponsorBackgroundViewWidth - (sponsoredByTextView.measuredWidth + informationTextView.measuredWidth +
-                    convertDpToPx(35))
+            val sponsorTextViewWidth =
+                sponsorBackgroundViewWidth - (sponsoredByTextView.measuredWidth + informationTextView.measuredWidth +
+                        convertDpToPx(35))
 
             sponsorTextView.measure(
                 MeasureSpec.makeMeasureSpec(sponsorTextViewWidth, MeasureSpec.AT_MOST),
@@ -149,12 +150,14 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
 
         phoneTextView.measureWrapContent()
 
-        mailImageView.measure(
-            MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY)
-        )
+        if (mailImageView.isVisible) {
+            mailImageView.measure(
+                MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY)
+            )
 
-        mailTextView.measureWrapContent()
+            mailTextView.measureWrapContent()
+        }
 
         openLocationLayout.measureWrapContent()
 
@@ -169,7 +172,8 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
             MeasureSpec.makeMeasureSpec(locationBackgroundViewHeight, MeasureSpec.EXACTLY)
         )
 
-        val contentHeight = titleTextView.measuredHeight + createdTextView.measuredHeight + separatorView.measuredHeight +
+        val contentHeight =
+            titleTextView.measuredHeight + createdTextView.measuredHeight + separatorView.measuredHeight +
                     if (sponsorTextView.isVisible) {
                         sponsorBackgroundView.measuredHeight + convertDpToPx(15)
                     } else {
@@ -290,15 +294,17 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
             phoneImageView.top + (phoneImageView.measuredHeight - phoneTextView.measuredHeight) / 2
         )
 
-        mailImageView.layoutToTopLeft(
-            phoneTextView.right + convertDpToPx(10),
-            phoneImageView.top
-        )
+        if (mailImageView.isVisible) {
+            mailImageView.layoutToTopLeft(
+                phoneTextView.right + convertDpToPx(10),
+                phoneImageView.top
+            )
 
-        mailTextView.layoutToTopLeft(
-            mailImageView.right + convertDpToPx(5),
-            mailImageView.top + (mailImageView.measuredHeight - mailTextView.measuredHeight) / 2
-        )
+            mailTextView.layoutToTopLeft(
+                mailImageView.right + convertDpToPx(5),
+                mailImageView.top + (mailImageView.measuredHeight - mailTextView.measuredHeight) / 2
+            )
+        }
 
         openLocationLayout.layoutToTopLeft(
             (viewWidth - openLocationLayout.measuredWidth) / 2,

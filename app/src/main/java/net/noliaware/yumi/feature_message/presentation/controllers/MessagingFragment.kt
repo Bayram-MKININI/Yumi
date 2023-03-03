@@ -49,18 +49,16 @@ class MessagingFragment : Fragment() {
     }
 
     private val messagingViewCallback: MessagingView.MailViewCallback by lazy {
-        object : MessagingView.MailViewCallback {
-            override fun onComposeButtonClicked() {
-                SendMailFragment.newInstance(
-                    viewModel.messageSubjects ?: listOf()
-                ).apply {
-                    onMessageSent = {
-                        (messagingView?.getViewPager?.adapter as MessageFragmentStateAdapter).refreshSentFragment()
-                    }
-                }.show(
-                    childFragmentManager.beginTransaction(), SEND_MESSAGES_FRAGMENT_TAG
-                )
-            }
+        MessagingView.MailViewCallback {
+            SendMailFragment.newInstance(
+                viewModel.messageSubjects ?: listOf()
+            ).apply {
+                onMessageSent = {
+                    (messagingView?.getViewPager?.adapter as MessageFragmentStateAdapter).refreshSentFragment()
+                }
+            }.show(
+                childFragmentManager.beginTransaction(), SEND_MESSAGES_FRAGMENT_TAG
+            )
         }
     }
 

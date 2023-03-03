@@ -26,7 +26,7 @@ class LoginView(context: Context, attrs: AttributeSet?) : ElevatedCardView(conte
 
     var callback: LoginViewCallback? by weak()
 
-    interface LoginViewCallback {
+    fun interface LoginViewCallback {
         fun onLoginEntered(login: String)
     }
 

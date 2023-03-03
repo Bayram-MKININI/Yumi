@@ -44,10 +44,8 @@ class BOSignInFragment : AppCompatDialogFragment() {
     }
 
     private val boSignInViewCallback: BOSignInView.BOSignInViewCallback by lazy {
-        object : BOSignInView.BOSignInViewCallback {
-            override fun onBackButtonClicked() {
-                dismissAllowingStateLoss()
-            }
+        BOSignInView.BOSignInViewCallback {
+            dismissAllowingStateLoss()
         }
     }
 

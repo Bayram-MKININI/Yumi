@@ -8,7 +8,6 @@
     <string name="enter_login_message">Saisissez votre identifiant</string>
     <string name="enter_code_message">Saisissez votre code</string>
     <string name="enter_code_description">6 chiffres</string>
-    <string name="enter_code_comment_message">Bienvenue %s!</string>
     <string name="login_empty_error">Le champ identifiant est vide</string>
     <string name="hint_login">Identifiant</string>
     <string name="secret_code">Votre code secret</string>
@@ -19,7 +18,7 @@
     <string name="cancel">Annuler</string>
 
     //Category list
-    <string name="name_formatted">%s!</string>
+    <string name="categories_title">Mes besoins concernent…</string>
     <string name="vouchers_list">Liste des coupons %s</string>
     <string name="back">Retour</string>
     <string name="expiry_date">Valable jusqu\'au</string>
@@ -30,6 +29,7 @@
     <string name="created_in_hyphen">Crée le %s -</string>
     <string name="created_in">Crée le %s</string>
     <string name="validation_date">Validé le</string>
+    <string name="cancellation_date">Annulé le</string>
     <string name="expiry_date_value">Valable jusqu\'au %s</string>
     <string name="sponsored_by">Sponsorisé par :</string>
     <string name="information">i</string>
@@ -46,10 +46,13 @@
 
     //Profile
     <string name="my_profile">Mon Profil</string>
+    <string name="my_data_short">Mes infos</string>
     <string name="my_data">Mes informations</string>
-    <string name="my_vouchers">Mes coupons</string>
+    <string name="used">Utilisés</string>
+    <string name="used_vouchers">Mes coupons utilisés</string>
+    <string name="cancelled">Annulés</string>
+    <string name="cancelled_vouchers">Mes coupons annulés</string>
     <string name="complementary_data">Informations complémentaires</string>
-    <string name="my_used_vouchers">Mes coupons</string>
     <string name="login">Login</string>
     <string name="surname">Nom</string>
     <string name="name">Prénom</string>

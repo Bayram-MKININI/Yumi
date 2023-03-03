@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<net.noliaware.yumi.feature_profile.presentation.views.UsedCategoriesView
+<net.noliaware.yumi.feature_profile.presentation.views.ProfileCategoriesView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/my_vouchers_text_view"
+        android:id="@+id/title_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/omnes_semibold_regular"
-        android:text="@string/my_used_vouchers"
         android:textColor="@color/colorPrimary"
         android:textSize="19sp" />
 
@@ -19,4 +18,4 @@
         android:layout_height="wrap_content"
         android:overScrollMode="never" />
 
-</net.noliaware.yumi.feature_profile.presentation.views.UsedCategoriesView>
+</net.noliaware.yumi.feature_profile.presentation.views.ProfileCategoriesView>

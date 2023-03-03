@@ -11,7 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
-import net.noliaware.yumi.commun.VOUCHERS_LIST_FRAGMENT_TAG
+import net.noliaware.yumi.commun.AVAILABLE_VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
@@ -70,7 +70,7 @@ class CategoriesFragment : Fragment() {
                     is ViewModelState.LoadingState -> Unit
                     is ViewModelState.DataState -> vmState.data?.let { categoryList ->
                         categoriesView?.refreshCategoryList(
-                            filterEmptyCategories(categoryList).map { category ->
+                            categoryList.map { category ->
                                 mapCategory(category)
                             }
                         )
@@ -89,7 +89,7 @@ class CategoriesFragment : Fragment() {
     private fun bindViewToData() {
         viewModel.eventsHelper.stateData?.let { categories ->
             CategoriesViewAdapter(
-                filterEmptyCategories(categories).map { category ->
+                categories.map { category ->
                     mapCategory(category)
                 }
             ).apply {
@@ -99,29 +99,23 @@ class CategoriesFragment : Fragment() {
     }
 
     private val categoriesViewCallback: CategoriesViewCallback by lazy {
-        object : CategoriesViewCallback {
-            override fun onItemClickedAtIndex(index: Int) {
-                viewModel.eventsHelper.stateData?.let { categories ->
-                    filterEmptyCategories(categories)[index]
-                        .let { category ->
-                            VouchersListFragment.newInstance(
-                                category
-                            ).apply {
-                                this.onDataRefreshed = {
-                                    viewModel.callGetAvailableCategories()
-                                }
-                            }.show(
-                                childFragmentManager.beginTransaction(),
-                                VOUCHERS_LIST_FRAGMENT_TAG
-                            )
-                        }
-                }
+        CategoriesViewCallback { index ->
+            viewModel.eventsHelper.stateData?.let { categories ->
+                categories[index]
+                    .let { category ->
+                        AvailableVouchersListFragment.newInstance(
+                            category
+                        ).apply {
+                            this.onDataRefreshed = {
+                                viewModel.callGetAvailableCategories()
+                            }
+                        }.show(
+                            childFragmentManager.beginTransaction(),
+                            AVAILABLE_VOUCHERS_LIST_FRAGMENT_TAG
+                        )
+                    }
             }
         }
-    }
-
-    private fun filterEmptyCategories(categoryList: List<Category>) = categoryList.filter {
-        it.availableVoucherCount > 0
     }
 
     override fun onDestroyView() {

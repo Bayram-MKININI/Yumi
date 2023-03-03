@@ -12,14 +12,14 @@ import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
 
-class UsedCategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
+class ProfileCategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
-    private lateinit var myVouchersTextView: TextView
+    private lateinit var titleTextView: TextView
     private lateinit var recyclerView: RecyclerView
     private val categoryItemViewAdapters = mutableListOf<CategoryItemViewAdapter>()
-    var callback: UsedCategoriesViewCallback? by weak()
+    var callback: ProfileCategoriesViewCallback? by weak()
 
-    interface UsedCategoriesViewCallback {
+    fun interface ProfileCategoriesViewCallback {
         fun onCategoryClickedAtIndex(index: Int)
     }
 
@@ -29,18 +29,8 @@ class UsedCategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(con
     }
 
     private fun initView() {
-        myVouchersTextView = findViewById(R.id.my_vouchers_text_view)
+        titleTextView = findViewById(R.id.title_text_view)
         recyclerView = findViewById(R.id.recycler_view)
-
-        val adapter = BaseAdapter(categoryItemViewAdapters)
-
-        adapter.expressionViewHolderBinding = { eachItem, view ->
-            (view as CategoryItemView).fillViewWithData(eachItem)
-        }
-
-        adapter.expressionOnCreateViewHolder = { viewGroup ->
-            viewGroup.inflate(R.layout.category_item_layout, false)
-        }
 
         recyclerView.also {
 
@@ -56,12 +46,23 @@ class UsedCategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(con
             it.clipChildren = false
             it.addItemDecoration(MarginItemDecoration(spacing, GRID))
 
-            it.adapter = adapter
-
-            it.onItemClicked(onClick = { position, _ ->
-                callback?.onCategoryClickedAtIndex(position)
-            })
+            BaseAdapter(categoryItemViewAdapters).apply {
+                expressionViewHolderBinding = { eachItem, view ->
+                    (view as CategoryItemView).fillViewWithData(eachItem)
+                }
+                expressionOnCreateViewHolder = { viewGroup ->
+                    viewGroup.inflate(R.layout.category_item_layout, false)
+                }
+                onItemClicked = { position ->
+                    callback?.onCategoryClickedAtIndex(position)
+                }
+                it.adapter = this
+            }
         }
+    }
+
+    fun setViewTitle(title: String) {
+        titleTextView.text = title
     }
 
     fun fillViewWithData(adapters: List<CategoryItemViewAdapter>) {
@@ -75,9 +76,10 @@ class UsedCategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(con
         val viewWidth = MeasureSpec.getSize(widthMeasureSpec)
         val viewHeight = MeasureSpec.getSize(heightMeasureSpec)
 
-        myVouchersTextView.measureWrapContent()
+        titleTextView.measureWrapContent()
 
-        val recyclerViewHeight = viewHeight - (myVouchersTextView.measuredHeight + convertDpToPx(30))
+        val recyclerViewHeight =
+            viewHeight - (titleTextView.measuredHeight + convertDpToPx(30))
         recyclerView.measure(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(recyclerViewHeight, MeasureSpec.EXACTLY)
@@ -93,14 +95,14 @@ class UsedCategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(con
         val viewWidth = right - left
         val viewHeight = bottom - top
 
-        myVouchersTextView.layoutToTopLeft(
+        titleTextView.layoutToTopLeft(
             convertDpToPx(20),
             convertDpToPx(15)
         )
 
         recyclerView.layoutToTopLeft(
             0,
-            myVouchersTextView.bottom + convertDpToPx(10)
+            titleTextView.bottom + convertDpToPx(10)
         )
     }
 }

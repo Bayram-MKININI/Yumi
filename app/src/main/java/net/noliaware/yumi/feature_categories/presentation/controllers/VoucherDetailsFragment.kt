@@ -146,10 +146,16 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
     private fun handleVoucherStatusUpdate(voucherStatus: VoucherStatus) {
         when (voucherStatus) {
-            VoucherStatus.INEXISTENT -> vouchersDetailsContainerView?.setVoucherStatus(getString(R.string.voucher_inexistent))
-            VoucherStatus.CANCELED -> vouchersDetailsContainerView?.setVoucherStatus(getString(R.string.voucher_canceled))
             VoucherStatus.USABLE -> Unit
-            VoucherStatus.CONSUMED -> vouchersDetailsContainerView?.setVoucherStatus(getString(R.string.voucher_consumed))
+            VoucherStatus.CONSUMED -> vouchersDetailsContainerView?.setVoucherStatus(
+                getString(R.string.voucher_consumed)
+            )
+            VoucherStatus.CANCELLED -> vouchersDetailsContainerView?.setVoucherStatus(
+                getString(R.string.voucher_canceled)
+            )
+            VoucherStatus.INEXISTENT -> vouchersDetailsContainerView?.setVoucherStatus(
+                getString(R.string.voucher_inexistent)
+            )
         }
     }
 
@@ -163,6 +169,14 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 viewModel.getVoucherEventsHelper.stateData?.let { voucher ->
                     voucher.partnerInfoURL?.let { url ->
                         context?.openWebPage(url)
+                    }
+                }
+            }
+
+            override fun onPhoneButtonClicked() {
+                viewModel.getVoucherEventsHelper.stateData?.let { voucher ->
+                    voucher.retailerCellPhoneNumber?.let { phone ->
+                        context?.makeCall(phone)
                     }
                 }
             }

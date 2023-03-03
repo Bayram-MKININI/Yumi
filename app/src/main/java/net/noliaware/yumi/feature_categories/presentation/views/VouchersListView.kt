@@ -28,7 +28,7 @@ class VouchersListView(context: Context, attrs: AttributeSet?) : ViewGroup(conte
         }
     var callback: VouchersListViewCallback? by weak()
 
-    interface VouchersListViewCallback {
+    fun interface VouchersListViewCallback {
         fun onBackButtonClicked()
     }
 

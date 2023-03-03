@@ -6,13 +6,8 @@ import net.noliaware.yumi.feature_alerts.data.remote.dto.AlertsDTO
 import net.noliaware.yumi.feature_categories.data.remote.dto.*
 import net.noliaware.yumi.feature_login.data.remote.dto.AccountDataDTO
 import net.noliaware.yumi.feature_login.data.remote.dto.InitDTO
-import net.noliaware.yumi.feature_message.data.remote.dto.DeleteMessageDTO
-import net.noliaware.yumi.feature_message.data.remote.dto.MessagesDTO
-import net.noliaware.yumi.feature_message.data.remote.dto.SentMessageDTO
-import net.noliaware.yumi.feature_message.data.remote.dto.SingleMessageDTO
-import net.noliaware.yumi.feature_profile.data.remote.dto.BOSignInDTO
-import net.noliaware.yumi.feature_profile.data.remote.dto.UsedVouchersDTO
-import net.noliaware.yumi.feature_profile.data.remote.dto.UserAccountDTO
+import net.noliaware.yumi.feature_message.data.remote.dto.*
+import net.noliaware.yumi.feature_profile.data.remote.dto.*
 import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
@@ -39,13 +34,31 @@ interface RemoteApi {
     ): ResponseDTO<AccountDataDTO>
 
     @FormUrlEncoded
-    @POST("$GET_DATA_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
-    suspend fun fetchDataByCategory(
+    @POST("$GET_AVAILABLE_DATA_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchAvailableDataByCategory(
         @Path(TIMESTAMP) timestamp: String,
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<VoucherCategoriesDTO>
+    ): ResponseDTO<AvailableVoucherCategoriesDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_USED_DATA_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchUsedDataByCategory(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<UsedVoucherCategoriesDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_CANCELLED_DATA_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchCancelledDataByCategory(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<CancelledVoucherCategoriesDTO>
 
     @FormUrlEncoded
     @POST("$GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
@@ -111,13 +124,22 @@ interface RemoteApi {
     ): ResponseDTO<UsedVouchersDTO>
 
     @FormUrlEncoded
+    @POST("$GET_CANCELLED_VOUCHER_LIST_BY_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchCancelledVouchersForCategory(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<CancelledVouchersDTO>
+
+    @FormUrlEncoded
     @POST("$GET_INBOX_MESSAGE_LIST/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
     suspend fun fetchInboxMessages(
         @Path(TIMESTAMP) timestamp: String,
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<MessagesDTO>
+    ): ResponseDTO<InboxMessagesDTO>
 
     @FormUrlEncoded
     @POST("$GET_INBOX_MESSAGE/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
@@ -126,7 +148,7 @@ interface RemoteApi {
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<SingleMessageDTO>
+    ): ResponseDTO<InboxMessageDTO>
 
     @FormUrlEncoded
     @POST("$GET_OUTBOX_MESSAGE_LIST/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
@@ -135,7 +157,7 @@ interface RemoteApi {
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<MessagesDTO>
+    ): ResponseDTO<OutboxMessagesDTO>
 
     @FormUrlEncoded
     @POST("$GET_OUTBOX_MESSAGE/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
@@ -144,7 +166,7 @@ interface RemoteApi {
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<SingleMessageDTO>
+    ): ResponseDTO<OutboxMessageDTO>
 
     @FormUrlEncoded
     @POST("$SEND_MESSAGE/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
@@ -162,7 +184,7 @@ interface RemoteApi {
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<DeleteMessageDTO>
+    ): ResponseDTO<DeleteInboxMessageDTO>
 
     @FormUrlEncoded
     @POST("$DELETE_OUTBOX_MESSAGE/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
@@ -171,7 +193,7 @@ interface RemoteApi {
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<DeleteMessageDTO>
+    ): ResponseDTO<DeleteOutboxMessageDTO>
 
     @FormUrlEncoded
     @POST("$GET_ALERT_LIST/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")

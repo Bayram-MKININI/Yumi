@@ -85,7 +85,7 @@
             android:id="@+id/separator_line_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/rectangle_rounded_grey2" />
+            android:background="@drawable/rectangle_rounded_grey5" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/message_parent_layout"

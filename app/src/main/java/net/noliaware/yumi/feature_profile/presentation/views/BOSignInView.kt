@@ -23,7 +23,7 @@ class BOSignInView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
 
     var callback: BOSignInViewCallback? by weak()
 
-    interface BOSignInViewCallback {
+    fun interface BOSignInViewCallback {
         fun onBackButtonClicked()
     }
 

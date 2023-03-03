@@ -19,8 +19,9 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
     private lateinit var headerView: View
     private lateinit var titleTextView: TextView
     private lateinit var profileIconView: View
-    private lateinit var myDataTabView: ClipartTabView
-    private lateinit var myVouchersTabView: ClipartTabView
+    private lateinit var userDataTabView: ClipartTabView
+    private lateinit var usedTabView: ClipartTabView
+    private lateinit var cancelledTabView: ClipartTabView
     private lateinit var contentView: View
     private lateinit var viewPager: ViewPager2
 
@@ -35,41 +36,59 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         headerView = findViewById(R.id.header_view)
         titleTextView = findViewById(R.id.title_text_view)
         profileIconView = findViewById(R.id.profile_icon_view)
-        myDataTabView = findViewById(R.id.my_data_tab_layout)
-        myDataTabView.setTitle(context.getString(R.string.my_data).uppercase())
-        myDataTabView.setOnClickListener {
+        userDataTabView = findViewById(R.id.user_data_tab_layout)
+        userDataTabView.setTitle(context.getString(R.string.my_data_short).uppercase())
+        userDataTabView.setOnClickListener {
             setFirstTabSelected()
             viewPager.setCurrentItem(0, true)
         }
-        myVouchersTabView = findViewById(R.id.my_vouchers_tab_layout)
-        myVouchersTabView.setTitle(context.getString(R.string.my_vouchers).uppercase())
-        myVouchersTabView.setOnClickListener {
+        usedTabView = findViewById(R.id.used_tab_layout)
+        usedTabView.setTitle(context.getString(R.string.used).uppercase())
+        usedTabView.setOnClickListener {
             setSecondTabSelected()
             viewPager.setCurrentItem(1, true)
+        }
+        cancelledTabView = findViewById(R.id.cancelled_tab_layout)
+        cancelledTabView.setTitle(context.getString(R.string.cancelled).uppercase())
+        cancelledTabView.setOnClickListener {
+            setThirdTabSelected()
+            viewPager.setCurrentItem(2, true)
         }
         contentView = findViewById(R.id.content_layout)
         viewPager = contentView.findViewById(R.id.pager)
         viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                if (position == 0) {
-                    setFirstTabSelected()
-                } else {
-                    setSecondTabSelected()
+                when (position) {
+                    0 -> {
+                        setFirstTabSelected()
+                    }
+                    1 -> {
+                        setSecondTabSelected()
+                    }
+                    else -> {
+                        setThirdTabSelected()
+                    }
                 }
             }
         })
     }
 
     private fun setFirstTabSelected() {
-        myVouchersTabView.setTabSelected(false)
-        myDataTabView.setTabSelected(true)
+        userDataTabView.setTabSelected(true)
+        usedTabView.setTabSelected(false)
+        cancelledTabView.setTabSelected(false)
     }
 
     private fun setSecondTabSelected() {
-        myDataTabView.setTabSelected(false)
-        myVouchersTabView.setTabSelected(true)
+        userDataTabView.setTabSelected(false)
+        usedTabView.setTabSelected(true)
+        cancelledTabView.setTabSelected(false)
     }
-
+    private fun setThirdTabSelected() {
+        userDataTabView.setTabSelected(false)
+        usedTabView.setTabSelected(false)
+        cancelledTabView.setTabSelected(true)
+    }
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val viewWidth = MeasureSpec.getSize(widthMeasureSpec)
         val viewHeight = MeasureSpec.getSize(heightMeasureSpec)
@@ -90,31 +109,39 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
 
         val contentViewWidth = viewWidth * 9 / 10
 
-        myDataTabView.measureWrapContent()
-        myVouchersTabView.measureWrapContent()
+        userDataTabView.measureWrapContent()
+        usedTabView.measureWrapContent()
+        cancelledTabView.measureWrapContent()
 
-        val tabWidthExtra = (contentViewWidth - (myDataTabView.measuredWidth + myVouchersTabView.measuredWidth + convertDpToPx(
-                8
-            ))) / 2
+        val tabWidthExtra = (contentViewWidth - (userDataTabView.measuredWidth + usedTabView.measuredWidth +
+                cancelledTabView.measuredWidth + convertDpToPx(16))) / 3
 
-        myDataTabView.measure(
+        userDataTabView.measure(
             MeasureSpec.makeMeasureSpec(
-                myDataTabView.measuredWidth + tabWidthExtra,
+                userDataTabView.measuredWidth + tabWidthExtra,
                 MeasureSpec.EXACTLY
             ),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
-        myVouchersTabView.measure(
+        usedTabView.measure(
             MeasureSpec.makeMeasureSpec(
-                myVouchersTabView.measuredWidth + tabWidthExtra,
+                usedTabView.measuredWidth + tabWidthExtra,
+                MeasureSpec.EXACTLY
+            ),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        )
+
+        cancelledTabView.measure(
+            MeasureSpec.makeMeasureSpec(
+                cancelledTabView.measuredWidth + tabWidthExtra,
                 MeasureSpec.EXACTLY
             ),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
         val contentViewHeight = viewHeight - (headerView.measuredHeight + profileIconView.measuredHeight / 2 +
-                    myDataTabView.measuredHeight + convertDpToPx(35))
+                userDataTabView.measuredHeight + convertDpToPx(35))
 
         contentView.measure(
             MeasureSpec.makeMeasureSpec(contentViewWidth, MeasureSpec.EXACTLY),
@@ -149,19 +176,24 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         )
 
         val contentViewLeft = (viewWidth - contentView.measuredWidth) / 2
-        myDataTabView.layoutToTopLeft(
+        userDataTabView.layoutToTopLeft(
             contentViewLeft,
             profileIconView.bottom + convertDpToPx(15)
         )
 
-        myVouchersTabView.layoutToTopLeft(
-            myDataTabView.right + convertDpToPx(8),
-            myDataTabView.top
+        usedTabView.layoutToTopLeft(
+            userDataTabView.right + convertDpToPx(8),
+            userDataTabView.top
+        )
+
+        cancelledTabView.layoutToTopLeft(
+            usedTabView.right + convertDpToPx(8),
+            userDataTabView.top
         )
 
         contentView.layoutToTopLeft(
             (viewWidth - contentView.measuredWidth) / 2,
-            myDataTabView.bottom - convertDpToPx(20)
+            userDataTabView.bottom - convertDpToPx(20)
         )
 
         viewPager.layoutToTopLeft(0, 0)

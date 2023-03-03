@@ -139,14 +139,17 @@ class LoginRepositoryImpl @Inject constructor(
     ).also { it.plusAssign(getCommonWSParams(sessionData, tokenKey)) }
 
     private fun SessionData.fillMapWithInitialToken(sessionDTO: SessionDTO) {
+        this.sessionTokens[GET_AVAILABLE_DATA_PER_CATEGORY] = sessionDTO.sessionToken
         this.sessionTokens[GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY] = sessionDTO.sessionToken
         this.sessionTokens[GET_VOUCHER] = sessionDTO.sessionToken
         this.sessionTokens[GET_VOUCHER_STATUS] = sessionDTO.sessionToken
         this.sessionTokens[USE_VOUCHER] = sessionDTO.sessionToken
         this.sessionTokens[GET_ACCOUNT] = sessionDTO.sessionToken
         this.sessionTokens[GET_BACK_OFFICE_SIGN_IN_CODE] = sessionDTO.sessionToken
-        this.sessionTokens[GET_DATA_PER_CATEGORY] = sessionDTO.sessionToken
+        this.sessionTokens[GET_USED_DATA_PER_CATEGORY] = sessionDTO.sessionToken
         this.sessionTokens[GET_USED_VOUCHER_LIST_BY_CATEGORY] = sessionDTO.sessionToken
+        this.sessionTokens[GET_CANCELLED_DATA_PER_CATEGORY] = sessionDTO.sessionToken
+        this.sessionTokens[GET_CANCELLED_VOUCHER_LIST_BY_CATEGORY] = sessionDTO.sessionToken
         this.sessionTokens[GET_ALERT_LIST] = sessionDTO.sessionToken
         this.sessionTokens[GET_INBOX_MESSAGE_LIST] = sessionDTO.sessionToken
         this.sessionTokens[GET_INBOX_MESSAGE] = sessionDTO.sessionToken

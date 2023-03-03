@@ -47,15 +47,18 @@ class UserProfileFragmentStateAdapter(
     lifecycle: Lifecycle
 ) : FragmentStateAdapter(fragmentManager, lifecycle) {
 
-    override fun getItemCount() = 2
+    override fun getItemCount() = 3
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> {
                 UserProfileDataFragment()
             }
-            else -> {
+            1 -> {
                 UsedCategoriesFragment()
+            }
+            else -> {
+                CancelledCategoriesFragment()
             }
         }
     }

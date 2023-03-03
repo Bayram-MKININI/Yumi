@@ -43,6 +43,7 @@ class VouchersDetailsContainerView(
     interface VouchersDetailsViewCallback {
         fun onBackButtonClicked()
         fun onPartnerInfoClicked()
+        fun onPhoneButtonClicked()
         fun onLocationClicked()
         fun onDisplayVoucherButtonClicked()
     }
@@ -64,6 +65,7 @@ class VouchersDetailsContainerView(
         vouchersDetailsView = parentContentView.findViewById(R.id.content_layout)
         vouchersDetailsView.informationTextView.setOnClickListener(onButtonClickListener)
         vouchersDetailsView.openLocationLayout.setOnClickListener(onButtonClickListener)
+        vouchersDetailsView.phoneImageView.setOnClickListener(onButtonClickListener)
 
         displayVoucherLayout = parentContentView.findViewById(R.id.display_voucher_layout)
         displayVoucherLayout.setOnClickListener(onButtonClickListener)
@@ -76,6 +78,7 @@ class VouchersDetailsContainerView(
             when (it.id) {
                 R.id.back_view -> callback?.onBackButtonClicked()
                 R.id.information_text_view -> callback?.onPartnerInfoClicked()
+                R.id.phone_image_view -> callback?.onPhoneButtonClicked()
                 R.id.open_location_layout -> callback?.onLocationClicked()
                 R.id.display_voucher_layout -> callback?.onDisplayVoucherButtonClicked()
             }

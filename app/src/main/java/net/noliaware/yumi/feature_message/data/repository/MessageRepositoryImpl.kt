@@ -1,6 +1,5 @@
 package net.noliaware.yumi.feature_message.data.repository
 
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import kotlinx.coroutines.flow.Flow
@@ -46,8 +45,6 @@ class MessageRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            Log.e("params", generateGetMessageParams(messageId, GET_INBOX_MESSAGE).toString())
-
             val remoteData = api.fetchInboxMessageForId(
                 timestamp = timestamp,
                 saltString = randomString,
@@ -68,10 +65,10 @@ class MessageRepositoryImpl(
             )
 
             if (sessionNoFailure) {
-                remoteData.data?.let { singleMessageDTO ->
+                remoteData.data?.let { inboxMessageDTO ->
                     emit(
                         Resource.Success(
-                            data = singleMessageDTO.message.toMessage(),
+                            data = inboxMessageDTO.message.toMessage(),
                             appMessage = remoteData.message?.toAppMessage()
                         )
                     )
@@ -118,10 +115,10 @@ class MessageRepositoryImpl(
             )
 
             if (sessionNoFailure) {
-                remoteData.data?.let { singleMessageDTO ->
+                remoteData.data?.let { outboxMessageDTO ->
                     emit(
                         Resource.Success(
-                            data = singleMessageDTO.message.toMessage(),
+                            data = outboxMessageDTO.message.toMessage(),
                             appMessage = remoteData.message?.toAppMessage()
                         )
                     )

@@ -13,4 +13,6 @@ interface ProfileRepository {
     fun getBackOfficeSignInCode(): Flow<Resource<BOSignIn>>
     fun getUsedCategories(): Flow<Resource<List<Category>>>
     fun getUsedVoucherList(categoryId: String): Flow<PagingData<Voucher>>
+    fun getCancelledCategories(): Flow<Resource<List<Category>>>
+    fun getCancelledVoucherList(categoryId: String): Flow<PagingData<Voucher>>
 }

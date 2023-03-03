@@ -21,6 +21,7 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
     private lateinit var nameTextView: TextView
     private lateinit var voucherImageView: ImageView
     private lateinit var voucherBadgeTextView: TextView
+    private lateinit var titleTextView: TextView
     private lateinit var recyclerView: RecyclerView
     private val categoryItemViewAdapters = mutableListOf<CategoryItemViewAdapter>()
     var callback: CategoriesViewCallback? by weak()
@@ -34,7 +35,7 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
         initView()
     }
 
-    interface CategoriesViewCallback {
+    fun interface CategoriesViewCallback {
         fun onItemClickedAtIndex(index: Int)
     }
 
@@ -45,17 +46,8 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
         nameTextView = findViewById(R.id.name_text_view)
         voucherImageView = findViewById(R.id.voucher_image_view)
         voucherBadgeTextView = findViewById(R.id.voucher_badge_text_view)
+        titleTextView = findViewById(R.id.title_text_view)
         recyclerView = findViewById(R.id.recycler_view)
-
-        val adapter = BaseAdapter(categoryItemViewAdapters)
-
-        adapter.expressionViewHolderBinding = { eachItem, view ->
-            (view as CategoryItemView).fillViewWithData(eachItem)
-        }
-
-        adapter.expressionOnCreateViewHolder = { viewGroup ->
-            viewGroup.inflate(R.layout.category_item_layout, false)
-        }
 
         recyclerView.also {
 
@@ -70,11 +62,18 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
             it.clipChildren = false
             it.addItemDecoration(MarginItemDecoration(spacing, GRID))
 
-            it.adapter = adapter
-
-            it.onItemClicked(onClick = { position, _ ->
-                callback?.onItemClickedAtIndex(position)
-            })
+            BaseAdapter(categoryItemViewAdapters).apply {
+                expressionViewHolderBinding = { eachItem, view ->
+                    (view as CategoryItemView).fillViewWithData(eachItem)
+                }
+                expressionOnCreateViewHolder = { viewGroup ->
+                    viewGroup.inflate(R.layout.category_item_layout, false)
+                }
+                onItemClicked = { position ->
+                    callback?.onItemClickedAtIndex(position)
+                }
+                it.adapter = this
+            }
         }
     }
 
@@ -123,8 +122,11 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
         )
 
         voucherBadgeTextView.measureWrapContent()
+        titleTextView.measureWrapContent()
 
-        val recyclerViewHeight = viewHeight - (headerView.measuredHeight + convertDpToPx(15))
+        val recyclerViewHeight =
+            viewHeight - (headerView.measuredHeight + titleTextView.measuredHeight +
+                    convertDpToPx(40))
 
         recyclerView.measure(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
@@ -164,6 +166,14 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
             voucherImageView.top
         )
 
-        recyclerView.layoutToBottomLeft(0, viewHeight)
+        titleTextView.layoutToTopLeft(
+            convertDpToPx(15),
+            headerView.bottom + convertDpToPx(15)
+        )
+
+        recyclerView.layoutToTopLeft(
+            0,
+            titleTextView.bottom + convertDpToPx(5)
+        )
     }
 }

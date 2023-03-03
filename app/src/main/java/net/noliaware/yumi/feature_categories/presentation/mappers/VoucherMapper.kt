@@ -1,4 +1,4 @@
-package net.noliaware.yumi.feature_categories.presentation.controllers
+package net.noliaware.yumi.feature_categories.presentation.mappers
 
 import android.content.Context
 import net.noliaware.yumi.feature_categories.domain.model.Voucher

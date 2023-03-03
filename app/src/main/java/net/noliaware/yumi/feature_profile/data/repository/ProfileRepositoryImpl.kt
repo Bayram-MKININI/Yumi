@@ -4,10 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import net.noliaware.yumi.commun.GET_ACCOUNT
-import net.noliaware.yumi.commun.GET_BACK_OFFICE_SIGN_IN_CODE
-import net.noliaware.yumi.commun.GET_DATA_PER_CATEGORY
-import net.noliaware.yumi.commun.LIST_PAGE_SIZE
+import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.*
@@ -119,21 +116,21 @@ class ProfileRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            val remoteData = api.fetchDataByCategory(
+            val remoteData = api.fetchUsedDataByCategory(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
                     timestamp = timestamp,
-                    methodName = GET_DATA_PER_CATEGORY,
+                    methodName = GET_USED_DATA_PER_CATEGORY,
                     randomString = randomString
                 ),
-                params = getCommonWSParams(sessionData, GET_DATA_PER_CATEGORY)
+                params = getCommonWSParams(sessionData, GET_USED_DATA_PER_CATEGORY)
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
                 session = remoteData.session,
                 sessionData = sessionData,
-                tokenKey = GET_DATA_PER_CATEGORY,
+                tokenKey = GET_USED_DATA_PER_CATEGORY,
                 appMessage = remoteData.message,
                 error = remoteData.error
             )
@@ -163,5 +160,56 @@ class ProfileRepositoryImpl(
         )
     ) {
         UsedVoucherPagingSource(api, sessionData, categoryId)
+    }.flow
+
+    override fun getCancelledCategories(): Flow<Resource<List<Category>>> = flow {
+        try {
+            val timestamp = System.currentTimeMillis().toString()
+            val randomString = UUID.randomUUID().toString()
+
+            val remoteData = api.fetchCancelledDataByCategory(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(
+                    timestamp = timestamp,
+                    methodName = GET_CANCELLED_DATA_PER_CATEGORY,
+                    randomString = randomString
+                ),
+                params = getCommonWSParams(sessionData, GET_CANCELLED_DATA_PER_CATEGORY)
+            )
+
+            val sessionNoFailure = handleSessionWithNoFailure(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_CANCELLED_DATA_PER_CATEGORY,
+                appMessage = remoteData.message,
+                error = remoteData.error
+            )
+
+            if (sessionNoFailure) {
+                remoteData.data?.categoryDTOs?.let { categoriesDTO ->
+                    emit(
+                        Resource.Success(
+                            data = categoriesDTO.map { it.toCategory() },
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
+                }
+            }
+
+        } catch (ex: HttpException) {
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
+        } catch (ex: IOException) {
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        }
+    }
+
+    override fun getCancelledVoucherList(categoryId: String) = Pager(
+        PagingConfig(
+            pageSize = LIST_PAGE_SIZE,
+            enablePlaceholders = false
+        )
+    ) {
+        CancelledVoucherPagingSource(api, sessionData, categoryId)
     }.flow
 }

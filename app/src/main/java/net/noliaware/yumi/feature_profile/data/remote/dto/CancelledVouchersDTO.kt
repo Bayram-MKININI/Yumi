@@ -5,7 +5,7 @@ import com.squareup.moshi.JsonClass
 import net.noliaware.yumi.feature_categories.data.remote.dto.VoucherDTO
 
 @JsonClass(generateAdapter = true)
-data class UsedVouchersDTO(
-    @Json(name = "categoryUsedVoucherList")
+data class CancelledVouchersDTO(
+    @Json(name = "categoryCanceledVoucherList")
     val voucherDTOList: List<VoucherDTO>
 )

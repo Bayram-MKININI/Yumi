@@ -26,7 +26,7 @@ class ProfileDataParentView(context: Context, attrs: AttributeSet?) : ViewGroup(
         val address: String = ""
     )
 
-    interface ProfileViewCallback {
+    fun interface ProfileViewCallback {
         fun onGetCodeButtonClicked()
     }
 

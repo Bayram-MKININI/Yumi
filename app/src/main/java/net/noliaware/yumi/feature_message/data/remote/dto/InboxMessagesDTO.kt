@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class SingleMessageDTO(
-    @Json(name = "message")
-    val message: MessageDTO
+data class InboxMessagesDTO(
+    @Json(name = "inboxMessageList")
+    val messageDTOList: List<MessageDTO>
 )

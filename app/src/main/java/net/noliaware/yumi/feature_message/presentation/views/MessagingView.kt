@@ -27,7 +27,7 @@ class MessagingView(context: Context, attrs: AttributeSet?) : CoordinatorLayout(
 
     val getViewPager get() = viewPager
 
-    interface MailViewCallback {
+    fun interface MailViewCallback {
         fun onComposeButtonClicked()
     }
 

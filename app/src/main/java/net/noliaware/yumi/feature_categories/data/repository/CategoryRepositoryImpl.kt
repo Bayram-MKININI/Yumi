@@ -29,21 +29,21 @@ class CategoryRepositoryImpl(
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
 
-            val remoteData = api.fetchDataByCategory(
+            val remoteData = api.fetchAvailableDataByCategory(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(
                     timestamp = timestamp,
-                    methodName = GET_DATA_PER_CATEGORY,
+                    methodName = GET_AVAILABLE_DATA_PER_CATEGORY,
                     randomString = randomString
                 ),
-                params = getCommonWSParams(sessionData, GET_DATA_PER_CATEGORY)
+                params = getCommonWSParams(sessionData, GET_AVAILABLE_DATA_PER_CATEGORY)
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
                 session = remoteData.session,
                 sessionData = sessionData,
-                tokenKey = GET_DATA_PER_CATEGORY,
+                tokenKey = GET_AVAILABLE_DATA_PER_CATEGORY,
                 appMessage = remoteData.message,
                 error = remoteData.error
             )

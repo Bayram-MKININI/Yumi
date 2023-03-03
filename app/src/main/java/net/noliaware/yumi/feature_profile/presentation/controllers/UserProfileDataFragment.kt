@@ -92,13 +92,11 @@ class UserProfileDataFragment : Fragment() {
     }
 
     private val profileViewCallback: ProfileDataParentView.ProfileViewCallback by lazy {
-        object : ProfileDataParentView.ProfileViewCallback {
-            override fun onGetCodeButtonClicked() {
-                BOSignInFragment.newInstance().show(
-                    childFragmentManager.beginTransaction(),
-                    BO_SIGN_IN_FRAGMENT_TAG
-                )
-            }
+        ProfileDataParentView.ProfileViewCallback {
+            BOSignInFragment.newInstance().show(
+                childFragmentManager.beginTransaction(),
+                BO_SIGN_IN_FRAGMENT_TAG
+            )
         }
     }
 

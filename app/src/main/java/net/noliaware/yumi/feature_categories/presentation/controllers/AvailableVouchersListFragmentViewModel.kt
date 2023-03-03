@@ -12,7 +12,7 @@ import net.noliaware.yumi.feature_categories.domain.model.Category
 import javax.inject.Inject
 
 @HiltViewModel
-class VouchersListFragmentViewModel @Inject constructor(
+class AvailableVouchersListFragmentViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {

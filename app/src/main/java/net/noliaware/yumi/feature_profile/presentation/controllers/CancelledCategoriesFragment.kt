@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.USED_VOUCHERS_LIST_FRAGMENT_TAG
+import net.noliaware.yumi.commun.CANCELLED_VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.formatNumber
 import net.noliaware.yumi.commun.util.handleSharedEvent
@@ -21,10 +21,10 @@ import net.noliaware.yumi.feature_profile.presentation.views.ProfileCategoriesVi
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileCategoriesView.ProfileCategoriesViewCallback
 
 @AndroidEntryPoint
-class UsedCategoriesFragment : Fragment() {
+class CancelledCategoriesFragment : Fragment() {
 
     private var profileCategoriesView: ProfileCategoriesView? = null
-    private val viewModel by viewModels<UsedCategoriesFragmentViewModel>()
+    private val viewModel by viewModels<CancelledCategoriesFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,19 +39,17 @@ class UsedCategoriesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        profileCategoriesView?.setViewTitle(getString(R.string.used_vouchers))
+        profileCategoriesView?.setViewTitle(getString(R.string.cancelled_vouchers))
         collectFlows()
     }
 
     private fun collectFlows() {
-
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreenFromSharedEvent(sharedEvent)
             }
         }
-
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventsHelper.stateFlow.collect { vmState ->
                 when (vmState) {
@@ -82,11 +80,11 @@ class UsedCategoriesFragment : Fragment() {
         ProfileCategoriesViewCallback { index ->
             viewModel.eventsHelper.stateData?.let { categories ->
                 categories[index].apply {
-                    UsedVouchersListFragment.newInstance(
+                    CancelledVouchersListFragment.newInstance(
                         this
                     ).show(
                         childFragmentManager.beginTransaction(),
-                        USED_VOUCHERS_LIST_FRAGMENT_TAG
+                        CANCELLED_VOUCHERS_LIST_FRAGMENT_TAG
                     )
                 }
             }

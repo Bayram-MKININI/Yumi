@@ -185,7 +185,8 @@
                     android:background="@drawable/circle_primary"
                     android:clickable="true"
                     android:padding="12dp"
-                    android:src="@drawable/ic_mail_on" />
+                    android:src="@drawable/ic_mail_on"
+                    android:visibility="gone" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/mail_text_view"
@@ -194,7 +195,8 @@
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:text="@string/write_email"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:visibility="gone" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/open_location_layout"

@@ -203,7 +203,10 @@ fun Fragment.handlePaginationError(loadState: CombinedLoadStates) {
     when (val currentState = loadState.refresh) {
         is LoadState.Loading -> Unit
         is LoadState.Error -> {
-            if (currentState.error is PaginationException && (currentState.error as PaginationException).errorType == ErrorType.SYSTEM_ERROR) {
+            if (
+                currentState.error is PaginationException &&
+                (currentState.error as PaginationException).errorType == ErrorType.SYSTEM_ERROR
+            ) {
                 redirectToLoginScreenInternal()
             }
         }
@@ -215,6 +218,14 @@ private fun Fragment.redirectToLoginScreenInternal() {
     activity?.finish()
     startActivity(Intent(requireActivity(), LoginActivity::class.java))
 }
+
+inline fun <reified T : Serializable> Intent.getSerializableExtraCompat(key: String): T? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getSerializableExtra(key, T::class.java)
+    } else {
+        @Suppress("DEPRECATION")
+        getSerializableExtra(key) as? T
+    }
 
 fun <T : Fragment> T.withArgs(vararg pairs: Pair<String, Any?>) =
     apply { arguments = bundleOf(*pairs) }
@@ -281,13 +292,6 @@ fun Number.pxToDp(
     metrics: DisplayMetrics = Resources.getSystem().displayMetrics
 ): Float {
     return toFloat() / metrics.density
-}
-
-fun RecyclerView.onItemClicked(
-    onClick: ((position: Int, view: View) -> Unit)? = null,
-    onLongClick: ((position: Int, view: View) -> Unit)? = null
-) {
-    this.addOnChildAttachStateChangeListener(RecyclerItemClickListener(this, onClick, onLongClick))
 }
 
 fun Context.showKeyboard() {
@@ -426,15 +430,6 @@ fun openMap(
     }
 }
 
-inline fun <reified T : Serializable> Intent.getSerializable(key: String): T? =
-    when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializableExtra(
-            key,
-            T::class.java
-        )
-        else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
-    }
-
 fun Context.startWebBrowserAtURL(url: String) {
     Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -486,6 +481,12 @@ fun String.toWebUri(): Uri {
             else
                 "https://$this"
             ).toUri()
+}
+
+fun Context.makeCall(phoneNumber: String) {
+    val intent = Intent(Intent.ACTION_DIAL)
+    intent.data = Uri.parse("tel:$phoneNumber")
+    startActivity(intent)
 }
 
 fun Context.toActivity(): Activity? {

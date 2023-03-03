@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class DeleteMessageDTO(
-    @Json(name = "result")
-    val result: String
+data class OutboxMessagesDTO(
+    @Json(name = "outboxMessageList")
+    val messageDTOList: List<MessageDTO>
 )

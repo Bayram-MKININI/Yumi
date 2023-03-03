@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.adapters.ItemViewHolder
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
-import net.noliaware.yumi.feature_categories.presentation.controllers.VoucherMapper
+import net.noliaware.yumi.feature_categories.presentation.mappers.VoucherMapper
 import net.noliaware.yumi.feature_categories.presentation.views.VoucherItemView
 
 class VoucherAdapter(

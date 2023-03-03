@@ -135,17 +135,14 @@ class LoginFragment : Fragment() {
     }
 
     private val loginViewCallback: LoginView.LoginViewCallback by lazy {
-        object : LoginView.LoginViewCallback {
-            override fun onLoginEntered(login: String) {
+        LoginView.LoginViewCallback { login ->
+            viewModel.saveLoginPreferences(login)
 
-                viewModel.saveLoginPreferences(login)
-
-                viewModel.callInitWebservice(
-                    getAndroidId(),
-                    viewModel.prefsStateData?.deviceId,
-                    login
-                )
-            }
+            viewModel.callInitWebservice(
+                getAndroidId(),
+                viewModel.prefsStateData?.deviceId,
+                login
+            )
         }
     }
 

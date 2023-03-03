@@ -18,6 +18,10 @@ data class VoucherDTO(
     val voucherUseDate: String?,
     @Json(name = "voucherUseTime")
     val voucherUseTime: String?,
+    @Json(name = "voucherCancelDate")
+    val voucherCancelDate: String?,
+    @Json(name = "voucherCancelTime")
+    val voucherCancelTime: String?,
     @Json(name = "productLabel")
     val productLabel: String?,
     @Json(name = "productDescription")
@@ -61,11 +65,13 @@ data class VoucherDTO(
 ) {
     fun toVoucher(sessionId: String? = null) = Voucher(
         voucherId = voucherId,
-        voucherCode = voucherCode + if (!sessionId.isNullOrBlank()) sessionId else sessionId,
+        voucherCode = voucherCode + if (!sessionId.isNullOrBlank()) sessionId else "",
         voucherDate = voucherDate,
         voucherExpiryDate = voucherExpiryDate,
         voucherUseDate = voucherUseDate,
         voucherUseTime = voucherUseTime,
+        voucherCancelDate = voucherCancelDate,
+        voucherCancelTime = voucherCancelTime,
         productLabel = productLabel,
         productDescription = productDescription,
         productWebpage = productWebpage,

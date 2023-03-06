@@ -7,6 +7,7 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -26,7 +27,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
@@ -277,6 +277,16 @@ fun View.convertDpToPx(dpValue: Int): Int = TypedValue.applyDimension(
     TypedValue.COMPLEX_UNIT_DIP, dpValue.toFloat(), context.resources.displayMetrics
 ).toInt()
 
+fun View.getLocationRectOnScreen(): Rect {
+    val location = IntArray(2)
+    getLocationOnScreen(location)
+    return Rect().apply {
+        left = location[0]
+        top = location[1]
+        right = left + measuredWidth
+        bottom = top + measuredHeight
+    }
+}
 
 @JvmOverloads
 @Dimension(unit = Dimension.PX)
@@ -304,17 +314,6 @@ fun Context.hideKeyboard() {
     (this as? Activity)?.let {
         WindowInsetsControllerCompat(window, window.decorView).hide(WindowInsetsCompat.Type.ime())
     }
-}
-
-fun View.getKeyboardHeight(): Int? {
-
-    /*WindowInsetsCompat
-        .toWindowInsetsCompat(View.rootWindowInsets)
-        .getInsets(WindowInsetsCompat.Type.ime()).bottom
-
-     */
-
-    return ViewCompat.getRootWindowInsets(this)?.getInsets(WindowInsetsCompat.Type.ime())?.bottom
 }
 
 inline fun <reified T : View> View.find(id: Int): T = findViewById(id)

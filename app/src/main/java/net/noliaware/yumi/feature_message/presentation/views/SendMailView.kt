@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.text.InputType
 import android.util.AttributeSet
-import android.view.GestureDetector
+import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnClickListener
@@ -88,8 +88,7 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
     }
 
     private fun EditText.setOnConsistentClickListener(doOnClick: (View) -> Unit) {
-        val gestureDetector =
-            GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
+        val gestureDetector = GestureDetectorCompat(context, object : SimpleOnGestureListener() {
                 override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                     doOnClick(this@setOnConsistentClickListener)
                     return false
@@ -195,7 +194,10 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
 
         mailEditText.measure(
             MeasureSpec.makeMeasureSpec(messageParentLayout.measuredWidth, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(availableHeightForBody.coerceAtLeast(mailEditText.measuredHeight), MeasureSpec.EXACTLY)
+            MeasureSpec.makeMeasureSpec(
+                availableHeightForBody.coerceAtLeast(mailEditText.measuredHeight),
+                MeasureSpec.EXACTLY
+            )
         )
 
         setMeasuredDimension(

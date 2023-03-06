@@ -13,7 +13,6 @@ import net.noliaware.yumi.commun.util.layoutToTopLeft
 import net.noliaware.yumi.commun.util.measureWrapContent
 import net.noliaware.yumi.commun.util.weak
 
-
 class PasswordView(context: Context, attrs: AttributeSet?) : ElevatedCardView(context, attrs) {
 
     private lateinit var inputCodeTextView: TextView
@@ -196,19 +195,6 @@ class PasswordView(context: Context, attrs: AttributeSet?) : ElevatedCardView(co
             MeasureSpec.makeMeasureSpec(rectangleWidth * 8 / 10, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(convertDpToPx(42), MeasureSpec.EXACTLY)
         )
-
-        /*padFirstDigit.measureWrapContent()
-        padSecondDigit.measureWrapContent()
-        padThirdDigit.measureWrapContent()
-        padFourthDigit.measureWrapContent()
-        padFifthDigit.measureWrapContent()
-        padSixthDigit.measureWrapContent()
-        padSeventhDigit.measureWrapContent()
-        padEighthDigit.measureWrapContent()
-        padNinthDigit.measureWrapContent()
-        padTenthDigit.measureWrapContent()
-
-         */
 
         measurePadView(padFirstDigit)
         measurePadView(padSecondDigit)

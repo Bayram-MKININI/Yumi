@@ -1,8 +1,6 @@
 package net.noliaware.yumi.feature_login.presentation.views
 
 import android.content.Context
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -10,6 +8,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.TextView.OnEditorActionListener
+import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.views.ElevatedCardView
@@ -41,8 +40,13 @@ class LoginView(context: Context, attrs: AttributeSet?) : ElevatedCardView(conte
         inputLayoutLogin = findViewById(R.id.input_layout_login)
 
         inputLogin = inputLayoutLogin.findViewById(R.id.input_login)
-        inputLogin.addTextChangedListener(textWatcher)
         inputLogin.setOnEditorActionListener(onEditorActionListener)
+        inputLogin.doAfterTextChanged {
+            if (inputLogin.text.isNullOrEmpty()) {
+                inputLogin.error = null
+                inputLayoutLogin.isErrorEnabled = false
+            }
+        }
 
         confirmImageView = findViewById(R.id.confirm_image_view)
         confirmImageView.setOnClickListener {
@@ -65,50 +69,33 @@ class LoginView(context: Context, attrs: AttributeSet?) : ElevatedCardView(conte
         }
     }
 
-    private val textWatcher: TextWatcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence, start: Int, before: Int, count: Int) = Unit
-        override fun onTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
-        override fun afterTextChanged(editable: Editable) {
-            when {
-                !inputLogin.text.isNullOrEmpty() -> {
-                    inputLogin.error = null
-                    inputLayoutLogin.isErrorEnabled = false
-                }
-            }
-        }
-    }
-
     private val onEditorActionListener = OnEditorActionListener { _, actionId, _ ->
-
         if (actionId == EditorInfo.IME_ACTION_DONE) {
-
             if (validateLogin()) {
-                //confirmTextView.requestFocus()
-                context.hideKeyboard()
                 confirmInputText()
             }
         }
-
         false
     }
 
     private fun confirmInputText() {
-        callback?.onLoginEntered(
-            inputLogin.text.toString().trim()
+        context.hideKeyboard()
+        postDelayed(
+            {
+                callback?.onLoginEntered(
+                    inputLogin.text.toString().trim()
+                )
+            },
+            150
         )
     }
 
     private fun validateLogin(): Boolean {
-
         val login = inputLogin.text.toString().trim()
-
         if (login.isEmpty()) {
-
             inputLayoutLogin.error = context.getString(R.string.login_empty_error)
             return false
-
         } else {
-
             inputLayoutLogin.isErrorEnabled = false
         }
         return true

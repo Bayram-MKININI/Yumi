@@ -17,7 +17,7 @@ import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.feature_categories.presentation.controllers.MainActivity
-import net.noliaware.yumi.feature_login.presentation.views.LoginParentView
+import net.noliaware.yumi.feature_login.presentation.views.LoginParentLayout
 import net.noliaware.yumi.feature_login.presentation.views.LoginView
 import net.noliaware.yumi.feature_login.presentation.views.PasswordView
 import java.net.NetworkInterface
@@ -26,7 +26,7 @@ import java.net.NetworkInterface
 class LoginFragment : Fragment() {
 
     private val viewModel: LoginFragmentViewModel by viewModels()
-    private var loginParentView: LoginParentView? = null
+    private var loginParentLayout: LoginParentLayout? = null
     private val passwordIndexes = mutableListOf<Int>()
 
     override fun onCreateView(
@@ -40,13 +40,13 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        loginParentView = view as LoginParentView
-        loginParentView?.loginView?.callback = loginViewCallback
-        loginParentView?.passwordView?.callback = passwordViewCallback
+        loginParentLayout = view as LoginParentLayout
+        loginParentLayout?.loginView?.callback = loginViewCallback
+        loginParentLayout?.passwordView?.callback = passwordViewCallback
         collectFlows()
     }
 
-    fun getAndroidId(): String = Settings.Secure.getString(
+    private fun getAndroidId(): String = Settings.Secure.getString(
         context?.applicationContext?.contentResolver,
         Settings.Secure.ANDROID_ID
     )
@@ -75,7 +75,7 @@ class LoginFragment : Fragment() {
                 when (vmState) {
                     is ViewModelState.LoadingState -> Unit
                     is ViewModelState.DataState -> vmState.data?.let { userPrefs ->
-                        loginParentView?.setLogin(userPrefs.login)
+                        loginParentLayout?.setLogin(userPrefs.login)
                     }
                 }
             }
@@ -83,7 +83,7 @@ class LoginFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.initEventsHelper.eventFlow.collectLatest { sharedEvent ->
-                loginParentView?.setLoginViewProgressVisible(false)
+                loginParentLayout?.setLoginViewProgressVisible(false)
                 handleSharedEvent(sharedEvent)
             }
         }
@@ -92,15 +92,15 @@ class LoginFragment : Fragment() {
 
             viewModel.initEventsHelper.stateFlow.collect { vmState ->
                 when (vmState) {
-                    is ViewModelState.LoadingState -> loginParentView?.setLoginViewProgressVisible(
+                    is ViewModelState.LoadingState -> loginParentLayout?.setLoginViewProgressVisible(
                         true
                     )
 
                     is ViewModelState.DataState -> vmState.data?.let { initData ->
                         viewModel.saveDeviceIdPreferences(initData.deviceId)
-                        loginParentView?.setLoginViewProgressVisible(false)
-                        loginParentView?.displayPasswordView()
-                        loginParentView?.fillPadViewWithData(initData.keyboard)
+                        loginParentLayout?.setLoginViewProgressVisible(false)
+                        loginParentLayout?.displayPasswordView()
+                        loginParentLayout?.fillPadViewWithData(initData.keyboard)
                     }
                 }
             }
@@ -108,7 +108,7 @@ class LoginFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.accountDataEventsHelper.eventFlow.collectLatest { sharedEvent ->
-                loginParentView?.let {
+                loginParentLayout?.let {
                     it.setLoginViewProgressVisible(false)
                     it.clearSecretDigits()
                     passwordIndexes.clear()
@@ -154,12 +154,12 @@ class LoginFragment : Fragment() {
                     return
 
                 passwordIndexes.add(index)
-                loginParentView?.addSecretDigit()
+                loginParentLayout?.addSecretDigit()
             }
 
             override fun onClearButtonPressed() {
                 passwordIndexes.clear()
-                loginParentView?.clearSecretDigits()
+                loginParentLayout?.clearSecretDigits()
             }
 
             override fun onConfirmButtonPressed() {
@@ -172,6 +172,6 @@ class LoginFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        loginParentView = null
+        loginParentLayout = null
     }
 }

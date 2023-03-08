@@ -22,7 +22,9 @@ data class CategoryDTO(
     @Json(name = "availableVoucherCount")
     val availableVoucherCount: Int?,
     @Json(name = "usedVoucherCount")
-    val usedVoucherCount: Int?
+    val usedVoucherCount: Int?,
+    @Json(name = "canceledVoucherCount")
+    val cancelledVoucherCount: Int?
 ) {
     fun toCategory() = Category(
         categoryId = categoryId,
@@ -32,6 +34,7 @@ data class CategoryDTO(
         categoryShortLabel = categoryShortLabel,
         categoryDescription = categoryDescription,
         availableVoucherCount = availableVoucherCount ?: 0,
-        usedVoucherCount = usedVoucherCount ?: 0
+        usedVoucherCount = usedVoucherCount ?: 0,
+        cancelledVoucherCount = cancelledVoucherCount ?: 0
     )
 }

@@ -66,13 +66,31 @@
         android:textColor="@color/grey_2"
         android:textSize="19sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <net.noliaware.yumi.commun.presentation.views.ClipartTabView
+        android:id="@+id/available_tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp" />
+        android:layout_height="wrap_content" />
 
+    <net.noliaware.yumi.commun.presentation.views.ClipartTabView
+        android:id="@+id/used_tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <net.noliaware.yumi.commun.presentation.views.ClipartTabView
+        android:id="@+id/cancelled_tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <net.noliaware.yumi.commun.presentation.views.ElevatedCardView
+        android:id="@+id/content_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never" />
+
+    </net.noliaware.yumi.commun.presentation.views.ElevatedCardView>
 </net.noliaware.yumi.feature_categories.presentation.views.CategoriesView>

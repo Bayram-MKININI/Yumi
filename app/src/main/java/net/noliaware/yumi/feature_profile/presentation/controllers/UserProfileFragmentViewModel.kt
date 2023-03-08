@@ -7,24 +7,24 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import net.noliaware.yumi.commun.presentation.EventsHelper
-import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_profile.data.repository.ProfileRepository
+import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import javax.inject.Inject
 
 @HiltViewModel
-class UsedCategoriesFragmentViewModel @Inject constructor(
+class UserProfileFragmentViewModel @Inject constructor(
     private val profileRepository: ProfileRepository
 ) : ViewModel() {
 
-    val eventsHelper = EventsHelper<List<Category>>()
+    val eventsHelper = EventsHelper<UserProfile>()
 
     init {
-        callGetUsedCategories()
+        callGetUserProfile()
     }
 
-    private fun callGetUsedCategories() {
+    private fun callGetUserProfile() {
         viewModelScope.launch {
-            profileRepository.getUsedCategories().onEach { result ->
+            profileRepository.getUserProfile().onEach { result ->
                 eventsHelper.handleResponse(result)
             }.launchIn(this)
         }

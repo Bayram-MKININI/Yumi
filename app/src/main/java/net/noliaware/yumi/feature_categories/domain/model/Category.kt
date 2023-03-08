@@ -10,5 +10,6 @@ data class Category(
     val categoryShortLabel: String,
     val categoryDescription: String,
     val availableVoucherCount: Int,
-    val usedVoucherCount: Int
+    val usedVoucherCount: Int,
+    val cancelledVoucherCount: Int
 ) : Serializable

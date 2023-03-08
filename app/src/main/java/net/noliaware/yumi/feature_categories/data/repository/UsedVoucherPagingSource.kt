@@ -1,4 +1,4 @@
-package net.noliaware.yumi.feature_profile.data.repository
+package net.noliaware.yumi.feature_categories.data.repository
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

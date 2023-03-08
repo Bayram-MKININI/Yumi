@@ -18,7 +18,10 @@
     <string name="cancel">Annuler</string>
 
     //Category list
-    <string name="categories_title">Mes besoins concernent…</string>
+    <string name="categories_title">Mes coupons…</string>
+    <string name="available">Disponibles</string>
+    <string name="used">Utilisés</string>
+    <string name="cancelled">Annulés</string>
     <string name="vouchers_list">Liste des coupons %s</string>
     <string name="back">Retour</string>
     <string name="expiry_date">Valable jusqu\'au</string>
@@ -46,13 +49,9 @@
 
     //Profile
     <string name="my_profile">Mon Profil</string>
-    <string name="my_data_short">Mes infos</string>
     <string name="my_data">Mes informations</string>
-    <string name="used">Utilisés</string>
-    <string name="used_vouchers">Mes coupons utilisés</string>
-    <string name="cancelled">Annulés</string>
-    <string name="cancelled_vouchers">Mes coupons annulés</string>
     <string name="complementary_data">Informations complémentaires</string>
+    <string name="my_vouchers">Mes coupons</string>
     <string name="login">Login</string>
     <string name="surname">Nom</string>
     <string name="name">Prénom</string>
@@ -61,12 +60,16 @@
     <string name="birth_data">%s\nà %s</string>
     <string name="phone">Téléphone</string>
     <string name="address">Adresse</string>
+    <string name="emitted">Émis</string>
+    <plurals name="voucher_stat_format">
+        <item quantity="one">%s coupon</item>
+        <item quantity="other">%s coupons</item>
+    </plurals>
     <string name="new_line">\n</string>
     <string name="get_code">Obtenir un code</string>
     <string name="bo_sign_in_description">Veuillez utiliser ce code pour vous connecter sur votre compte back office</string>
     <string name="bo_code_expiration">Ce code expire dans:</string>
     <string name="empty_time">--:--</string>
-    <string name="usage_date">Date d\'utilisation: %s à %s</string>
 
     //Messages
     <string name="mail">Messagerie</string>

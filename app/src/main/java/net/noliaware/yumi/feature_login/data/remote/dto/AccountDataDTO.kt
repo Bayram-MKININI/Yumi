@@ -24,7 +24,7 @@ data class AccountDataDTO(
     fun toAccountData() = AccountData(
         helloMessage = helloMessage,
         userName = userName,
-        availableVoucherCountSinceLast = availableVoucherCount,
+        availableVoucherCount = availableVoucherCount,
         messageSubjects = messageSubjectDTOs.map { it.toMessageSubject() },
         newAlertCount = newAlertCount,
         newMessageCount = newMessageCount

@@ -1,4 +1,4 @@
-package net.noliaware.yumi.feature_profile.presentation.controllers
+package net.noliaware.yumi.feature_categories.presentation.controllers
 
 import android.graphics.Color
 import android.os.Bundle
@@ -22,24 +22,23 @@ import net.noliaware.yumi.commun.util.handlePaginationError
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.presentation.adapters.VoucherAdapter
-import net.noliaware.yumi.feature_categories.presentation.controllers.VoucherDetailsFragment
+import net.noliaware.yumi.feature_categories.presentation.mappers.UsedVoucherMapper
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryUI
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView.VouchersListViewAdapter
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView.VouchersListViewCallback
-import net.noliaware.yumi.feature_profile.presentation.mappers.CancelledVoucherMapper
 
 @AndroidEntryPoint
-class CancelledVouchersListFragment : AppCompatDialogFragment() {
+class UsedVouchersListFragment : AppCompatDialogFragment() {
 
     companion object {
         fun newInstance(
             category: Category
-        ) = CancelledVouchersListFragment().withArgs(CATEGORY to category)
+        ) = UsedVouchersListFragment().withArgs(CATEGORY to category)
     }
 
     private var vouchersListView: VouchersListView? = null
-    private val viewModel by viewModels<CancelledVouchersListFragmentViewModel>()
+    private val viewModel by viewModels<UsedVouchersListFragmentViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +55,7 @@ class CancelledVouchersListFragment : AppCompatDialogFragment() {
             vouchersListView?.callback = vouchersListViewCallback
             vouchersListView?.voucherAdapter = VoucherAdapter(
                 color = viewModel.selectedCategory?.categoryColor ?: Color.TRANSPARENT,
-                voucherMapper = CancelledVoucherMapper()
+                voucherMapper = UsedVoucherMapper()
             ) { voucher ->
                 VoucherDetailsFragment.newInstance(
                     categoryUI = CategoryUI(

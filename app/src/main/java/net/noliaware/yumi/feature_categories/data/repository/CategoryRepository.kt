@@ -10,12 +10,12 @@ import net.noliaware.yumi.feature_categories.domain.model.VoucherStatus
 interface CategoryRepository {
 
     fun getAvailableCategories(): Flow<Resource<List<Category>>>
-
-    fun getVoucherList(categoryId: String): Flow<PagingData<Voucher>>
-
+    fun getAvailableVoucherList(categoryId: String): Flow<PagingData<Voucher>>
+    fun getUsedCategories(): Flow<Resource<List<Category>>>
+    fun getUsedVoucherList(categoryId: String): Flow<PagingData<Voucher>>
+    fun getCancelledCategories(): Flow<Resource<List<Category>>>
+    fun getCancelledVoucherList(categoryId: String): Flow<PagingData<Voucher>>
     fun getVoucherById(voucherId: String): Flow<Resource<Voucher>>
-
     fun getVoucherStatusById(voucherId: String): Flow<Resource<VoucherStatus>>
-
     fun useVoucherById(voucherId: String): Flow<Resource<Boolean>>
 }

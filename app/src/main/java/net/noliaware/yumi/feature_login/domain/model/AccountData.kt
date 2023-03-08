@@ -5,7 +5,7 @@ import java.io.Serializable
 data class AccountData(
     val helloMessage: String = "",
     val userName: String = "",
-    val availableVoucherCountSinceLast: Int = 0,
+    val availableVoucherCount: Int = 0,
     val messageSubjects: List<MessageSubject>,
     val newAlertCount: Int = 0,
     val newMessageCount: Int = 0

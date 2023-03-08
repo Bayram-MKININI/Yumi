@@ -68,13 +68,116 @@ class CategoryRepositoryImpl(
         }
     }
 
-    override fun getVoucherList(categoryId: String) = Pager(
+    override fun getAvailableVoucherList(categoryId: String) = Pager(
         PagingConfig(
             pageSize = LIST_PAGE_SIZE,
             enablePlaceholders = false
         )
     ) {
         VoucherPagingSource(api, sessionData, categoryId)
+    }.flow
+
+    override fun getUsedCategories(): Flow<Resource<List<Category>>> = flow {
+
+        try {
+            val timestamp = System.currentTimeMillis().toString()
+            val randomString = UUID.randomUUID().toString()
+
+            val remoteData = api.fetchUsedDataByCategory(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(
+                    timestamp = timestamp,
+                    methodName = GET_USED_DATA_PER_CATEGORY,
+                    randomString = randomString
+                ),
+                params = getCommonWSParams(sessionData, GET_USED_DATA_PER_CATEGORY)
+            )
+
+            val sessionNoFailure = handleSessionWithNoFailure(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_USED_DATA_PER_CATEGORY,
+                appMessage = remoteData.message,
+                error = remoteData.error
+            )
+
+            if (sessionNoFailure) {
+                remoteData.data?.categoryDTOs?.let { categoriesDTO ->
+                    emit(
+                        Resource.Success(
+                            data = categoriesDTO.map { it.toCategory() },
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
+                }
+            }
+
+        } catch (ex: HttpException) {
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
+        } catch (ex: IOException) {
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        }
+    }
+
+    override fun getUsedVoucherList(categoryId: String) = Pager(
+        PagingConfig(
+            pageSize = LIST_PAGE_SIZE,
+            enablePlaceholders = false
+        )
+    ) {
+        UsedVoucherPagingSource(api, sessionData, categoryId)
+    }.flow
+
+    override fun getCancelledCategories(): Flow<Resource<List<Category>>> = flow {
+        try {
+            val timestamp = System.currentTimeMillis().toString()
+            val randomString = UUID.randomUUID().toString()
+
+            val remoteData = api.fetchCancelledDataByCategory(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(
+                    timestamp = timestamp,
+                    methodName = GET_CANCELLED_DATA_PER_CATEGORY,
+                    randomString = randomString
+                ),
+                params = getCommonWSParams(sessionData, GET_CANCELLED_DATA_PER_CATEGORY)
+            )
+
+            val sessionNoFailure = handleSessionWithNoFailure(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = GET_CANCELLED_DATA_PER_CATEGORY,
+                appMessage = remoteData.message,
+                error = remoteData.error
+            )
+
+            if (sessionNoFailure) {
+                remoteData.data?.categoryDTOs?.let { categoriesDTO ->
+                    emit(
+                        Resource.Success(
+                            data = categoriesDTO.map { it.toCategory() },
+                            appMessage = remoteData.message?.toAppMessage()
+                        )
+                    )
+                }
+            }
+
+        } catch (ex: HttpException) {
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
+        } catch (ex: IOException) {
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        }
+    }
+
+    override fun getCancelledVoucherList(categoryId: String) = Pager(
+        PagingConfig(
+            pageSize = LIST_PAGE_SIZE,
+            enablePlaceholders = false
+        )
+    ) {
+        CancelledVoucherPagingSource(api, sessionData, categoryId)
     }.flow
 
     override fun getVoucherById(voucherId: String): Flow<Resource<Voucher>> = flow {

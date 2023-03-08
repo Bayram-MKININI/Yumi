@@ -40,6 +40,14 @@ data class UserProfileDTO(
     val cellPhoneNumber: String?,
     @Json(name = "email")
     val email: String?,
+    @Json(name = "assignedVoucherCount")
+    val assignedVoucherCount: Int,
+    @Json(name = "availableVoucherCount")
+    val availableVoucherCount: Int,
+    @Json(name = "usedVoucherCount")
+    val usedVoucherCount: Int,
+    @Json(name = "canceledVoucherCount")
+    val cancelledVoucherCount: Int,
     @Json(name = "messageBoxUsagePercentage")
     val messageBoxUsagePercentage: Int
 ) {
@@ -61,6 +69,10 @@ data class UserProfileDTO(
         phoneNumber = phoneNumber,
         cellPhoneNumber = cellPhoneNumber,
         email = email,
+        assignedVoucherCount = assignedVoucherCount,
+        availableVoucherCount = availableVoucherCount,
+        usedVoucherCount = usedVoucherCount,
+        cancelledVoucherCount = cancelledVoucherCount,
         messageBoxUsagePercentage = messageBoxUsagePercentage,
     )
 }

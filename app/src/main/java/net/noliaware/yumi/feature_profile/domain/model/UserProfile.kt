@@ -20,5 +20,9 @@ data class UserProfile(
     val phoneNumber: String?,
     val cellPhoneNumber: String?,
     val email: String?,
+    val assignedVoucherCount: Int,
+    val availableVoucherCount: Int,
+    val usedVoucherCount: Int,
+    val cancelledVoucherCount: Int,
     val messageBoxUsagePercentage: Int
 ) : Serializable

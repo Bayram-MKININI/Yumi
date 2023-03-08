@@ -5,19 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
-import net.noliaware.yumi.commun.AVAILABLE_VOUCHERS_LIST_FRAGMENT_TAG
-import net.noliaware.yumi.commun.util.*
-import net.noliaware.yumi.feature_categories.domain.model.Category
+import net.noliaware.yumi.commun.util.formatNumber
+import net.noliaware.yumi.commun.util.inflate
+import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
-import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewAdapter
-import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView.CategoriesViewCallback
-import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
 import net.noliaware.yumi.feature_login.domain.model.AccountData
 
 @AndroidEntryPoint
@@ -30,7 +29,7 @@ class CategoriesFragment : Fragment() {
     }
 
     private var categoriesView: CategoriesView? = null
-    private val viewModel by viewModels<CategoriesFragmentViewModel>()
+    private val viewModel: CategoriesFragmentViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,87 +38,61 @@ class CategoriesFragment : Fragment() {
     ): View? {
         return container?.inflate(R.layout.categories_layout, false)?.apply {
             categoriesView = this as CategoriesView
-            categoriesView?.callback = categoriesViewCallback
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        collectFlows()
-        bindViewToData()
+        setUserName()
+        collectFlow()
+        setUpViewPager()
+    }
+
+    private fun setUserName() {
         viewModel.accountData?.let {
-            categoriesView?.setUserData(
-                it.helloMessage,
-                it.userName,
-                it.availableVoucherCountSinceLast.formatNumber()
-            )
+            categoriesView?.setUserData(it.helloMessage, it.userName)
         }
     }
 
-    private fun collectFlows() {
+    private fun collectFlow() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventsHelper.eventFlow.collectLatest { sharedEvent ->
-                handleSharedEvent(sharedEvent)
-                redirectToLoginScreenFromSharedEvent(sharedEvent)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.eventsHelper.stateFlow.collect { vmState ->
-                when (vmState) {
-                    is ViewModelState.LoadingState -> Unit
-                    is ViewModelState.DataState -> vmState.data?.let { categoryList ->
-                        categoriesView?.refreshCategoryList(
-                            categoryList.map { category ->
-                                mapCategory(category)
-                            }
-                        )
-                    }
-                }
+            viewModel.badgeCountFlow.collect { badgeCount ->
+                categoriesView?.setAvailableVouchersBadgeValue(badgeCount.formatNumber())
             }
         }
     }
 
-    private fun mapCategory(category: Category) = CategoryItemViewAdapter(
-        count = category.availableVoucherCount.formatNumber(),
-        iconName = category.categoryIcon,
-        title = category.categoryShortLabel
-    )
-
-    private fun bindViewToData() {
-        viewModel.eventsHelper.stateData?.let { categories ->
-            CategoriesViewAdapter(
-                categories.map { category ->
-                    mapCategory(category)
-                }
-            ).apply {
-                categoriesView?.fillViewWithData(this)
-            }
-        }
-    }
-
-    private val categoriesViewCallback: CategoriesViewCallback by lazy {
-        CategoriesViewCallback { index ->
-            viewModel.eventsHelper.stateData?.let { categories ->
-                categories[index]
-                    .let { category ->
-                        AvailableVouchersListFragment.newInstance(
-                            category
-                        ).apply {
-                            this.onDataRefreshed = {
-                                viewModel.callGetAvailableCategories()
-                            }
-                        }.show(
-                            childFragmentManager.beginTransaction(),
-                            AVAILABLE_VOUCHERS_LIST_FRAGMENT_TAG
-                        )
-                    }
-            }
+    private fun setUpViewPager() {
+        val viewPager = categoriesView?.getViewPager
+        CategoriesFragmentStateAdapter(childFragmentManager, lifecycle).apply {
+            viewPager?.adapter = this
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         categoriesView = null
+    }
+}
+
+class CategoriesFragmentStateAdapter(
+    fragmentManager: FragmentManager,
+    lifecycle: Lifecycle
+) : FragmentStateAdapter(fragmentManager, lifecycle) {
+
+    override fun getItemCount() = 3
+
+    override fun createFragment(position: Int): Fragment {
+        return when (position) {
+            0 -> {
+                AvailableCategoriesFragment()
+            }
+            1 -> {
+                UsedCategoriesFragment()
+            }
+            else -> {
+                CancelledCategoriesFragment()
+            }
+        }
     }
 }

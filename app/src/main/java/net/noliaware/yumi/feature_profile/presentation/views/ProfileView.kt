@@ -5,27 +5,57 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.viewpager2.widget.ViewPager2
-import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import androidx.core.view.isVisible
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.presentation.views.ClipartTabView
 import net.noliaware.yumi.commun.util.convertDpToPx
-import net.noliaware.yumi.commun.util.getStatusBarHeight
 import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.layoutToTopRight
 import net.noliaware.yumi.commun.util.measureWrapContent
+import kotlin.math.max
 
 class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
-    private lateinit var headerView: View
-    private lateinit var titleTextView: TextView
-    private lateinit var profileIconView: View
-    private lateinit var userDataTabView: ClipartTabView
-    private lateinit var usedTabView: ClipartTabView
-    private lateinit var cancelledTabView: ClipartTabView
-    private lateinit var contentView: View
-    private lateinit var viewPager: ViewPager2
+    private lateinit var myDataTextView: TextView
+    private lateinit var loginTitleTextView: TextView
+    private lateinit var loginValueTextView: TextView
+    private lateinit var surnameTitleTextView: TextView
+    private lateinit var surnameValueTextView: TextView
+    private lateinit var nameTitleTextView: TextView
+    private lateinit var nameValueTextView: TextView
+    private lateinit var referentTitleTextView: TextView
+    private lateinit var referentValueTextView: TextView
+    private lateinit var birthTitleTextView: TextView
+    private lateinit var birthValueTextView: TextView
+    private lateinit var separator1View: View
+    private lateinit var complementaryDataTextView: TextView
+    private lateinit var phoneTitleTextView: TextView
+    private lateinit var phoneValueTextView: TextView
+    private lateinit var addressTitleTextView: TextView
+    private lateinit var addressValueTextView: TextView
+    private lateinit var separator2View: View
+    private lateinit var myVouchersTextView: TextView
+    private lateinit var emittedTitleTextView: TextView
+    private lateinit var emittedValueTextView: TextView
+    private lateinit var availableTitleTextView: TextView
+    private lateinit var availableValueTextView: TextView
+    private lateinit var usedTitleTextView: TextView
+    private lateinit var usedValueTextView: TextView
+    private lateinit var cancelledTitleTextView: TextView
+    private lateinit var cancelledValueTextView: TextView
 
-    val getViewPager get() = viewPager
+    data class ProfileViewAdapter(
+        val login: String = "",
+        val surname: String = "",
+        val name: String = "",
+        val referent: String? = null,
+        val birth: String = "",
+        val phone: String = "",
+        val address: String = "",
+        val emittedValue: String = "",
+        val availableValue: String = "",
+        val usedValue: String = "",
+        val cancelledValue: String = ""
+    )
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -33,125 +63,123 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
     }
 
     private fun initView() {
-        headerView = findViewById(R.id.header_view)
-        titleTextView = findViewById(R.id.title_text_view)
-        profileIconView = findViewById(R.id.profile_icon_view)
-        userDataTabView = findViewById(R.id.user_data_tab_layout)
-        userDataTabView.setTitle(context.getString(R.string.my_data_short).uppercase())
-        userDataTabView.setOnClickListener {
-            setFirstTabSelected()
-            viewPager.setCurrentItem(0, true)
-        }
-        usedTabView = findViewById(R.id.used_tab_layout)
-        usedTabView.setTitle(context.getString(R.string.used).uppercase())
-        usedTabView.setOnClickListener {
-            setSecondTabSelected()
-            viewPager.setCurrentItem(1, true)
-        }
-        cancelledTabView = findViewById(R.id.cancelled_tab_layout)
-        cancelledTabView.setTitle(context.getString(R.string.cancelled).uppercase())
-        cancelledTabView.setOnClickListener {
-            setThirdTabSelected()
-            viewPager.setCurrentItem(2, true)
-        }
-        contentView = findViewById(R.id.content_layout)
-        viewPager = contentView.findViewById(R.id.pager)
-        viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                when (position) {
-                    0 -> {
-                        setFirstTabSelected()
-                    }
-                    1 -> {
-                        setSecondTabSelected()
-                    }
-                    else -> {
-                        setThirdTabSelected()
-                    }
-                }
-            }
-        })
+        myDataTextView = findViewById(R.id.my_data_text_view)
+        loginTitleTextView = findViewById(R.id.login_title_text_view)
+        loginValueTextView = findViewById(R.id.login_value_text_view)
+        surnameTitleTextView = findViewById(R.id.surname_title_text_view)
+        surnameValueTextView = findViewById(R.id.surname_value_text_view)
+        nameTitleTextView = findViewById(R.id.name_title_text_view)
+        nameValueTextView = findViewById(R.id.name_value_text_view)
+        referentTitleTextView = findViewById(R.id.referent_title_text_view)
+        referentValueTextView = findViewById(R.id.referent_value_text_view)
+        birthTitleTextView = findViewById(R.id.birth_title_text_view)
+        birthValueTextView = findViewById(R.id.birth_value_text_view)
+        separator1View = findViewById(R.id.separator_1_view)
+        complementaryDataTextView = findViewById(R.id.complementary_data_text_view)
+        phoneTitleTextView = findViewById(R.id.phone_title_text_view)
+        phoneValueTextView = findViewById(R.id.phone_value_text_view)
+        addressTitleTextView = findViewById(R.id.address_title_text_view)
+        addressValueTextView = findViewById(R.id.address_value_text_view)
+        separator2View = findViewById(R.id.separator_2_view)
+        myVouchersTextView = findViewById(R.id.my_vouchers_text_view)
+        emittedTitleTextView = findViewById(R.id.emitted_title_text_view)
+        emittedValueTextView = findViewById(R.id.emitted_value_text_view)
+        availableTitleTextView = findViewById(R.id.available_title_text_view)
+        availableValueTextView = findViewById(R.id.available_value_text_view)
+        usedTitleTextView = findViewById(R.id.used_title_text_view)
+        usedValueTextView = findViewById(R.id.used_value_text_view)
+        cancelledTitleTextView = findViewById(R.id.cancelled_title_text_view)
+        cancelledValueTextView = findViewById(R.id.cancelled_value_text_view)
     }
 
-    private fun setFirstTabSelected() {
-        userDataTabView.setTabSelected(true)
-        usedTabView.setTabSelected(false)
-        cancelledTabView.setTabSelected(false)
+    fun fillViewWithData(profileViewAdapter: ProfileViewAdapter) {
+
+        loginValueTextView.text = profileViewAdapter.login
+        surnameValueTextView.text = profileViewAdapter.surname
+        nameValueTextView.text = profileViewAdapter.name
+
+        profileViewAdapter.referent?.let {
+            referentTitleTextView.isVisible = true
+            referentValueTextView.isVisible = true
+            referentValueTextView.text = profileViewAdapter.referent
+        }
+
+        birthValueTextView.text = profileViewAdapter.birth
+        phoneValueTextView.text = profileViewAdapter.phone
+        addressValueTextView.text = profileViewAdapter.address
+
+        emittedValueTextView.text = profileViewAdapter.emittedValue
+        availableValueTextView.text = profileViewAdapter.availableValue
+        usedValueTextView.text = profileViewAdapter.usedValue
+        cancelledValueTextView.text = profileViewAdapter.cancelledValue
     }
 
-    private fun setSecondTabSelected() {
-        userDataTabView.setTabSelected(false)
-        usedTabView.setTabSelected(true)
-        cancelledTabView.setTabSelected(false)
-    }
-    private fun setThirdTabSelected() {
-        userDataTabView.setTabSelected(false)
-        usedTabView.setTabSelected(false)
-        cancelledTabView.setTabSelected(true)
-    }
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val viewWidth = MeasureSpec.getSize(widthMeasureSpec)
-        val viewHeight = MeasureSpec.getSize(heightMeasureSpec)
+        var viewHeight = MeasureSpec.getSize(heightMeasureSpec)
 
-        headerView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(
-                getStatusBarHeight() + convertDpToPx(75),
-                MeasureSpec.EXACTLY
-            )
+        myDataTextView.measureWrapContent()
+
+        loginTitleTextView.measureWrapContent()
+        loginValueTextView.measureWrapContent()
+
+        surnameTitleTextView.measureWrapContent()
+        surnameValueTextView.measureWrapContent()
+
+        nameTitleTextView.measureWrapContent()
+        nameValueTextView.measureWrapContent()
+
+        if (referentTitleTextView.isVisible) {
+            referentTitleTextView.measureWrapContent()
+            referentValueTextView.measureWrapContent()
+        }
+
+        birthTitleTextView.measureWrapContent()
+        birthValueTextView.measureWrapContent()
+
+        separator1View.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth * 4 / 10, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(3), MeasureSpec.EXACTLY)
         )
 
-        titleTextView.measureWrapContent()
-        profileIconView.measure(
-            MeasureSpec.makeMeasureSpec(convertDpToPx(50), MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(convertDpToPx(50), MeasureSpec.EXACTLY)
+        complementaryDataTextView.measureWrapContent()
+
+        phoneTitleTextView.measureWrapContent()
+        phoneValueTextView.measureWrapContent()
+
+        addressTitleTextView.measureWrapContent()
+        addressValueTextView.measureWrapContent()
+
+        separator2View.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth * 4 / 10, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(3), MeasureSpec.EXACTLY)
         )
 
-        val contentViewWidth = viewWidth * 9 / 10
+        myVouchersTextView.measureWrapContent()
 
-        userDataTabView.measureWrapContent()
-        usedTabView.measureWrapContent()
-        cancelledTabView.measureWrapContent()
+        emittedTitleTextView.measureWrapContent()
+        emittedValueTextView.measureWrapContent()
 
-        val tabWidthExtra = (contentViewWidth - (userDataTabView.measuredWidth + usedTabView.measuredWidth +
-                cancelledTabView.measuredWidth + convertDpToPx(16))) / 3
+        availableTitleTextView.measureWrapContent()
+        availableValueTextView.measureWrapContent()
 
-        userDataTabView.measure(
-            MeasureSpec.makeMeasureSpec(
-                userDataTabView.measuredWidth + tabWidthExtra,
-                MeasureSpec.EXACTLY
-            ),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        )
+        usedTitleTextView.measureWrapContent()
+        usedValueTextView.measureWrapContent()
 
-        usedTabView.measure(
-            MeasureSpec.makeMeasureSpec(
-                usedTabView.measuredWidth + tabWidthExtra,
-                MeasureSpec.EXACTLY
-            ),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        )
+        cancelledTitleTextView.measureWrapContent()
+        cancelledValueTextView.measureWrapContent()
 
-        cancelledTabView.measure(
-            MeasureSpec.makeMeasureSpec(
-                cancelledTabView.measuredWidth + tabWidthExtra,
-                MeasureSpec.EXACTLY
-            ),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        )
-
-        val contentViewHeight = viewHeight - (headerView.measuredHeight + profileIconView.measuredHeight / 2 +
-                userDataTabView.measuredHeight + convertDpToPx(35))
-
-        contentView.measure(
-            MeasureSpec.makeMeasureSpec(contentViewWidth, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(contentViewHeight, MeasureSpec.EXACTLY)
-        )
-
-        viewPager.measure(
-            MeasureSpec.makeMeasureSpec(contentView.measuredWidth, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(contentView.measuredHeight, MeasureSpec.EXACTLY)
-        )
+        viewHeight =
+            myDataTextView.measuredHeight + loginValueTextView.measuredHeight + surnameValueTextView.measuredHeight +
+                    nameValueTextView.measuredHeight +
+                    if (referentTitleTextView.isVisible) {
+                        referentValueTextView.measuredHeight + convertDpToPx(15)
+                    } else {
+                        0
+                    } + birthValueTextView.measuredHeight + separator1View.measuredHeight + complementaryDataTextView.measuredHeight +
+                    phoneValueTextView.measuredHeight + addressValueTextView.measuredHeight + separator1View.measuredHeight +
+                    myVouchersTextView.measuredHeight + emittedValueTextView.measuredHeight + availableValueTextView.measuredHeight +
+                    usedValueTextView.measuredHeight + cancelledValueTextView.measuredHeight + convertDpToPx(190)
 
         setMeasuredDimension(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
@@ -163,39 +191,149 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         val viewWidth = right - left
         val viewHeight = bottom - top
 
-        headerView.layoutToTopLeft(0, 0)
-
-        titleTextView.layoutToTopLeft(
-            (viewWidth - titleTextView.measuredWidth) / 2,
-            getStatusBarHeight() + convertDpToPx(15)
+        myDataTextView.layoutToTopLeft(
+            convertDpToPx(20),
+            0
         )
 
-        profileIconView.layoutToTopLeft(
-            (viewWidth - profileIconView.measuredWidth) / 2,
-            headerView.bottom - profileIconView.measuredHeight / 2
+        val edge = viewWidth * 1 / 3
+
+        loginTitleTextView.layoutToTopRight(
+            edge,
+            myDataTextView.bottom + convertDpToPx(15)
         )
 
-        val contentViewLeft = (viewWidth - contentView.measuredWidth) / 2
-        userDataTabView.layoutToTopLeft(
-            contentViewLeft,
-            profileIconView.bottom + convertDpToPx(15)
+        loginValueTextView.layoutToTopLeft(
+            loginTitleTextView.right + convertDpToPx(15),
+            loginTitleTextView.top
         )
 
-        usedTabView.layoutToTopLeft(
-            userDataTabView.right + convertDpToPx(8),
-            userDataTabView.top
+        surnameTitleTextView.layoutToTopRight(
+            edge,
+            loginTitleTextView.bottom + convertDpToPx(10)
         )
 
-        cancelledTabView.layoutToTopLeft(
-            usedTabView.right + convertDpToPx(8),
-            userDataTabView.top
+        surnameValueTextView.layoutToTopLeft(
+            surnameTitleTextView.right + convertDpToPx(15),
+            surnameTitleTextView.top
         )
 
-        contentView.layoutToTopLeft(
-            (viewWidth - contentView.measuredWidth) / 2,
-            userDataTabView.bottom - convertDpToPx(20)
+        nameTitleTextView.layoutToTopRight(
+            edge,
+            surnameTitleTextView.bottom + convertDpToPx(10)
         )
 
-        viewPager.layoutToTopLeft(0, 0)
+        nameValueTextView.layoutToTopLeft(
+            nameTitleTextView.right + convertDpToPx(15),
+            nameTitleTextView.top
+        )
+
+        val referentViewBottom = if (referentTitleTextView.isVisible) {
+
+            referentTitleTextView.layoutToTopRight(
+                edge,
+                nameValueTextView.bottom + convertDpToPx(10)
+            )
+
+            referentValueTextView.layoutToTopLeft(
+                referentTitleTextView.right + convertDpToPx(15),
+                referentTitleTextView.top
+            )
+
+            referentTitleTextView.bottom
+
+        } else {
+            nameTitleTextView.bottom
+        }
+
+        birthTitleTextView.layoutToTopRight(
+            edge,
+            referentViewBottom + convertDpToPx(10)
+        )
+
+        birthValueTextView.layoutToTopLeft(
+            birthTitleTextView.right + convertDpToPx(15),
+            birthTitleTextView.top
+        )
+
+        separator1View.layoutToTopLeft(
+            (viewWidth - separator1View.measuredWidth) / 2,
+            birthTitleTextView.bottom + convertDpToPx(20)
+        )
+
+        complementaryDataTextView.layoutToTopLeft(
+            myDataTextView.left,
+            separator1View.bottom + convertDpToPx(20)
+        )
+
+        phoneTitleTextView.layoutToTopRight(
+            edge,
+            complementaryDataTextView.bottom + convertDpToPx(10)
+        )
+
+        phoneValueTextView.layoutToTopLeft(
+            phoneTitleTextView.right + convertDpToPx(15),
+            phoneTitleTextView.top
+        )
+
+        addressTitleTextView.layoutToTopRight(
+            edge,
+            phoneTitleTextView.bottom + convertDpToPx(10)
+        )
+
+        addressValueTextView.layoutToTopLeft(
+            addressTitleTextView.right + convertDpToPx(15),
+            addressTitleTextView.top
+        )
+
+        separator2View.layoutToTopLeft(
+            (viewWidth - separator2View.measuredWidth) / 2,
+            max(addressTitleTextView.bottom, addressValueTextView.bottom) + convertDpToPx(20)
+        )
+
+        myVouchersTextView.layoutToTopLeft(
+            myDataTextView.left,
+            separator2View.bottom + convertDpToPx(20)
+        )
+
+        emittedTitleTextView.layoutToTopRight(
+            edge,
+            myVouchersTextView.bottom + convertDpToPx(10)
+        )
+
+        emittedValueTextView.layoutToTopLeft(
+            emittedTitleTextView.right + convertDpToPx(15),
+            emittedTitleTextView.top
+        )
+
+        availableTitleTextView.layoutToTopRight(
+            edge,
+            emittedTitleTextView.bottom + convertDpToPx(10)
+        )
+
+        availableValueTextView.layoutToTopLeft(
+            availableTitleTextView.right + convertDpToPx(15),
+            availableTitleTextView.top
+        )
+
+        usedTitleTextView.layoutToTopRight(
+            edge,
+            availableTitleTextView.bottom + convertDpToPx(10)
+        )
+
+        usedValueTextView.layoutToTopLeft(
+            usedTitleTextView.right + convertDpToPx(15),
+            usedTitleTextView.top
+        )
+
+        cancelledTitleTextView.layoutToTopRight(
+            edge,
+            usedTitleTextView.bottom + convertDpToPx(10)
+        )
+
+        cancelledValueTextView.layoutToTopLeft(
+            cancelledTitleTextView.right + convertDpToPx(15),
+            cancelledTitleTextView.top
+        )
     }
 }

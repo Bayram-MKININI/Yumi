@@ -129,10 +129,13 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
         voucherBadgeTextView.measureWrapContent()
         titleTextView.measureWrapContent()
 
+        availableTabView.measureWrapContent()
+        usedTabView.measureWrapContent()
+        cancelledTabView.measureWrapContent()
+
         val contentViewWidth = viewWidth * 9 / 10
 
-        val tabWidthExtra =
-            (contentViewWidth - (availableTabView.measuredWidth + usedTabView.measuredWidth +
+        val tabWidthExtra = (contentViewWidth - (availableTabView.measuredWidth + usedTabView.measuredWidth +
                     cancelledTabView.measuredWidth + convertDpToPx(16))) / 3
 
         availableTabView.measure(
@@ -159,8 +162,7 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
-        val contentViewHeight =
-            viewHeight - (headerView.measuredHeight + availableTabView.measuredHeight +
+        val contentViewHeight = viewHeight - (headerView.measuredHeight + availableTabView.measuredHeight +
                     convertDpToPx(70))
         contentView.measure(
             MeasureSpec.makeMeasureSpec(contentViewWidth, MeasureSpec.EXACTLY),

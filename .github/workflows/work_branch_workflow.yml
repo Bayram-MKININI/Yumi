@@ -28,13 +28,13 @@ jobs:
           java-version: 17
 
       - name: Build gradle project
-          run: ./gradlew build --scan
+        run: ./gradlew build --scan
 
       - name: Build apk release
-          run: ./gradlew assemble
+        run: ./gradlew assemble
 
       - name: Build app bundle release (AAB) - ${{ env.main_project_module }} module
-          run: ./gradlew ${{ env.main_project_module }}:bundleRelease
+        run: ./gradlew ${{ env.main_project_module }}:bundleRelease
 
       - name: Upload APK Release
         uses: actions/upload-artifact@v3

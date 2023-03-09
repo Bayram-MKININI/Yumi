@@ -1,7 +1,10 @@
 name: Generate AAB Release
 
 env:
-  MAIN_project_module: app
+  KEYSTORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+  KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+  KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+  JVM_OPTS: -Xmx2048m
 
 on:
   push:
@@ -29,6 +32,13 @@ jobs:
 
       - name: Make Gradle executable
         run: chmod +x gradlew
+
+      - name: Decode keystore
+        env:
+          ENCODED_KEYSTORE: ${{ secrets.ENCODED_KEYSTORE }}
+        run: |
+          echo $ENCODED_KEYSTORE | base64 --decode > app/Noliaware.jks
+          echo KEYSTORE=Noliaware.jks >> $GITHUB_ENV
 
       - name: Execute Gradle build
         run: ./gradlew build

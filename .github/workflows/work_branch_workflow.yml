@@ -1,8 +1,7 @@
 name: Generate AAB Release
 
 env:
-  # The name of the main module repository
-  main_project_module: app
+  MAIN_project_module: app
 
 on:
   push:
@@ -28,18 +27,14 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Change gradlew permissions
-        run: |
-          chmod +x gradlew
-
       - name: Execute Gradle build
         run: ./gradlew build
 
       - name: Build apk release
         run: ./gradlew assemble
 
-      - name: Build app bundle release (AAB) - ${{ env.main_project_module }} module
-        run: ./gradlew ${{ env.main_project_module }}:bundleRelease
+      - name: Build app bundle release (AAB)
+        run: ./gradlew app:bundleRelease
 
       - name: Set release date
         run: |

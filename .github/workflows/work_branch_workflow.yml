@@ -1,7 +1,7 @@
 name: Generate AAB Release
 
 env:
-  KEYSTORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+  KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
   KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
   KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
   JVM_OPTS: -Xmx2048m

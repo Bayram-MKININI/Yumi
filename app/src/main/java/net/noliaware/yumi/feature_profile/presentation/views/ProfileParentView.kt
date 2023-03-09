@@ -62,9 +62,11 @@ class ProfileParentView(context: Context, attrs: AttributeSet?) : ViewGroup(cont
 
         getCodeLayout.measureWrapContent()
 
-        val contentViewWidth = viewWidth * 9 / 10
+        val contentViewWidth = viewWidth * 95 / 100
+        val sideMargin = viewWidth * 5 / 100 / 2
+
         val contentViewHeight = viewHeight - (headerView.measuredHeight + profileIconView.measuredHeight / 2 +
-                    convertDpToPx(55))
+                    sideMargin + convertDpToPx(35))
         contentView.measure(
             MeasureSpec.makeMeasureSpec(contentViewWidth, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(contentViewHeight, MeasureSpec.EXACTLY)

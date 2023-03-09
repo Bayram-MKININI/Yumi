@@ -144,8 +144,8 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
         addressTextView.measureWrapContent()
 
         phoneImageView.measure(
-            MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(convertDpToPx(40), MeasureSpec.EXACTLY)
+            MeasureSpec.makeMeasureSpec(convertDpToPx(30), MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(30), MeasureSpec.EXACTLY)
         )
 
         phoneTextView.measureWrapContent()
@@ -161,19 +161,16 @@ class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(co
 
         openLocationLayout.measureWrapContent()
 
-        val locationBackgroundViewHeight =
-            retailerTextView.measuredHeight + addressTextView.measuredHeight +
-                    phoneImageView.measuredHeight + openLocationLayout.measuredHeight / 2 + convertDpToPx(
-                50
-            )
+        val locationBackgroundViewHeight = retailerTextView.measuredHeight + addressTextView.measuredHeight +
+                    phoneImageView.measuredHeight + openLocationLayout.measuredHeight / 2 +
+                    convertDpToPx(50)
 
         locationBackgroundView.measure(
             MeasureSpec.makeMeasureSpec(viewWidth * 9 / 10, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(locationBackgroundViewHeight, MeasureSpec.EXACTLY)
         )
 
-        val contentHeight =
-            titleTextView.measuredHeight + createdTextView.measuredHeight + separatorView.measuredHeight +
+        val contentHeight = titleTextView.measuredHeight + createdTextView.measuredHeight + separatorView.measuredHeight +
                     if (sponsorTextView.isVisible) {
                         sponsorBackgroundView.measuredHeight + convertDpToPx(15)
                     } else {

@@ -1,0 +1,48 @@
+name: Generate AAB Release
+
+env:
+  # The name of the main module repository
+  main_project_module: app
+
+on:
+  push:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set Up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Build gradle project
+          run: ./gradlew build
+
+      - name: Build apk release
+          run: ./gradlew assemble
+
+      - name: Build app bundle release (AAB) - ${{ env.main_project_module }} module
+          run: ./gradlew ${{ env.main_project_module }}:bundleRelease
+
+      - name: Upload APK Release
+        uses: actions/upload-artifact@v3
+        with:
+          name: Release APK - ${{ env.date_today }}
+          path: app/build/outputs/apk/release/
+
+      - name: Upload AAB Release
+        uses: actions/upload-artifact@v3
+        with:
+          name: Release AAB - ${{ env.date_today }}
+          path: app/build/outputs/bundle/release/

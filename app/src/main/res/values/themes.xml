@@ -33,7 +33,6 @@
     </style>
 
     <style name="FullScreenDialogTheme" parent="ThemeOverlay.MaterialComponents.Light">
-        <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowIsFloating">false</item>

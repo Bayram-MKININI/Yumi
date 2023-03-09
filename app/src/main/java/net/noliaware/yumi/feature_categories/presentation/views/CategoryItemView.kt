@@ -76,7 +76,7 @@ class CategoryItemView(context: Context, attrs: AttributeSet?) : ElevatedCardVie
 
         titleTextView.layoutToTopLeft(
             (viewHeight - titleTextView.measuredWidth) / 2,
-            iconImageView.bottom + convertDpToPx(10)
+            iconImageView.bottom + convertDpToPx(2)
         )
     }
 }

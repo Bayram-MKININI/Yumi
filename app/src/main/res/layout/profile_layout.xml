@@ -78,6 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/omnes_semibold_regular"
+                    android:text="@string/empty_value"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
 
@@ -94,6 +95,7 @@
                     android:id="@+id/surname_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
@@ -111,6 +113,7 @@
                     android:id="@+id/name_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
@@ -148,6 +151,7 @@
                     android:id="@+id/birth_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
@@ -181,6 +185,7 @@
                     android:id="@+id/phone_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
@@ -199,6 +204,7 @@
                     android:id="@+id/address_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
@@ -232,6 +238,7 @@
                     android:id="@+id/emitted_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
@@ -250,6 +257,7 @@
                     android:id="@+id/available_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
@@ -268,6 +276,7 @@
                     android:id="@+id/used_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
@@ -286,6 +295,7 @@
                     android:id="@+id/cancelled_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />

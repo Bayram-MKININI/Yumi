@@ -33,6 +33,7 @@ import androidx.fragment.app.Fragment
 import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.FlowCollector
@@ -286,6 +287,10 @@ fun View.getLocationRectOnScreen(): Rect {
         right = left + measuredWidth
         bottom = top + measuredHeight
     }
+}
+
+fun ViewPager2.removeOverScroll() {
+    (getChildAt(0) as? RecyclerView)?.overScrollMode = View.OVER_SCROLL_NEVER
 }
 
 @JvmOverloads

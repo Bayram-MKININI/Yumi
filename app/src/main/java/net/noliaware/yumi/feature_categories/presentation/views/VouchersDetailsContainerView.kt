@@ -143,12 +143,11 @@ class VouchersDetailsContainerView(
         displayVoucherLayout.measureWrapContent()
         voucherStatusTextView.measureWrapContent()
 
-        val parentContentViewHeight =
-            viewHeight - (headerView.measuredHeight + categoryImageView.measuredHeight / 2 +
+        val parentContentViewHeight = viewHeight - (headerView.measuredHeight + categoryImageView.measuredHeight / 2 +
                     convertDpToPx(25))
 
         parentContentView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth * 9 / 10, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(viewWidth * 95 / 100, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(parentContentViewHeight, MeasureSpec.EXACTLY)
         )
 

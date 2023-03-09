@@ -57,7 +57,13 @@ class CategoriesFragment : Fragment() {
     private fun collectFlow() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.badgeCountFlow.collect { badgeCount ->
-                categoriesView?.setAvailableVouchersBadgeValue(badgeCount.formatNumber())
+                categoriesView?.setAvailableVouchersBadgeValue(
+                    badgeCount.formatNumber(),
+                    resources.getQuantityString(
+                        R.plurals.available_vouchers,
+                        badgeCount
+                    )
+                )
             }
         }
     }

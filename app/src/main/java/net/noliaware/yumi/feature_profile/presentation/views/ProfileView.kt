@@ -169,8 +169,7 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         cancelledTitleTextView.measureWrapContent()
         cancelledValueTextView.measureWrapContent()
 
-        viewHeight =
-            myDataTextView.measuredHeight + loginValueTextView.measuredHeight + surnameValueTextView.measuredHeight +
+        viewHeight = myDataTextView.measuredHeight + loginValueTextView.measuredHeight + surnameValueTextView.measuredHeight +
                     nameValueTextView.measuredHeight +
                     if (referentTitleTextView.isVisible) {
                         referentValueTextView.measuredHeight + convertDpToPx(15)

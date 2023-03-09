@@ -18,6 +18,11 @@
     <string name="cancel">Annuler</string>
 
     //Category list
+    <string name="you_have">Vous avez</string>
+    <plurals name="available_vouchers">
+        <item quantity="one">coupon disponible</item>
+        <item quantity="other">coupons disponibles</item>
+    </plurals>
     <string name="categories_title">Mes coupons…</string>
     <string name="available">Disponibles</string>
     <string name="used">Utilisés</string>
@@ -43,6 +48,7 @@
     <string name="display_voucher">Accéder au coupon</string>
     <string name="use_voucher">Utiliser ce coupon</string>
     <string name="application_not_found">Application cartographique introuvable</string>
+    <string name="use_voucher_message">CLIQUEZ SUR \"UTILISER CE COUPON\" POUR L\'ACTIVER</string>
     <string name="voucher_inexistent">Coupon inexistant</string>
     <string name="voucher_canceled">Coupon annulé</string>
     <string name="voucher_consumed">Coupon consommé</string>
@@ -61,6 +67,7 @@
     <string name="phone">Téléphone</string>
     <string name="address">Adresse</string>
     <string name="emitted">Émis</string>
+    <string name="empty_value">-</string>
     <plurals name="voucher_stat_format">
         <item quantity="one">%s coupon</item>
         <item quantity="other">%s coupons</item>

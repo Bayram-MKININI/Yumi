@@ -4,9 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.viewpager2.widget.ViewPager2
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.views.ClipartTabView
@@ -17,8 +15,9 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
     private lateinit var headerView: View
     private lateinit var helloTextView: TextView
     private lateinit var nameTextView: TextView
-    private lateinit var voucherImageView: ImageView
+    private lateinit var youHaveTextView: TextView
     private lateinit var voucherBadgeTextView: TextView
+    private lateinit var vouchersTextView: TextView
     private lateinit var titleTextView: TextView
     private lateinit var availableTabView: ClipartTabView
     private lateinit var usedTabView: ClipartTabView
@@ -37,8 +36,9 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
         headerView = findViewById(R.id.header_view)
         helloTextView = findViewById(R.id.hello_text_view)
         nameTextView = findViewById(R.id.name_text_view)
-        voucherImageView = findViewById(R.id.voucher_image_view)
+        youHaveTextView = findViewById(R.id.you_have_text_view)
         voucherBadgeTextView = findViewById(R.id.voucher_badge_text_view)
+        vouchersTextView = findViewById(R.id.vouchers_text_view)
         titleTextView = findViewById(R.id.title_text_view)
         availableTabView = findViewById(R.id.available_tab_layout)
         availableTabView.setTitle(context.getString(R.string.available).uppercase())
@@ -60,6 +60,7 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
         }
         contentView = findViewById(R.id.content_layout)
         viewPager = contentView.findViewById(R.id.pager)
+        viewPager.removeOverScroll()
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 when (position) {
@@ -100,11 +101,9 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
         nameTextView.text = userName
     }
 
-    fun setAvailableVouchersBadgeValue(voucherBadgeValue: String?) {
-        voucherBadgeValue?.let {
-            voucherBadgeTextView.isVisible = true
-            voucherBadgeTextView.text = voucherBadgeValue
-        }
+    fun setAvailableVouchersBadgeValue(voucherBadgeValue: String, vouchers: String) {
+        voucherBadgeTextView.text = voucherBadgeValue
+        vouchersTextView.text = vouchers
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -114,26 +113,30 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
         headerView.measure(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(
-                getStatusBarHeight() + convertDpToPx(111), MeasureSpec.EXACTLY
+                getStatusBarHeight() + convertDpToPx(100), MeasureSpec.EXACTLY
             )
         )
 
         helloTextView.measureWrapContent()
-        nameTextView.measureWrapContent()
 
-        voucherImageView.measure(
-            MeasureSpec.makeMeasureSpec(convertDpToPx(50), MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(convertDpToPx(50), MeasureSpec.EXACTLY)
+        val nameTextViewWidth = viewWidth - (helloTextView.measuredWidth + convertDpToPx(35))
+        nameTextView.measure(
+            MeasureSpec.makeMeasureSpec(nameTextViewWidth, MeasureSpec.AT_MOST),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
+        youHaveTextView.measureWrapContent()
         voucherBadgeTextView.measureWrapContent()
+        vouchersTextView.measureWrapContent()
+
         titleTextView.measureWrapContent()
 
         availableTabView.measureWrapContent()
         usedTabView.measureWrapContent()
         cancelledTabView.measureWrapContent()
 
-        val contentViewWidth = viewWidth * 9 / 10
+        val contentViewWidth = viewWidth * 95 / 100
+        val sideMargin = viewWidth * 5 / 100 / 2
 
         val tabWidthExtra = (contentViewWidth - (availableTabView.measuredWidth + usedTabView.measuredWidth +
                     cancelledTabView.measuredWidth + convertDpToPx(16))) / 3
@@ -163,7 +166,7 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
         )
 
         val contentViewHeight = viewHeight - (headerView.measuredHeight + availableTabView.measuredHeight +
-                    convertDpToPx(70))
+                    sideMargin + convertDpToPx(50))
         contentView.measure(
             MeasureSpec.makeMeasureSpec(contentViewWidth, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(contentViewHeight, MeasureSpec.EXACTLY)
@@ -186,25 +189,29 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
 
         headerView.layoutToTopLeft(0, 0)
 
-        val contentHeight = helloTextView.measuredHeight + nameTextView.measuredHeight
-        val headerHeight = headerView.measuredHeight - getStatusBarHeight()
         helloTextView.layoutToTopLeft(
-            convertDpToPx(20),
-            getStatusBarHeight() + (headerHeight - contentHeight) / 2
+            convertDpToPx(15),
+            getStatusBarHeight() + convertDpToPx(10)
         )
 
         nameTextView.layoutToTopLeft(
-            helloTextView.left, helloTextView.bottom
+            helloTextView.right + convertDpToPx(5),
+            helloTextView.top
         )
 
-        voucherImageView.layoutToTopRight(
-            right - convertDpToPx(30),
-            helloTextView.top + convertDpToPx(8)
+        youHaveTextView.layoutToTopLeft(
+            helloTextView.left,
+            helloTextView.bottom + convertDpToPx(5)
         )
 
         voucherBadgeTextView.layoutToTopLeft(
-            voucherImageView.right - voucherImageView.measuredWidth * 3 / 10,
-            voucherImageView.top
+            youHaveTextView.right + convertDpToPx(3),
+            youHaveTextView.top + (youHaveTextView.measuredHeight - voucherBadgeTextView.measuredHeight) / 2
+        )
+
+        vouchersTextView.layoutToTopLeft(
+            voucherBadgeTextView.right + convertDpToPx(3),
+            youHaveTextView.top
         )
 
         titleTextView.layoutToTopLeft(

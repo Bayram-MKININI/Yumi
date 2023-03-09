@@ -15,7 +15,8 @@ import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.parseTimestampToString
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
-import net.noliaware.yumi.feature_profile.presentation.views.BOSignInView
+import net.noliaware.yumi.feature_profile.presentation.views.BOSignInParentView
+import net.noliaware.yumi.feature_profile.presentation.views.BOSignInParentView.BOSignInViewCallback
 
 @AndroidEntryPoint
 class BOSignInFragment : AppCompatDialogFragment() {
@@ -24,7 +25,7 @@ class BOSignInFragment : AppCompatDialogFragment() {
         fun newInstance() = BOSignInFragment()
     }
 
-    private var boSignInView: BOSignInView? = null
+    private var boSignInView: BOSignInParentView? = null
     private val viewModel by viewModels<BOSignInFragmentViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,13 +39,13 @@ class BOSignInFragment : AppCompatDialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.bo_sign_in_layout, container, false).apply {
-            boSignInView = this as BOSignInView
+            boSignInView = this as BOSignInParentView
             boSignInView?.callback = boSignInViewCallback
         }
     }
 
-    private val boSignInViewCallback: BOSignInView.BOSignInViewCallback by lazy {
-        BOSignInView.BOSignInViewCallback {
+    private val boSignInViewCallback: BOSignInViewCallback by lazy {
+        BOSignInViewCallback {
             dismissAllowingStateLoss()
         }
     }
@@ -68,7 +69,7 @@ class BOSignInFragment : AppCompatDialogFragment() {
                 when (vmState) {
                     is ViewModelState.LoadingState -> Unit
                     is ViewModelState.DataState -> vmState.data?.let { boSignIn ->
-                        boSignInView?.displayCode(boSignIn.signInCode)
+                        boSignInView?.getBoSignInView?.displayCode(boSignIn.signInCode)
                         viewModel.startTimerWithPeriod(boSignIn.expiryDelayInSeconds)
                     }
                 }
@@ -77,7 +78,7 @@ class BOSignInFragment : AppCompatDialogFragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.timerStateFlow.collect { timerState ->
-                boSignInView?.displayRemainingTime(
+                boSignInView?.getBoSignInView?.displayRemainingTime(
                     timerState.secondsRemaining?.let { secondsRemaining ->
                         parseTimestampToString(secondsRemaining)
                     } ?: getString(R.string.empty_time)

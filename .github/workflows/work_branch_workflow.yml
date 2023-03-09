@@ -27,15 +27,14 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Change gradlew permissions
-        run: |
-          chmod +x gradlew
+      - name: Make Gradle executable
+        run: chmod +x gradlew
 
       - name: Execute Gradle build
         run: ./gradlew build
 
-      - name: Build apk release
-        run: ./gradlew assemble
+      - name: Build release APK
+        run: ./gradlew assembleRelease
 
       - name: Build app bundle release (AAB)
         run: ./gradlew app:bundleRelease

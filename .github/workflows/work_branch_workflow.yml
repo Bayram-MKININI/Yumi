@@ -27,6 +27,10 @@ jobs:
           java-version: 17
           cache: gradle
 
+      - name: Change gradlew permissions
+        run: |
+          chmod +x gradlew
+
       - name: Execute Gradle build
         run: ./gradlew build
 

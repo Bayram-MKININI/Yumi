@@ -191,7 +191,7 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
 
         helloTextView.layoutToTopLeft(
             convertDpToPx(15),
-            getStatusBarHeight() + convertDpToPx(10)
+            getStatusBarHeight() + convertDpToPx(5)
         )
 
         nameTextView.layoutToTopLeft(

@@ -89,11 +89,11 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
 
     private fun EditText.setOnConsistentClickListener(doOnClick: (View) -> Unit) {
         val gestureDetector = GestureDetectorCompat(context, object : SimpleOnGestureListener() {
-                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                    doOnClick(this@setOnConsistentClickListener)
-                    return false
-                }
-            })
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                doOnClick(this@setOnConsistentClickListener)
+                return false
+            }
+        })
 
         this.setOnTouchListener { _, motionEvent -> gestureDetector.onTouchEvent(motionEvent) }
     }
@@ -125,7 +125,10 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
 
         headerView.measure(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(getStatusBarHeight() + convertDpToPx(75), MeasureSpec.EXACTLY)
+            MeasureSpec.makeMeasureSpec(
+                getStatusBarHeight() + convertDpToPx(75),
+                MeasureSpec.EXACTLY
+            )
         )
 
         backView.measureWrapContent()
@@ -156,7 +159,7 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
 
         val screenHeight = viewHeight - getStatusBarHeight()
         val messageBackgroundViewHeight = contentView.measuredHeight - (titleTextView.measuredHeight + sendButton.measuredHeight / 2 +
-                    if (screenHeight == visibleRect.height()) {
+                    if (visibleRect.height() > (screenHeight * 9 / 10)) {
                         convertDpToPx(40)
                     } else {
                         screenHeight - visibleRect.height() + convertDpToPx(25)
@@ -168,7 +171,10 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         )
 
         subjectEditText.measure(
-            MeasureSpec.makeMeasureSpec(messageBackgroundView.measuredWidth - convertDpToPx(30), MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(
+                messageBackgroundView.measuredWidth - convertDpToPx(30),
+                MeasureSpec.EXACTLY
+            ),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 

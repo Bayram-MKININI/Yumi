@@ -79,25 +79,25 @@ class CategoriesFragment : Fragment() {
         super.onDestroyView()
         categoriesView = null
     }
-}
 
-class CategoriesFragmentStateAdapter(
-    fragmentManager: FragmentManager,
-    lifecycle: Lifecycle
-) : FragmentStateAdapter(fragmentManager, lifecycle) {
+    private class CategoriesFragmentStateAdapter(
+        fragmentManager: FragmentManager,
+        lifecycle: Lifecycle
+    ) : FragmentStateAdapter(fragmentManager, lifecycle) {
 
-    override fun getItemCount() = 3
+        override fun getItemCount() = 3
 
-    override fun createFragment(position: Int): Fragment {
-        return when (position) {
-            0 -> {
-                AvailableCategoriesFragment()
-            }
-            1 -> {
-                UsedCategoriesFragment()
-            }
-            else -> {
-                CancelledCategoriesFragment()
+        override fun createFragment(position: Int): Fragment {
+            return when (position) {
+                0 -> {
+                    AvailableCategoriesFragment()
+                }
+                1 -> {
+                    UsedCategoriesFragment()
+                }
+                else -> {
+                    CancelledCategoriesFragment()
+                }
             }
         }
     }

@@ -120,7 +120,7 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val viewWidth = View.MeasureSpec.getSize(widthMeasureSpec)
+        val viewWidth = MeasureSpec.getSize(widthMeasureSpec)
         val viewHeight = MeasureSpec.getSize(heightMeasureSpec)
 
         headerView.measure(

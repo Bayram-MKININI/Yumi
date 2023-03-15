@@ -2,7 +2,6 @@ package net.noliaware.yumi.feature_categories.presentation.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import net.noliaware.yumi.R
@@ -39,7 +38,7 @@ class CategoryItemView(context: Context, attrs: AttributeSet?) : ElevatedCardVie
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val viewWidth = View.MeasureSpec.getSize(widthMeasureSpec)
+        val viewWidth = MeasureSpec.getSize(widthMeasureSpec)
         val viewHeight = MeasureSpec.getSize(heightMeasureSpec)
 
         countTextView.measureWrapContent()

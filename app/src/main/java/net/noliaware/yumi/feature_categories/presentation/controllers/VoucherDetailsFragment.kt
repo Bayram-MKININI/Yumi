@@ -131,6 +131,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                     R.string.expiry_date_value,
                     parseToShortDate(voucher.voucherExpiryDate)
                 ),
+                partnerAvailable = voucher.partnerInfoText?.isNotEmpty() == true,
                 partnerLabel = voucher.partnerInfoText,
                 voucherDescription = voucher.productDescription,
                 retailerLabel = voucher.retailerLabel.orEmpty(),

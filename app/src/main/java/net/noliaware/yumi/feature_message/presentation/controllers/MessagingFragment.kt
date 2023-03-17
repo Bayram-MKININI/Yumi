@@ -17,6 +17,7 @@ import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.presentation.views.MessagingView
+import net.noliaware.yumi.feature_message.presentation.views.MessagingView.MailViewCallback
 
 @AndroidEntryPoint
 class MessagingFragment : Fragment() {
@@ -48,8 +49,8 @@ class MessagingFragment : Fragment() {
         }
     }
 
-    private val messagingViewCallback: MessagingView.MailViewCallback by lazy {
-        MessagingView.MailViewCallback {
+    private val messagingViewCallback: MailViewCallback by lazy {
+        MailViewCallback {
             SendMailFragment.newInstance(
                 viewModel.messageSubjects ?: listOf()
             ).apply {
@@ -57,7 +58,8 @@ class MessagingFragment : Fragment() {
                     (messagingView?.getViewPager?.adapter as MessageFragmentStateAdapter).refreshSentFragment()
                 }
             }.show(
-                childFragmentManager.beginTransaction(), SEND_MESSAGES_FRAGMENT_TAG
+                childFragmentManager.beginTransaction(),
+                SEND_MESSAGES_FRAGMENT_TAG
             )
         }
     }

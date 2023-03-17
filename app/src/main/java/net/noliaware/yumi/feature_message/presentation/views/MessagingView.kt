@@ -3,15 +3,15 @@ package net.noliaware.yumi.feature_message.presentation.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.views.ClipartTabView
 import net.noliaware.yumi.commun.util.*
 
-class MessagingView(context: Context, attrs: AttributeSet?) : CoordinatorLayout(context, attrs) {
+class MessagingView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
     private lateinit var headerView: View
     private lateinit var titleTextView: TextView

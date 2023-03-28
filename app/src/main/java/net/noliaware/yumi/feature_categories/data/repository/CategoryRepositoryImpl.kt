@@ -258,7 +258,7 @@ class CategoryRepositoryImpl(
                 remoteData.data?.let { getVoucherStatusDTO ->
                     emit(
                         Resource.Success(
-                            data = getVoucherStatusDTO.toVoucherStatus(),
+                            data = getVoucherStatusDTO.toVoucherStatus() ?: VoucherStatus.INEXISTENT,
                             appMessage = remoteData.message?.toAppMessage()
                         )
                     )

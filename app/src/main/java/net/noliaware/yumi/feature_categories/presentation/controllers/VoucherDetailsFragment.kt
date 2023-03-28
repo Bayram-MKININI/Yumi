@@ -17,7 +17,6 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.CATEGORY_UI
 import net.noliaware.yumi.commun.QR_CODE_FRAGMENT_TAG
 import net.noliaware.yumi.commun.VOUCHER_ID
-import net.noliaware.yumi.commun.VOUCHER_VALIDATED
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.domain.model.VoucherCodeData
@@ -33,12 +32,10 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
     companion object {
         fun newInstance(
             categoryUI: CategoryUI,
-            voucherId: String,
-            voucherValidated: Boolean = false
+            voucherId: String
         ) = VoucherDetailsFragment().withArgs(
             CATEGORY_UI to categoryUI,
-            VOUCHER_ID to voucherId,
-            VOUCHER_VALIDATED to voucherValidated
+            VOUCHER_ID to voucherId
         )
     }
 
@@ -136,18 +133,17 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 voucherDescription = voucher.productDescription,
                 retailerLabel = voucher.retailerLabel.orEmpty(),
                 retailerAddress = retailerAddress,
-                displayVoucherActionNotAvailable = viewModel.voucherValidated == true
+                displayVoucherActionNotAvailable = voucher.voucherStatus == VoucherStatus.USABLE
             )
         )
 
-        if (viewModel.voucherValidated == true) {
-            handleVoucherStatusUpdate(VoucherStatus.CONSUMED)
+        if (voucher.voucherStatus != VoucherStatus.USABLE) {
+            handleVoucherStatusUpdate(voucher.voucherStatus)
         }
     }
 
-    private fun handleVoucherStatusUpdate(voucherStatus: VoucherStatus) {
+    private fun handleVoucherStatusUpdate(voucherStatus: VoucherStatus?) {
         when (voucherStatus) {
-            VoucherStatus.USABLE -> Unit
             VoucherStatus.CONSUMED -> vouchersDetailsContainerView?.setVoucherStatus(
                 getString(R.string.voucher_consumed)
             )
@@ -157,6 +153,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             VoucherStatus.INEXISTENT -> vouchersDetailsContainerView?.setVoucherStatus(
                 getString(R.string.voucher_inexistent)
             )
+            else -> Unit
         }
     }
 

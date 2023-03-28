@@ -68,7 +68,7 @@ data class VoucherDTO(
         voucherId = voucherId,
         voucherNumber = voucherNumber,
         voucherCode = voucherCode + if (!sessionId.isNullOrBlank()) sessionId else "",
-        voucherStatus = VoucherStatus.fromInt(voucherStatus),
+        voucherStatus = VoucherStatus.fromValue(voucherStatus),
         voucherDate = voucherDate,
         voucherExpiryDate = voucherExpiryDate,
         voucherUseDate = voucherUseDate,

@@ -8,9 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
 import net.noliaware.yumi.commun.util.formatNumber
@@ -55,8 +57,8 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun collectFlow() {
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.badgeCountFlow.collect { badgeCount ->
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.badgeCountFlow.flowWithLifecycle(lifecycle).collect { badgeCount ->
                 categoriesView?.setAvailableVouchersBadgeValue(
                     badgeCount.formatNumber(),
                     resources.getQuantityString(

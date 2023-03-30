@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.CATEGORY
 import net.noliaware.yumi.commun.VOUCHER_DETAILS_FRAGMENT_TAG
@@ -114,13 +115,13 @@ class AvailableVouchersListFragment : AppCompatDialogFragment() {
     }
 
     private fun collectFlows() {
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launch {
             vouchersListView?.voucherAdapter?.loadStateFlow?.collectLatest { loadState ->
                 handlePaginationError(loadState)
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getVouchers()?.collectLatest {
                 vouchersListView?.voucherAdapter?.withLoadStateFooter(
                     footer = ListLoadStateAdapter()

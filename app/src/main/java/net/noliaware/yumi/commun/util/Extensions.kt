@@ -430,7 +430,7 @@ fun openMap(
             context?.applicationContext,
             R.string.application_not_found,
             Toast.LENGTH_LONG
-        ).show();
+        ).show()
     }
 }
 

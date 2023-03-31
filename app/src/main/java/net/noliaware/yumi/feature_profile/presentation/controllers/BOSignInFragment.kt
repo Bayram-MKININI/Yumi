@@ -58,7 +58,6 @@ class BOSignInFragment : AppCompatDialogFragment() {
     }
 
     private fun collectFlows() {
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.eventsHelper.eventFlow.flowWithLifecycle(lifecycle)
                 .collectLatest { sharedEvent ->
@@ -66,7 +65,6 @@ class BOSignInFragment : AppCompatDialogFragment() {
                     redirectToLoginScreenFromSharedEvent(sharedEvent)
                 }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.eventsHelper.stateFlow.flowWithLifecycle(lifecycle).collect { vmState ->
                 when (vmState) {
@@ -78,7 +76,6 @@ class BOSignInFragment : AppCompatDialogFragment() {
                 }
             }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.timerStateFlow.flowWithLifecycle(lifecycle).collect { timerState ->
                 boSignInView?.getBoSignInView?.displayRemainingTime(

@@ -42,7 +42,6 @@ class UserProfileFragment : Fragment() {
     }
 
     private fun collectFlows() {
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.eventsHelper.eventFlow.flowWithLifecycle(lifecycle)
                 .collectLatest { sharedEvent ->
@@ -50,7 +49,6 @@ class UserProfileFragment : Fragment() {
                     redirectToLoginScreenFromSharedEvent(sharedEvent)
                 }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.eventsHelper.stateFlow.flowWithLifecycle(lifecycle).collect { vmState ->
                 when (vmState) {

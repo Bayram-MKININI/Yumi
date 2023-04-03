@@ -44,7 +44,6 @@ class AlertsFragment : Fragment() {
                 handlePaginationError(loadState)
             }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getAlerts().collectLatest {
                 alertsView?.alertAdapter?.withLoadStateFooter(

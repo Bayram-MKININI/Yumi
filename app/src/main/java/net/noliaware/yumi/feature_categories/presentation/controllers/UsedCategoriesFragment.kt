@@ -50,7 +50,6 @@ class UsedCategoriesFragment : Fragment() {
                 viewModel.callGetUsedCategories()
             }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.usedCategoriesEventsHelper.eventFlow.flowWithLifecycle(lifecycle)
                 .collectLatest { sharedEvent ->
@@ -58,7 +57,6 @@ class UsedCategoriesFragment : Fragment() {
                     redirectToLoginScreenFromSharedEvent(sharedEvent)
                 }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.usedCategoriesEventsHelper.stateFlow.flowWithLifecycle(lifecycle)
                 .collect { vmState ->

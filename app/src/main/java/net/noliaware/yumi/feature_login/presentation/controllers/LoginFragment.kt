@@ -72,7 +72,6 @@ class LoginFragment : Fragment() {
         }
 
     private fun collectFlows() {
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.prefsStateFlow.flowWithLifecycle(lifecycle).collectLatest { vmState ->
                 when (vmState) {
@@ -83,7 +82,6 @@ class LoginFragment : Fragment() {
                 }
             }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.initEventsHelper.eventFlow.flowWithLifecycle(lifecycle)
                 .collectLatest { sharedEvent ->
@@ -91,7 +89,6 @@ class LoginFragment : Fragment() {
                     handleSharedEvent(sharedEvent)
                 }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.initEventsHelper.stateFlow.flowWithLifecycle(lifecycle).collect { vmState ->
                 when (vmState) {
@@ -105,7 +102,6 @@ class LoginFragment : Fragment() {
                 }
             }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.accountDataEventsHelper.eventFlow.flowWithLifecycle(lifecycle)
                 .collectLatest { sharedEvent ->
@@ -117,7 +113,6 @@ class LoginFragment : Fragment() {
                     handleSharedEvent(sharedEvent)
                 }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.accountDataEventsHelper.stateFlow.flowWithLifecycle(lifecycle)
                 .collect { vmState ->

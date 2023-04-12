@@ -12,7 +12,7 @@ import net.noliaware.yumi.commun.VOUCHER_ID
 import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.feature_categories.data.repository.CategoryRepository
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
-import net.noliaware.yumi.feature_categories.domain.model.VoucherStatus
+import net.noliaware.yumi.feature_categories.domain.model.VoucherStateData
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryUI
 import javax.inject.Inject
 
@@ -25,7 +25,7 @@ class VoucherDetailsFragmentViewModel @Inject constructor(
     val categoryUI get() = savedStateHandle.get<CategoryUI>(CATEGORY_UI)
 
     val getVoucherEventsHelper = EventsHelper<Voucher>()
-    val getVoucherStatusEventsHelper = EventsHelper<VoucherStatus>()
+    val getVoucherStateDataEventsHelper = EventsHelper<VoucherStateData>()
 
     init {
         savedStateHandle.get<String>(VOUCHER_ID)?.let {
@@ -43,8 +43,8 @@ class VoucherDetailsFragmentViewModel @Inject constructor(
 
     fun callGetVoucherStatusById(voucherId: String) {
         viewModelScope.launch {
-            repository.getVoucherStatusById(voucherId).onEach { result ->
-                getVoucherStatusEventsHelper.handleResponse(result)
+            repository.getVoucherStateDataById(voucherId).onEach { result ->
+                getVoucherStateDataEventsHelper.handleResponse(result)
             }.launchIn(this)
         }
     }

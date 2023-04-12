@@ -5,9 +5,11 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.widget.LinearLayoutCompat
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.getStatusBarHeight
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.measureWrapContent
 
 class ProfileParentView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
@@ -17,14 +19,8 @@ class ProfileParentView(context: Context, attrs: AttributeSet?) : ViewGroup(cont
     private lateinit var contentView: View
     private lateinit var scrollView: View
     private lateinit var profileView: ProfileView
-    private lateinit var getCodeLayout: LinearLayoutCompat
 
     val getProfileView get() = profileView
-    var callback: ProfileParentViewCallback? by weak()
-
-    fun interface ProfileParentViewCallback {
-        fun onGetCodeButtonClicked()
-    }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -38,8 +34,6 @@ class ProfileParentView(context: Context, attrs: AttributeSet?) : ViewGroup(cont
         contentView = findViewById(R.id.content_layout)
         scrollView = contentView.findViewById(R.id.scroll_view)
         profileView = scrollView.findViewById(R.id.profile_view)
-        getCodeLayout = findViewById(R.id.get_code_layout)
-        getCodeLayout.setOnClickListener { callback?.onGetCodeButtonClicked() }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -60,8 +54,6 @@ class ProfileParentView(context: Context, attrs: AttributeSet?) : ViewGroup(cont
             MeasureSpec.makeMeasureSpec(convertDpToPx(50), MeasureSpec.EXACTLY)
         )
 
-        getCodeLayout.measureWrapContent()
-
         val contentViewWidth = viewWidth * 95 / 100
         val sideMargin = viewWidth * 5 / 100 / 2
 
@@ -74,10 +66,7 @@ class ProfileParentView(context: Context, attrs: AttributeSet?) : ViewGroup(cont
 
         scrollView.measure(
             MeasureSpec.makeMeasureSpec(contentViewWidth, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(
-                contentViewHeight - (getCodeLayout.measuredHeight + convertDpToPx(40)),
-                MeasureSpec.EXACTLY
-            )
+            MeasureSpec.makeMeasureSpec(contentViewHeight, MeasureSpec.EXACTLY)
         )
 
         setMeasuredDimension(
@@ -105,11 +94,6 @@ class ProfileParentView(context: Context, attrs: AttributeSet?) : ViewGroup(cont
         contentView.layoutToTopLeft(
             (viewWidth - contentView.measuredWidth) / 2,
             profileIconView.bottom + convertDpToPx(15)
-        )
-
-        getCodeLayout.layoutToBottomLeft(
-            (contentView.measuredWidth - getCodeLayout.measuredWidth) / 2,
-            contentView.measuredHeight - convertDpToPx(40)
         )
     }
 }

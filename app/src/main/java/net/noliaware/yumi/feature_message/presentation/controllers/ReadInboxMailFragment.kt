@@ -16,11 +16,15 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.MESSAGE_ID
+import net.noliaware.yumi.commun.MESSAGE_PRIORITY
 import net.noliaware.yumi.commun.MESSAGE_SUBJECT_LABEL
 import net.noliaware.yumi.commun.SEND_MESSAGES_FRAGMENT_TAG
+import net.noliaware.yumi.commun.presentation.mappers.PriorityMapper
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_message.domain.model.Message
 import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
+import net.noliaware.yumi.feature_message.presentation.views.ReadMailView.ReadMailViewAdapter
+import net.noliaware.yumi.feature_message.presentation.views.ReadMailView.ReadMailViewCallback
 
 @AndroidEntryPoint
 class ReadInboxMailFragment : AppCompatDialogFragment() {
@@ -28,10 +32,12 @@ class ReadInboxMailFragment : AppCompatDialogFragment() {
     companion object {
         fun newInstance(
             messageId: String,
-            messageSubjectLabel: String? = null
+            messageSubjectLabel: String? = null,
+            messagePriority: Int? = null
         ) = ReadInboxMailFragment().withArgs(
             MESSAGE_ID to messageId,
-            MESSAGE_SUBJECT_LABEL to messageSubjectLabel
+            MESSAGE_SUBJECT_LABEL to messageSubjectLabel,
+            MESSAGE_PRIORITY to messagePriority
         )
     }
 
@@ -55,8 +61,64 @@ class ReadInboxMailFragment : AppCompatDialogFragment() {
         }
     }
 
-    private val readMailViewCallback: ReadMailView.ReadMailViewCallback by lazy {
-        object : ReadMailView.ReadMailViewCallback {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        collectFlows()
+    }
+
+    private fun collectFlows() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getMessageEventsHelper.eventFlow.flowWithLifecycle(lifecycle)
+                .collectLatest { sharedEvent ->
+                    handleSharedEvent(sharedEvent)
+                    redirectToLoginScreenFromSharedEvent(sharedEvent)
+                }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getMessageEventsHelper.stateFlow.flowWithLifecycle(lifecycle)
+                .collect { vmState ->
+                    when (vmState) {
+                        is ViewModelState.LoadingState -> Unit
+                        is ViewModelState.DataState -> vmState.data?.let { message ->
+                            bindViewToData(message)
+                        }
+                    }
+                }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.deleteMessageEventsHelper.stateFlow.flowWithLifecycle(lifecycle)
+                .collect { vmState ->
+                    when (vmState) {
+                        is ViewModelState.LoadingState -> Unit
+                        is ViewModelState.DataState -> vmState.data?.let { result ->
+                            if (result) {
+                                viewModel.receivedMessageListShouldRefresh = true
+                                dismissAllowingStateLoss()
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun bindViewToData(message: Message) {
+        ReadMailViewAdapter(
+            priorityIconRes = PriorityMapper().mapPriorityIcon(message.messagePriority),
+            subject = "${message.messageType} ${message.messageSubject}",
+            time = getString(
+                R.string.received_at,
+                parseToLongDate(message.messageDate),
+                parseTimeString(message.messageTime)
+            ),
+            message = message.messageBody.orEmpty(),
+            replyPossible = true
+        ).also {
+            readMailView?.fillViewWithData(it)
+        }
+    }
+
+    private val readMailViewCallback: ReadMailViewCallback by lazy {
+        object : ReadMailViewCallback {
             override fun onBackButtonClicked() {
                 dismissAllowingStateLoss()
             }
@@ -78,72 +140,13 @@ class ReadInboxMailFragment : AppCompatDialogFragment() {
 
             override fun onComposeButtonClicked() {
                 SendMailFragment.newInstance(
-                    messageId = viewModel.messageId,
-                    messageSubjectLabel = viewModel.messageSubjectLabel
+                    message = viewModel.getMessageEventsHelper.stateData
                 ).apply {
                     onMessageSent = { viewModel.receivedMessageListShouldRefresh = true }
                 }.show(
                     childFragmentManager.beginTransaction(), SEND_MESSAGES_FRAGMENT_TAG
                 )
             }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        collectFlows()
-    }
-
-    private fun collectFlows() {
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getMessageEventsHelper.eventFlow.flowWithLifecycle(lifecycle)
-                .collectLatest { sharedEvent ->
-                    handleSharedEvent(sharedEvent)
-                    redirectToLoginScreenFromSharedEvent(sharedEvent)
-                }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getMessageEventsHelper.stateFlow.flowWithLifecycle(lifecycle)
-                .collect { vmState ->
-                    when (vmState) {
-                        is ViewModelState.LoadingState -> Unit
-                        is ViewModelState.DataState -> vmState.data?.let { message ->
-                            bindViewToData(message)
-                        }
-                    }
-                }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.deleteMessageEventsHelper.stateFlow.flowWithLifecycle(lifecycle)
-                .collect { vmState ->
-                    when (vmState) {
-                        is ViewModelState.LoadingState -> Unit
-                        is ViewModelState.DataState -> vmState.data?.let { result ->
-                            if (result) {
-                                viewModel.receivedMessageListShouldRefresh = true
-                                dismissAllowingStateLoss()
-                            }
-                        }
-                    }
-                }
-        }
-    }
-
-    private fun bindViewToData(message: Message) {
-        ReadMailView.ReadMailViewAdapter(
-            subject = message.messageSubject,
-            time = getString(
-                R.string.received_at,
-                parseToLongDate(message.messageDate),
-                parseTimeString(message.messageTime)
-            ),
-            message = message.messageBody.orEmpty(),
-            replyPossible = true
-        ).also {
-            readMailView?.fillViewWithData(it)
         }
     }
 

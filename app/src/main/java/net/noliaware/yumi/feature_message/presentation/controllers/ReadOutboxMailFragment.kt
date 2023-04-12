@@ -16,9 +16,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.MESSAGE_ID
+import net.noliaware.yumi.commun.presentation.mappers.PriorityMapper
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_message.domain.model.Message
 import net.noliaware.yumi.feature_message.presentation.views.ReadMailView
+import net.noliaware.yumi.feature_message.presentation.views.ReadMailView.ReadMailViewAdapter
+import net.noliaware.yumi.feature_message.presentation.views.ReadMailView.ReadMailViewCallback
 
 @AndroidEntryPoint
 class ReadOutboxMailFragment : AppCompatDialogFragment() {
@@ -32,6 +35,7 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
     private var readMailView: ReadMailView? = null
     private val viewModel by viewModels<ReadOutboxMailFragmentViewModel>()
     var onSentMessageListRefreshed: (() -> Unit)? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,8 +53,8 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
         }
     }
 
-    private val readMailViewCallback: ReadMailView.ReadMailViewCallback by lazy {
-        object : ReadMailView.ReadMailViewCallback {
+    private val readMailViewCallback: ReadMailViewCallback by lazy {
+        object : ReadMailViewCallback {
             override fun onBackButtonClicked() {
                 dismissAllowingStateLoss()
             }
@@ -80,7 +84,6 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
     }
 
     private fun collectFlows() {
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getMessageEventsHelper.eventFlow.flowWithLifecycle(lifecycle)
                 .collectLatest { sharedEvent ->
@@ -88,7 +91,6 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
                     redirectToLoginScreenFromSharedEvent(sharedEvent)
                 }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getMessageEventsHelper.stateFlow.flowWithLifecycle(lifecycle)
                 .collect { vmState ->
@@ -100,7 +102,6 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
                     }
                 }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.deleteMessageEventsHelper.stateFlow.flowWithLifecycle(lifecycle)
                 .collect { vmState ->
@@ -118,8 +119,9 @@ class ReadOutboxMailFragment : AppCompatDialogFragment() {
     }
 
     private fun bindViewToData(message: Message) {
-        ReadMailView.ReadMailViewAdapter(
-            subject = message.messageSubject,
+        ReadMailViewAdapter(
+            priorityIconRes = PriorityMapper().mapPriorityIcon(message.messagePriority),
+            subject = "${message.messageType} ${message.messageSubject}",
             time = getString(
                 R.string.sent_at,
                 parseToLongDate(message.messageDate),

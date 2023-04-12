@@ -10,7 +10,7 @@ import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
-import net.noliaware.yumi.feature_categories.domain.model.VoucherStatus
+import net.noliaware.yumi.feature_categories.domain.model.VoucherStateData
 import okio.IOException
 import retrofit2.HttpException
 import java.util.*
@@ -226,7 +226,7 @@ class CategoryRepositoryImpl(
         }
     }
 
-    override fun getVoucherStatusById(voucherId: String): Flow<Resource<VoucherStatus>> = flow {
+    override fun getVoucherStateDataById(voucherId: String): Flow<Resource<VoucherStateData>> = flow {
 
         emit(Resource.Loading())
 
@@ -258,7 +258,7 @@ class CategoryRepositoryImpl(
                 remoteData.data?.let { getVoucherStatusDTO ->
                     emit(
                         Resource.Success(
-                            data = getVoucherStatusDTO.toVoucherStatus() ?: VoucherStatus.INEXISTENT,
+                            data = getVoucherStatusDTO.toVoucherStateData(),
                             appMessage = remoteData.message?.toAppMessage()
                         )
                     )

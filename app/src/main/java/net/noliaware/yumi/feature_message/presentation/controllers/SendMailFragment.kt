@@ -1,37 +1,33 @@
 package net.noliaware.yumi.feature_message.presentation.controllers
 
 import android.content.DialogInterface
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.MESSAGE_ID
+import net.noliaware.yumi.commun.MESSAGE
 import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
-import net.noliaware.yumi.commun.MESSAGE_SUBJECT_LABEL
+import net.noliaware.yumi.commun.domain.model.Priority
+import net.noliaware.yumi.commun.presentation.mappers.PriorityMapper
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
-import net.noliaware.yumi.feature_message.presentation.views.MessageSubjectItemView
-import net.noliaware.yumi.feature_message.presentation.views.MessageSubjectsListView
-import net.noliaware.yumi.feature_message.presentation.views.MessageSubjectsListView.MessageSubjectsListViewCallback
+import net.noliaware.yumi.feature_message.domain.model.Message
+import net.noliaware.yumi.feature_message.presentation.adapters.MessagePriorityAdapter
+import net.noliaware.yumi.feature_message.presentation.adapters.MessageSubjectsAdapter
+import net.noliaware.yumi.feature_message.presentation.views.PriorityUI
 import net.noliaware.yumi.feature_message.presentation.views.SendMailView
-import net.noliaware.yumi.feature_message.presentation.views.SendMailView.SendMailViewCallback
-
 
 @AndroidEntryPoint
 class SendMailFragment : AppCompatDialogFragment() {
@@ -39,19 +35,15 @@ class SendMailFragment : AppCompatDialogFragment() {
     companion object {
         fun newInstance(
             messageSubjects: List<MessageSubject>? = null,
-            messageId: String? = null,
-            messageSubjectLabel: String? = null
+            message: Message? = null
         ) = SendMailFragment().withArgs(
             MESSAGE_SUBJECTS_DATA to messageSubjects,
-            MESSAGE_ID to messageId,
-            MESSAGE_SUBJECT_LABEL to messageSubjectLabel
+            MESSAGE to message
         )
     }
 
     private var sendMailView: SendMailView? = null
     private val viewModel by viewModels<SendMailFragmentViewModel>()
-    private var dialog: AlertDialog? = null
-    private var selectedSubjectIndex: Int = 0
     var onMessageSent: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,8 +64,53 @@ class SendMailFragment : AppCompatDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.messageSubjectLabel?.let { sendMailView?.setSubjectFixed(it) }
+        setUpSubjectDropdownView()
+        setUpPriorityDropdownView()
+        setUpDefaultValuesIfAny()
         collectFlows()
+    }
+
+    private fun setUpSubjectDropdownView() {
+        viewModel.messageSubjects?.map { messageSubject ->
+            messageSubject.subjectLabel
+        }.also { subjects ->
+            sendMailView?.subjectSpinner?.adapter = MessageSubjectsAdapter(
+                requireContext(),
+                mutableListOf<String>().apply {
+                    subjects?.let {
+                        addAll(it)
+                    }
+                    add(getString(R.string.select_subject))
+                }.toMutableList()
+            )
+            sendMailView?.subjectSpinner?.setSelection(
+                sendMailView?.subjectSpinner?.adapter?.count ?: 0
+            )
+        }
+    }
+
+    private fun setUpPriorityDropdownView() {
+        Priority.values().map { priority ->
+            val mapper = PriorityMapper()
+            PriorityUI(
+                resIcon = mapper.mapPriorityIcon(priority),
+                label = getString(mapper.mapPriorityTitle(priority))
+            )
+        }.also { priorities ->
+            sendMailView?.prioritySpinner?.adapter = MessagePriorityAdapter(
+                requireContext(),
+                priorities
+            )
+        }
+    }
+
+    private fun setUpDefaultValuesIfAny() {
+        viewModel.message?.let { selectedMessage ->
+            sendMailView?.setSubjectFixed(selectedMessage.messageSubject)
+            selectedMessage.messagePriority?.let { priority ->
+                sendMailView?.setSelectedPriorityAtIndex(priority.ordinal)
+            }
+        }
     }
 
     private fun collectFlows() {
@@ -99,59 +136,10 @@ class SendMailFragment : AppCompatDialogFragment() {
         }
     }
 
-    private val sendMailViewCallback: SendMailViewCallback by lazy {
-        object : SendMailViewCallback {
+    private val sendMailViewCallback: SendMailView.SendMailViewCallback by lazy {
+        object : SendMailView.SendMailViewCallback {
             override fun onBackButtonClicked() {
                 dismissAllowingStateLoss()
-            }
-
-            override fun onSubjectEditTextClicked() {
-
-                if (dialog?.isShowing == true) {
-                    return
-                }
-
-                MaterialAlertDialogBuilder(
-                    requireContext()
-                ).apply {
-
-                    val messageSubjectsListView = layoutInflater.inflate(
-                        R.layout.message_subjects_list_layout,
-                        null
-                    ) as MessageSubjectsListView
-
-                    viewModel.messageSubjects?.mapIndexed { index, messageSubject ->
-                        MessageSubjectItemView.MessageSubjectItemViewAdapter(
-                            subject = messageSubject.subjectLabel,
-                            backgroundDrawable = if (index % 2 == 0) {
-                                R.drawable.rectangle_white_ripple
-                            } else {
-                                R.drawable.rectangle_grey7_ripple
-                            }
-                        )
-                    }?.let {
-                        messageSubjectsListView.fillViewWithData(it)
-                    }
-
-                    messageSubjectsListView.setMessageSubjectsListViewCallback(object :
-                        MessageSubjectsListViewCallback {
-                        override fun onSubjectClickedAtIndex(index: Int) {
-                            viewModel.messageSubjects?.get(index)?.let {
-                                sendMailView?.setSubject(it.subjectLabel)
-                                dialog?.dismiss()
-                            }
-                        }
-
-                        override fun onClickOutside() {
-                            dialog?.dismiss()
-                        }
-                    })
-
-                    setView(messageSubjectsListView)
-                    dialog = create()
-                    dialog?.show()
-                    dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                }
             }
 
             override fun onClearButtonClicked() {
@@ -159,22 +147,37 @@ class SendMailFragment : AppCompatDialogFragment() {
             }
 
             override fun onSendMailClicked(text: String) {
-                viewModel.messageSubjects?.get(selectedSubjectIndex)?.let { messageSubject ->
-                    viewModel.callSendMessage(
-                        messagePriority = 1,
-                        messageSubjectId = messageSubject.subjectId.toString(),
-                        messageBody = text
-                    )
-                }
+                val selectedPriorityIndex = sendMailView?.getSelectedPriorityIndex() ?: 0
+                val priority = Priority.values()[selectedPriorityIndex].value
 
-                viewModel.messageId?.let { messageId ->
-                    viewModel.callSendMessage(
-                        messagePriority = 1,
-                        messageId = messageId,
-                        messageBody = text
-                    )
+                if (viewModel.message != null) {
+                    sendMailReply(priority, text)
+                } else {
+                    sendNewMail(priority, text)
                 }
             }
+        }
+    }
+
+    private fun sendMailReply(priority: Int, text: String) {
+        viewModel.callSendMessage(
+            messagePriority = priority,
+            messageId = viewModel.message?.messageId,
+            messageBody = text
+        )
+    }
+
+    private fun sendNewMail(priority: Int, text: String) {
+        val selectedSubjectIndex = sendMailView?.getSelectedSubjectIndex() ?: -1
+        if (selectedSubjectIndex == -1) {
+            return
+        }
+        viewModel.messageSubjects?.get(selectedSubjectIndex)?.let { messageSubject ->
+            viewModel.callSendMessage(
+                messagePriority = priority,
+                messageSubjectId = messageSubject.subjectId.toString(),
+                messageBody = text
+            )
         }
     }
 

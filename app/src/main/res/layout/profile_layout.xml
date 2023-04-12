@@ -95,8 +95,8 @@
                     android:id="@+id/surname_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
+                    android:text="@string/empty_value"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
 
@@ -113,8 +113,8 @@
                     android:id="@+id/name_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
+                    android:text="@string/empty_value"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
 
@@ -151,25 +151,10 @@
                     android:id="@+id/birth_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
+                    android:text="@string/empty_value"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
-
-                <View
-                    android:id="@+id/separator_1_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/rectangle_rounded_primary" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/complementary_data_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/omnes_semibold_regular"
-                    android:text="@string/complementary_data"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="19sp" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/phone_title_text_view"
@@ -185,8 +170,8 @@
                     android:id="@+id/phone_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
+                    android:text="@string/empty_value"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
 
@@ -204,10 +189,63 @@
                     android:id="@+id/address_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
+                    android:text="@string/empty_value"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
+
+                <View
+                    android:id="@+id/separator_1_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle_rounded_primary" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/bo_access_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/omnes_semibold_regular"
+                    android:text="@string/bo_access"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="19sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/bo_access_description_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/omnes_semibold_regular"
+                    android:gravity="center"
+                    android:text="@string/bo_access_description"
+                    android:textColor="@color/grey_2"
+                    android:textSize="15sp" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/access_button_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_rounded_primary"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingVertical="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="15dp">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ic_login" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:fontFamily="@font/omnes_semibold_regular"
+                        android:text="@string/access"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <View
                     android:id="@+id/separator_2_view"
@@ -238,8 +276,8 @@
                     android:id="@+id/emitted_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
+                    android:text="@string/empty_value"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
 
@@ -257,8 +295,8 @@
                     android:id="@+id/available_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
+                    android:text="@string/empty_value"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
 
@@ -276,8 +314,8 @@
                     android:id="@+id/used_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
+                    android:text="@string/empty_value"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
 
@@ -295,39 +333,12 @@
                     android:id="@+id/cancelled_value_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/empty_value"
                     android:fontFamily="@font/omnes_semibold_regular"
+                    android:text="@string/empty_value"
                     android:textColor="@color/grey_2"
                     android:textSize="15sp" />
 
             </net.noliaware.yumi.feature_profile.presentation.views.ProfileView>
         </androidx.core.widget.NestedScrollView>
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/get_code_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/button_rounded_primary"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="10dp">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_voucher" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:fontFamily="@font/omnes_semibold_regular"
-                android:text="@string/get_code"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
     </net.noliaware.yumi.commun.presentation.views.ElevatedCardView>
 </net.noliaware.yumi.feature_profile.presentation.views.ProfileParentView>

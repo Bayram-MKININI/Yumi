@@ -16,7 +16,7 @@ import net.noliaware.yumi.commun.BO_SIGN_IN_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.*
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileParentView
-import net.noliaware.yumi.feature_profile.presentation.views.ProfileParentView.ProfileParentViewCallback
+import net.noliaware.yumi.feature_profile.presentation.views.ProfileView.ProfileParentViewCallback
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileView.ProfileViewAdapter
 
 @AndroidEntryPoint
@@ -32,7 +32,7 @@ class UserProfileFragment : Fragment() {
     ): View? {
         return inflater.inflate(R.layout.profile_layout, container, false).apply {
             profileDataParentView = this as ProfileParentView
-            profileDataParentView?.callback = profileParentViewCallback
+            profileDataParentView?.getProfileView?.callback = profileParentViewCallback
         }
     }
 

@@ -7,12 +7,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import net.noliaware.yumi.commun.MESSAGE_ID
+import net.noliaware.yumi.commun.MESSAGE
 import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
-import net.noliaware.yumi.commun.MESSAGE_SUBJECT_LABEL
 import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
 import net.noliaware.yumi.feature_message.data.repository.MessageRepository
+import net.noliaware.yumi.feature_message.domain.model.Message
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,8 +22,7 @@ class SendMailFragmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     val messageSubjects get() = savedStateHandle.get<List<MessageSubject>>(MESSAGE_SUBJECTS_DATA)
-    val messageId get() = savedStateHandle.get<String>(MESSAGE_ID)
-    val messageSubjectLabel get() = savedStateHandle.get<String>(MESSAGE_SUBJECT_LABEL)
+    val message get() = savedStateHandle.get<Message>(MESSAGE)
     val messageSentEventsHelper = EventsHelper<Boolean>()
 
     fun callSendMessage(

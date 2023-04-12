@@ -4,13 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.core.content.ContextCompat
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.views.ElevatedCardView
-import net.noliaware.yumi.commun.util.convertDpToPx
-import net.noliaware.yumi.commun.util.layoutToTopLeft
-import net.noliaware.yumi.commun.util.measureWrapContent
-import net.noliaware.yumi.commun.util.tint
+import net.noliaware.yumi.commun.util.*
 
 class VoucherItemView(context: Context, attrs: AttributeSet?) : ElevatedCardView(context, attrs) {
 
@@ -26,7 +22,8 @@ class VoucherItemView(context: Context, attrs: AttributeSet?) : ElevatedCardView
         val highlightDescription: String = "",
         val highlightValue: String = "",
         val title: String = "",
-        val retailer: String = ""
+        val retailerDescription: String = "",
+        val retailerValue: String? = ""
     )
 
     override fun onFinishInflate() {
@@ -46,17 +43,16 @@ class VoucherItemView(context: Context, attrs: AttributeSet?) : ElevatedCardView
     fun fillViewWithData(voucherItemViewAdapter: VoucherItemViewAdapter) {
         highlightDescriptionTextView.text = voucherItemViewAdapter.highlightDescription
         highlightValueTextView.text = voucherItemViewAdapter.highlightValue
-        highlightLayout.background = ContextCompat.getDrawable(
-            context,
+        highlightLayout.background = context.getDrawableCompat(
             R.drawable.rectangle_rounded_15dp
         )?.tint(voucherItemViewAdapter.color)
         titleTextView.text = voucherItemViewAdapter.title
-        retailerTextView.text = voucherItemViewAdapter.retailer
+        retrieveTextView.text = voucherItemViewAdapter.retailerDescription
+        retailerTextView.text = voucherItemViewAdapter.retailerValue
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val viewWidth = MeasureSpec.getSize(widthMeasureSpec)
-        var viewHeight = MeasureSpec.getSize(heightMeasureSpec)
 
         titleTextView.measureWrapContent()
 
@@ -64,14 +60,14 @@ class VoucherItemView(context: Context, attrs: AttributeSet?) : ElevatedCardView
 
         retrieveTextView.measureWrapContent()
 
-        val retailerTextViewWidth = viewWidth - (retrieveTextView.measuredWidth + convertDpToPx(42))
+        val retailerTextViewWidth = viewWidth - (retrieveTextView.measuredWidth + convertDpToPx(44))
         retailerTextView.measure(
             MeasureSpec.makeMeasureSpec(retailerTextViewWidth, MeasureSpec.AT_MOST),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
-        viewHeight = highlightLayout.measuredHeight + titleTextView.measuredHeight + retrieveTextView.measuredHeight +
-                    convertDpToPx(45)
+        val viewHeight = highlightLayout.measuredHeight + titleTextView.measuredHeight + retrieveTextView.measuredHeight +
+                    convertDpToPx(30)
 
         setMeasuredDimension(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
@@ -83,10 +79,7 @@ class VoucherItemView(context: Context, attrs: AttributeSet?) : ElevatedCardView
         val viewWidth = right - left
         val viewHeight = bottom - top
 
-        highlightLayout.layoutToTopLeft(
-            (viewWidth - highlightLayout.measuredWidth) / 2,
-            convertDpToPx(10)
-        )
+        highlightLayout.layoutToTopRight(viewWidth, 0)
 
         titleTextView.layoutToTopLeft(
             convertDpToPx(20),
@@ -99,7 +92,7 @@ class VoucherItemView(context: Context, attrs: AttributeSet?) : ElevatedCardView
         )
 
         retailerTextView.layoutToTopLeft(
-            retrieveTextView.right + convertDpToPx(2),
+            retrieveTextView.right + convertDpToPx(4),
             retrieveTextView.top
         )
     }

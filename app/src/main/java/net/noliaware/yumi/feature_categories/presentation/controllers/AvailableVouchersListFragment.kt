@@ -3,9 +3,6 @@ package net.noliaware.yumi.feature_categories.presentation.controllers
 import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +17,8 @@ import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.CATEGORY
 import net.noliaware.yumi.commun.VOUCHER_DETAILS_FRAGMENT_TAG
 import net.noliaware.yumi.commun.presentation.adapters.ListLoadStateAdapter
+import net.noliaware.yumi.commun.util.decorateText
+import net.noliaware.yumi.commun.util.getColorCompat
 import net.noliaware.yumi.commun.util.handlePaginationError
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.domain.model.Category
@@ -81,37 +80,22 @@ class AvailableVouchersListFragment : AppCompatDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val title = getString(
-            R.string.vouchers_list,
+            R.string.available_vouchers_list,
             viewModel.selectedCategory?.categoryLabel.orEmpty()
         )
         vouchersListView?.fillViewWithData(
             VouchersListViewAdapter(
-                title = decorateText(
-                    text = title,
-                    coloredText = viewModel.selectedCategory?.categoryLabel.orEmpty(),
-                    color = viewModel.selectedCategory?.categoryColor ?: Color.TRANSPARENT
+                title = title.decorateText(
+                    coloredText1 = getString(R.string.available).lowercase(),
+                    color1 = context?.getColorCompat(R.color.colorPrimary) ?: Color.TRANSPARENT,
+                    coloredText2 = viewModel.selectedCategory?.categoryLabel.orEmpty(),
+                    color2 = viewModel.selectedCategory?.categoryColor ?: Color.TRANSPARENT
                 ),
                 color = viewModel.selectedCategory?.categoryColor ?: Color.TRANSPARENT,
                 iconName = viewModel.selectedCategory?.categoryIcon
             )
         )
         collectFlows()
-    }
-
-    private fun decorateText(
-        text: String,
-        coloredText: String,
-        color: Int
-    ) = SpannableString(text).apply {
-        val colorSpan = ForegroundColorSpan(color)
-        val startIndex = text.indexOf(coloredText)
-        val endIndex = text.length
-        setSpan(
-            colorSpan,
-            startIndex,
-            endIndex,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
     }
 
     private fun collectFlows() {

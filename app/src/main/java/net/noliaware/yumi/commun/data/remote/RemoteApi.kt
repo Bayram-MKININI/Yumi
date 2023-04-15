@@ -85,7 +85,7 @@ interface RemoteApi {
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
-    ): ResponseDTO<GetVoucherStatusDTO>
+    ): ResponseDTO<GetVoucherStateDataDTO>
 
     @FormUrlEncoded
     @POST("$USE_VOUCHER/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")

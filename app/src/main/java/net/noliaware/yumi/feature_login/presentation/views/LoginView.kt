@@ -12,7 +12,12 @@ import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.views.ElevatedCardView
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.hideKeyboard
+import net.noliaware.yumi.commun.util.layoutToBottomLeft
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.measureWrapContent
+import net.noliaware.yumi.commun.util.weak
 
 class LoginView(context: Context, attrs: AttributeSet?) : ElevatedCardView(context, attrs) {
 

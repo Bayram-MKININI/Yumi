@@ -6,7 +6,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.adapters.BaseAdapter
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.GRID
+import net.noliaware.yumi.commun.util.MarginItemDecoration
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.inflate
+import net.noliaware.yumi.commun.util.weak
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
 
 class CategoriesListView(context: Context, attrs: AttributeSet?) : RecyclerView(context, attrs) {
@@ -42,7 +46,7 @@ class CategoriesListView(context: Context, attrs: AttributeSet?) : RecyclerView(
             }
 
             expressionOnCreateViewHolder = { viewGroup ->
-                viewGroup.inflate(R.layout.category_item_layout, false)
+                viewGroup.inflate(R.layout.category_item_layout)
             }
 
             onItemClicked = { position ->

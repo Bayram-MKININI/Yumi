@@ -1,6 +1,5 @@
 package net.noliaware.yumi.commun.presentation.adapters
 
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -9,6 +8,7 @@ import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.util.inflate
 
 class ListLoadStateAdapter(
     //private val retry: () -> Unit
@@ -18,7 +18,7 @@ class ListLoadStateAdapter(
         parent: ViewGroup,
         loadState: LoadState
     ) = LoadStateViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.load_state_layout, parent, false)
+        parent.inflate(R.layout.load_state_layout)
     )
 
     override fun onBindViewHolder(holder: LoadStateViewHolder, loadState: LoadState) {

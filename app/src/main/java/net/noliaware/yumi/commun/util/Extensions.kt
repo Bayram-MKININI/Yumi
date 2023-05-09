@@ -168,6 +168,7 @@ fun Fragment.handleSharedEvent(sharedEvent: UIEvent) = context?.let {
                             show()
                         }
                 }
+
                 AppMessageType.SNACKBAR -> {
                     Snackbar.make(
                         requireView(),
@@ -175,6 +176,7 @@ fun Fragment.handleSharedEvent(sharedEvent: UIEvent) = context?.let {
                         Snackbar.LENGTH_LONG
                     ).show()
                 }
+
                 AppMessageType.TOAST -> {
                     Toast.makeText(
                         context,
@@ -182,9 +184,11 @@ fun Fragment.handleSharedEvent(sharedEvent: UIEvent) = context?.let {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+
                 else -> Unit
             }
         }
+
         is UIEvent.ShowError -> {
             Toast.makeText(
                 context,
@@ -214,6 +218,7 @@ fun Fragment.handlePaginationError(loadState: CombinedLoadStates) {
                 redirectToLoginScreenInternal()
             }
         }
+
         else -> Unit
     }
 }
@@ -234,8 +239,10 @@ inline fun <reified T : Serializable> Intent.getSerializableExtraCompat(key: Str
 fun <T : Fragment> T.withArgs(vararg pairs: Pair<String, Any?>) =
     apply { arguments = bundleOf(*pairs) }
 
-fun ViewGroup.inflate(layoutRes: Int, attachToRoot: Boolean): View =
-    LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
+fun ViewGroup.inflate(
+    layoutRes: Int,
+    attachToRoot: Boolean = false
+): View = LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 
 fun Context.drawableIdByName(resIdName: String?): Int {
     resIdName?.let {

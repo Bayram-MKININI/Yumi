@@ -1,11 +1,11 @@
 package net.noliaware.yumi.feature_categories.presentation.adapters
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.adapters.ItemViewHolder
+import net.noliaware.yumi.commun.util.inflate
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.presentation.mappers.VoucherMapper
 import net.noliaware.yumi.feature_categories.presentation.views.VoucherItemView
@@ -20,7 +20,7 @@ class VoucherAdapter(
         parent: ViewGroup,
         viewType: Int
     ) = ItemViewHolder<VoucherItemView>(
-        LayoutInflater.from(parent.context).inflate(R.layout.voucher_item_layout, parent, false)
+        parent.inflate(R.layout.voucher_item_layout)
     ) { position ->
         getItem(position)?.let { onItemClicked(it) }
     }

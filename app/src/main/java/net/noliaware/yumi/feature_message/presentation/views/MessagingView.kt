@@ -9,14 +9,19 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.views.ClipartTabView
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.getStatusBarHeight
+import net.noliaware.yumi.commun.util.layoutToBottomLeft
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.measureWrapContent
+import net.noliaware.yumi.commun.util.removeOverScroll
+import net.noliaware.yumi.commun.util.weak
 
 class MessagingView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
     private lateinit var headerView: View
     private lateinit var titleTextView: TextView
     private lateinit var messageIconView: View
-    private lateinit var descriptionTextView: TextView
     private lateinit var receivedTabView: ClipartTabView
     private lateinit var sentTabView: ClipartTabView
     private lateinit var contentView: View
@@ -41,7 +46,6 @@ class MessagingView(context: Context, attrs: AttributeSet?) : ViewGroup(context,
         headerView = findViewById(R.id.header_view)
         titleTextView = findViewById(R.id.title_text_view)
         messageIconView = findViewById(R.id.message_icon_view)
-        descriptionTextView = findViewById(R.id.description_text_view)
         receivedTabView = findViewById(R.id.received_tab_layout)
         receivedTabView.setTitle(context.getString(R.string.received).uppercase())
         receivedTabView.setOnClickListener {
@@ -98,11 +102,6 @@ class MessagingView(context: Context, attrs: AttributeSet?) : ViewGroup(context,
             MeasureSpec.makeMeasureSpec(convertDpToPx(50), MeasureSpec.EXACTLY)
         )
 
-        descriptionTextView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth * 8 / 10, MeasureSpec.AT_MOST),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        )
-
         val contentViewWidth = viewWidth * 95 / 100
         val sideMargin = viewWidth * 5 / 100 / 2
 
@@ -123,8 +122,7 @@ class MessagingView(context: Context, attrs: AttributeSet?) : ViewGroup(context,
         )
 
         val contentViewHeight = viewHeight - (headerView.measuredHeight + messageIconView.measuredHeight / 2 +
-                receivedTabView.measuredHeight + descriptionTextView.measuredHeight + sideMargin
-                + convertDpToPx(25))
+                receivedTabView.measuredHeight + sideMargin + convertDpToPx(15))
 
         contentView.measure(
             MeasureSpec.makeMeasureSpec(contentViewWidth, MeasureSpec.EXACTLY),
@@ -160,15 +158,10 @@ class MessagingView(context: Context, attrs: AttributeSet?) : ViewGroup(context,
             headerView.bottom - messageIconView.measuredHeight / 2
         )
 
-        descriptionTextView.layoutToTopLeft(
-            (viewWidth - descriptionTextView.measuredWidth) / 2,
-            messageIconView.bottom + convertDpToPx(10)
-        )
-
         val contentViewLeft = (viewWidth - contentView.measuredWidth) / 2
         receivedTabView.layoutToTopLeft(
             contentViewLeft,
-            descriptionTextView.bottom + convertDpToPx(15)
+            messageIconView.bottom + convertDpToPx(15)
         )
 
         sentTabView.layoutToTopLeft(

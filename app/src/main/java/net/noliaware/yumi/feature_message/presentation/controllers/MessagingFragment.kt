@@ -34,7 +34,7 @@ class MessagingFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        return container?.inflate(R.layout.messaging_layout, false)?.apply {
+        return container?.inflate(R.layout.messaging_layout)?.apply {
             messagingView = this as MessagingView
             messagingView?.callback = messagingViewCallback
         }
@@ -81,12 +81,14 @@ class MessagingFragment : Fragment() {
                     fragments[0] = ReceivedMessagesFragment()
                     fragments[0]!!
                 }
+
                 else -> {
                     fragments[1] = SentMessagesFragment()
                     fragments[1]!!
                 }
             }
         }
+
         fun refreshSentFragment() {
             (fragments[1] as? SentMessagesFragment)?.refreshAdapter()
         }

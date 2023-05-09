@@ -38,7 +38,7 @@ class CategoriesFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return container?.inflate(R.layout.categories_layout, false)?.apply {
+        return container?.inflate(R.layout.categories_layout)?.apply {
             categoriesView = this as CategoriesView
         }
     }

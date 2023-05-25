@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.ViewModelState.DataState
@@ -30,6 +31,7 @@ class LoginFragmentViewModel @Inject constructor(
     private val _prefsStateFlow: MutableStateFlow<ViewModelState<UserPreferences>> =
         MutableStateFlow(DataState())
     val prefsStateFlow = _prefsStateFlow.asStateFlow()
+    private var pushToken: String? = null
 
     private val prefsStateData
         get() = when (prefsStateFlow.value) {
@@ -73,17 +75,19 @@ class LoginFragmentViewModel @Inject constructor(
         androidId: String,
         login: String
     ) {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            viewModelScope.launch {
-                repository.getInitData(
-                    androidId = androidId,
-                    deviceId = prefsStateData?.deviceId,
-                    pushToken = task.result,
-                    login = login
-                ).onEach { result ->
-                    initEventsHelper.handleResponse(result)
-                }.launchIn(this)
-            }
+        viewModelScope.launch {
+
+            if (pushToken.isNullOrBlank())
+                pushToken = FirebaseMessaging.getInstance().token.await()
+
+            repository.getInitData(
+                androidId = androidId,
+                deviceId = prefsStateData?.deviceId,
+                pushToken = pushToken,
+                login = login
+            ).onEach { result ->
+                initEventsHelper.handleResponse(result)
+            }.launchIn(this)
         }
     }
 

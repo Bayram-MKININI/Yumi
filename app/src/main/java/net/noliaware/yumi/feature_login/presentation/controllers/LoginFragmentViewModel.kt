@@ -2,6 +2,7 @@ package net.noliaware.yumi.feature_login.presentation.controllers
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +31,7 @@ class LoginFragmentViewModel @Inject constructor(
         MutableStateFlow(DataState())
     val prefsStateFlow = _prefsStateFlow.asStateFlow()
 
-    val prefsStateData
+    private val prefsStateData
         get() = when (prefsStateFlow.value) {
             is DataState -> (prefsStateFlow.value as DataState<UserPreferences>).data
             is ViewModelState.LoadingState -> null
@@ -68,11 +69,21 @@ class LoginFragmentViewModel @Inject constructor(
         }
     }
 
-    fun callInitWebservice(androidId: String, deviceId: String?, login: String) {
-        viewModelScope.launch {
-            repository.getInitData(androidId, deviceId, login).onEach { result ->
-                initEventsHelper.handleResponse(result)
-            }.launchIn(this)
+    fun callInitWebservice(
+        androidId: String,
+        login: String
+    ) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            viewModelScope.launch {
+                repository.getInitData(
+                    androidId = androidId,
+                    deviceId = prefsStateData?.deviceId,
+                    pushToken = task.result,
+                    login = login
+                ).onEach { result ->
+                    initEventsHelper.handleResponse(result)
+                }.launchIn(this)
+            }
         }
     }
 

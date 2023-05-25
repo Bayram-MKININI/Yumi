@@ -6,11 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.USED_VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.ViewModelState
@@ -45,28 +43,26 @@ class UsedCategoriesFragment : Fragment() {
     }
 
     private fun collectFlows() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.onDataRefreshedEventFlow.flowWithLifecycle(lifecycle).collectLatest {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.onDataRefreshedEventFlow.collectLatest {
                 viewModel.callGetUsedCategories()
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.usedCategoriesEventsHelper.eventFlow.flowWithLifecycle(lifecycle)
-                .collectLatest { sharedEvent ->
-                    handleSharedEvent(sharedEvent)
-                    redirectToLoginScreenFromSharedEvent(sharedEvent)
-                }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.usedCategoriesEventsHelper.eventFlow.collectLatest { sharedEvent ->
+                handleSharedEvent(sharedEvent)
+                redirectToLoginScreenFromSharedEvent(sharedEvent)
+            }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.usedCategoriesEventsHelper.stateFlow.flowWithLifecycle(lifecycle)
-                .collect { vmState ->
-                    when (vmState) {
-                        is ViewModelState.LoadingState -> Unit
-                        is ViewModelState.DataState -> vmState.data?.let { categories ->
-                            bindViewToData(categories)
-                        }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.usedCategoriesEventsHelper.stateFlow.collect { vmState ->
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { categories ->
+                        bindViewToData(categories)
                     }
                 }
+            }
         }
     }
 

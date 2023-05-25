@@ -4,16 +4,49 @@ import android.os.Build
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.noliaware.yumi.BuildConfig
-import net.noliaware.yumi.commun.*
+import net.noliaware.yumi.commun.APP_VERSION
+import net.noliaware.yumi.commun.CONNECT
+import net.noliaware.yumi.commun.DELETE_INBOX_MESSAGE
+import net.noliaware.yumi.commun.DELETE_OUTBOX_MESSAGE
+import net.noliaware.yumi.commun.DEVICE_ID
+import net.noliaware.yumi.commun.DEVICE_LABEL
+import net.noliaware.yumi.commun.DEVICE_OS
+import net.noliaware.yumi.commun.DEVICE_TYPE
+import net.noliaware.yumi.commun.DEVICE_UUID
+import net.noliaware.yumi.commun.GET_ACCOUNT
+import net.noliaware.yumi.commun.GET_ALERT_LIST
+import net.noliaware.yumi.commun.GET_AVAILABLE_DATA_PER_CATEGORY
+import net.noliaware.yumi.commun.GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY
+import net.noliaware.yumi.commun.GET_BACK_OFFICE_SIGN_IN_CODE
+import net.noliaware.yumi.commun.GET_CANCELLED_DATA_PER_CATEGORY
+import net.noliaware.yumi.commun.GET_CANCELLED_VOUCHER_LIST_BY_CATEGORY
+import net.noliaware.yumi.commun.GET_INBOX_MESSAGE
+import net.noliaware.yumi.commun.GET_INBOX_MESSAGE_LIST
+import net.noliaware.yumi.commun.GET_OUTBOX_MESSAGE
+import net.noliaware.yumi.commun.GET_OUTBOX_MESSAGE_LIST
+import net.noliaware.yumi.commun.GET_USED_DATA_PER_CATEGORY
+import net.noliaware.yumi.commun.GET_USED_VOUCHER_LIST_BY_CATEGORY
+import net.noliaware.yumi.commun.GET_VOUCHER
+import net.noliaware.yumi.commun.GET_VOUCHER_STATUS
+import net.noliaware.yumi.commun.INIT
+import net.noliaware.yumi.commun.LOGIN
+import net.noliaware.yumi.commun.PASSWORD
+import net.noliaware.yumi.commun.PUSH_TOKEN
+import net.noliaware.yumi.commun.SEND_MESSAGE
+import net.noliaware.yumi.commun.USE_VOUCHER
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.data.remote.dto.SessionDTO
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.ErrorType
+import net.noliaware.yumi.commun.util.Resource
+import net.noliaware.yumi.commun.util.generateToken
+import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.handleSessionWithNoFailure
 import net.noliaware.yumi.feature_login.domain.model.AccountData
 import net.noliaware.yumi.feature_login.domain.model.InitData
 import okio.IOException
 import retrofit2.HttpException
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 class LoginRepositoryImpl @Inject constructor(
@@ -24,6 +57,7 @@ class LoginRepositoryImpl @Inject constructor(
     override fun getInitData(
         androidId: String,
         deviceId: String?,
+        pushToken: String?,
         login: String
     ): Flow<Resource<InitData>> = flow {
 
@@ -38,7 +72,12 @@ class LoginRepositoryImpl @Inject constructor(
                 timestamp = timestamp,
                 saltString = randomString,
                 token = generateToken(timestamp, INIT, randomString),
-                params = generateInitParams(androidId, deviceId, login)
+                params = generateInitParams(
+                    androidId = androidId,
+                    deviceId = deviceId,
+                    pushToken = pushToken,
+                    login = login
+                )
             )
 
             val sessionNoFailure = handleSessionWithNoFailure(
@@ -67,6 +106,7 @@ class LoginRepositoryImpl @Inject constructor(
     private fun generateInitParams(
         androidId: String,
         deviceId: String?,
+        pushToken: String?,
         login: String
     ): Map<String, String> {
 
@@ -82,6 +122,10 @@ class LoginRepositoryImpl @Inject constructor(
             parameters[DEVICE_LABEL] = Build.MODEL
         } else {
             parameters[DEVICE_ID] = deviceId
+        }
+
+        pushToken?.let {
+            parameters[PUSH_TOKEN] = pushToken
         }
 
         return parameters

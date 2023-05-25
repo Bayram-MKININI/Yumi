@@ -1,5 +1,8 @@
 package net.noliaware.yumi.commun
 
+import net.noliaware.yumi.BuildConfig
+
+
 const val BASE_URL = "https://api.noliaware.net/yumi/user/"
 const val INIT = "init"
 const val CONNECT = "connect"
@@ -27,6 +30,7 @@ const val LOGIN = "login"
 const val PASSWORD = "password"
 const val APP_VERSION = "appVersion"
 const val DEVICE_ID = "deviceId"
+const val PUSH_TOKEN = "devicePushToken"
 const val DEVICE_TYPE = "deviceType"
 const val DEVICE_OS = "deviceOS"
 const val DEVICE_UUID = "deviceUUID"
@@ -67,6 +71,14 @@ const val MESSAGE_OUTBOX_DAT = "message_outbox_dat"
 const val DATA_SHOULD_REFRESH = "dataShouldRefresh"
 const val SELECTED_MESSAGE_INDEX = "selectedMessageIndex"
 
+const val ACTION_PUSH_DATA = BuildConfig.APPLICATION_ID + ".action.PUSH"
+const val PUSH_TITLE = "title"
+const val PUSH_BODY = "body"
+
+const val KEY_CURRENT_VERSION = "android_force_update_current_version"
+const val KEY_FORCE_UPDATE_REQUIRED = "android_force_update_required"
+const val KEY_FORCE_UPDATE_URL = "android_force_update_store_url"
+
 //FRAGMENT TAGS
 const val AVAILABLE_VOUCHERS_LIST_FRAGMENT_TAG = "available_vouchers_list_fragment"
 const val BO_SIGN_IN_FRAGMENT_TAG = "bo_sign_in_fragment"
@@ -78,3 +90,4 @@ const val READ_MESSAGE_FRAGMENT_TAG = "read_message_fragment"
 const val SEND_MESSAGES_FRAGMENT_TAG = "send_messages_fragment"
 
 const val GOLDEN_RATIO = 1.6180339887
+const val ONE_HOUR = 3600L

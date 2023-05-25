@@ -8,11 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
 import net.noliaware.yumi.commun.util.formatNumber
@@ -57,8 +55,8 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun collectFlow() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.badgeCountFlow.flowWithLifecycle(lifecycle).collect { badgeCount ->
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.badgeCountFlow.collect { badgeCount ->
                 categoriesView?.setAvailableVouchersBadgeValue(
                     badgeCount.formatNumber(),
                     resources.getQuantityString(
@@ -72,7 +70,7 @@ class CategoriesFragment : Fragment() {
 
     private fun setUpViewPager() {
         val viewPager = categoriesView?.getViewPager
-        CategoriesFragmentStateAdapter(childFragmentManager, lifecycle).apply {
+        CategoriesFragmentStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle).apply {
             viewPager?.adapter = this
         }
     }

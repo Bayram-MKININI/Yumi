@@ -4,7 +4,7 @@
     <string name="error_contact_support">Une erreur est survenue, veuillez contacter le support technique.</string>
     <string name="error_message">%s Essais restants: %d</string>
     <string name="update_app">Mise à jour disponible</string>
-    <string name="update_message">Une nouvelle version de l\'application Netflix est disponible. Veuillez la télécharger maintenant pour continuer</string>
+    <string name="update_message">Une nouvelle version de l\'application est disponible. Veuillez la télécharger maintenant pour continuer</string>
     <string name="update">Mettre à jour</string>
 
     //Login

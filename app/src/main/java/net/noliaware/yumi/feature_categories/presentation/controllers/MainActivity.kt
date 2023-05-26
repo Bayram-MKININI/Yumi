@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
                 val title = it.getString(PUSH_TITLE)
                 val body = it.getString(PUSH_BODY)
                 context?.let {
-                    MaterialAlertDialogBuilder(context)
+                    MaterialAlertDialogBuilder(this@MainActivity)
                         .setTitle(title)
                         .setMessage(body)
                         .setPositiveButton(R.string.ok) { dialog, _ ->

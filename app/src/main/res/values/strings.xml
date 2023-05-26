@@ -83,7 +83,7 @@
         <item quantity="other">%s coupons</item>
     </plurals>
     <string name="new_line">\n</string>
-    <string name="bo_sign_in_description">Veuillez utiliser ce code pour vous connecter sur votre compte back office</string>
+    <string name="bo_sign_in_description">Veuillez utiliser ce code pour vous connecter à votre compte sur l\'application web</string>
     <string name="bo_code_expiration">Ce code expire dans:</string>
     <string name="empty_time">--:--</string>
 

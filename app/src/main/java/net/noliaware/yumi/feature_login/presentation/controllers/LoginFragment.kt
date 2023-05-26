@@ -1,6 +1,9 @@
 package net.noliaware.yumi.feature_login.presentation.controllers
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -9,7 +12,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,10 +22,13 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
+import net.noliaware.yumi.commun.ACTION_PUSH_DATA
 import net.noliaware.yumi.commun.KEY_CURRENT_VERSION
 import net.noliaware.yumi.commun.KEY_FORCE_UPDATE_REQUIRED
 import net.noliaware.yumi.commun.KEY_FORCE_UPDATE_URL
 import net.noliaware.yumi.commun.ONE_HOUR
+import net.noliaware.yumi.commun.PUSH_BODY
+import net.noliaware.yumi.commun.PUSH_TITLE
 import net.noliaware.yumi.commun.util.ViewModelState.DataState
 import net.noliaware.yumi.commun.util.ViewModelState.LoadingState
 import net.noliaware.yumi.commun.util.handleSharedEvent
@@ -30,7 +38,6 @@ import net.noliaware.yumi.feature_categories.presentation.controllers.MainActivi
 import net.noliaware.yumi.feature_login.presentation.views.LoginParentLayout
 import net.noliaware.yumi.feature_login.presentation.views.LoginView.LoginViewCallback
 import net.noliaware.yumi.feature_login.presentation.views.PasswordView.PasswordViewCallback
-import java.net.NetworkInterface
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -43,6 +50,23 @@ class LoginFragment : Fragment() {
         FirebaseRemoteConfigSettings.Builder()
             .setMinimumFetchIntervalInSeconds(if (BuildConfig.DEBUG) 0 else ONE_HOUR)
             .build()
+    }
+
+    private val messageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+            intent.extras?.let {
+                val title = it.getString(PUSH_TITLE)
+                val body = it.getString(PUSH_BODY)
+                val text = "$title:$body"
+                view?.let { view ->
+                    Snackbar.make(
+                        view,
+                        text,
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
     }
 
     init {
@@ -66,27 +90,23 @@ class LoginFragment : Fragment() {
         checkAppVersion()
     }
 
+    override fun onStart() {
+        super.onStart()
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+            messageReceiver,
+            IntentFilter(ACTION_PUSH_DATA)
+        )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(messageReceiver)
+    }
+
     private fun getAndroidId(): String = Settings.Secure.getString(
         context?.applicationContext?.contentResolver,
         Settings.Secure.ANDROID_ID
     )
-
-    private fun getMac(): String? =
-        try {
-            NetworkInterface.getNetworkInterfaces()
-                .toList()
-                .find { networkInterface ->
-                    networkInterface.name.equals(
-                        "wlan0",
-                        ignoreCase = true
-                    )
-                }
-                ?.hardwareAddress
-                ?.joinToString(separator = ":") { byte -> "%02X".format(byte) }
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-            null
-        }
 
     private fun collectFlows() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {

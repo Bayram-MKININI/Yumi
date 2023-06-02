@@ -14,7 +14,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.getStatusBarHeight
+import net.noliaware.yumi.commun.util.layoutToBottomRight
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.layoutToTopRight
+import net.noliaware.yumi.commun.util.measureWrapContent
+import net.noliaware.yumi.commun.util.weak
 
 
 class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
@@ -141,8 +147,7 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
             MeasureSpec.makeMeasureSpec(convertDpToPx(50), MeasureSpec.EXACTLY)
         )
 
-        val contentViewHeight =
-            viewHeight - (headerView.measuredHeight + messageIconView.measuredHeight / 2 +
+        val contentViewHeight = viewHeight - (headerView.measuredHeight + messageIconView.measuredHeight / 2 +
                     convertDpToPx(25))
 
         val contentViewWidth = viewWidth * 95 / 100
@@ -163,7 +168,7 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
                     if (visibleRect.height() == screenHeight) {
                         convertDpToPx(40)
                     } else {
-                        screenHeight - visibleRect.height() + convertDpToPx(25)
+                        contentView.measuredHeight - visibleRect.height() + convertDpToPx(30) + (viewWidth * 5 / 200)
                     })
 
         messageBackgroundView.measure(
@@ -220,6 +225,7 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
 
         val viewWidth = right - left
         val viewHeight = bottom - top
+        val screenHeight = viewHeight - getStatusBarHeight()
 
         backgroundView.layoutToTopLeft(
             0,
@@ -238,9 +244,15 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
             headerView.bottom - messageIconView.measuredHeight / 2
         )
 
-        contentView.layoutToTopLeft(
-            (viewWidth - contentView.measuredWidth) / 2,
+        val contentSideSpace = (viewWidth - contentView.measuredWidth) / 2
+        val contentViewTop = if (visibleRect.height() == screenHeight) {
             messageIconView.bottom + convertDpToPx(15)
+        } else {
+            getStatusBarHeight() + contentSideSpace
+        }
+        contentView.layoutToTopLeft(
+            contentSideSpace,
+            contentViewTop
         )
 
         titleTextView.layoutToTopLeft(

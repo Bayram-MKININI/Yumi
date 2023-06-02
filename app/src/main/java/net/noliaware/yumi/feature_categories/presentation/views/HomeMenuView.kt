@@ -7,6 +7,7 @@ import android.view.View.OnClickListener
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import com.google.android.material.card.MaterialCardView
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.convertDpToPx
@@ -89,6 +90,7 @@ class HomeMenuView(context: Context, attrs: AttributeSet?) : MaterialCardView(co
     }
 
     fun setBadgeForMailButton(number: Int) {
+        mailBadgeTextView.isVisible = true
         mailBadgeTextView.text = number.toString()
     }
 
@@ -97,6 +99,7 @@ class HomeMenuView(context: Context, attrs: AttributeSet?) : MaterialCardView(co
     }
 
     fun setBadgeForNotificationButton(number: Int) {
+        notificationBadgeTextView.isVisible = true
         notificationBadgeTextView.text = number.toString()
     }
 

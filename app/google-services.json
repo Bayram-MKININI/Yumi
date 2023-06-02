@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "270823669602-f27eu0p165hlsh97almht5pm1ss1mfpm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "net.noliaware.yumi",
+            "certificate_hash": "7195f32b65ededf22e5a3192522f6be9487adedf"
+          }
+        },
+        {
           "client_id": "270823669602-a751jh8vrr94rrbc6laeu4u1kiu51oqr.apps.googleusercontent.com",
           "client_type": 3
         }

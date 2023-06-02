@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.parseTimestampToString
+import net.noliaware.yumi.commun.util.parseSecondsToMinutesString
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
 import net.noliaware.yumi.feature_profile.presentation.views.BOSignInParentView
 import net.noliaware.yumi.feature_profile.presentation.views.BOSignInParentView.BOSignInViewCallback
@@ -76,9 +76,7 @@ class BOSignInFragment : AppCompatDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.timerStateFlow.collect { timerState ->
                 boSignInView?.getBoSignInView?.displayRemainingTime(
-                    timerState.secondsRemaining?.let { secondsRemaining ->
-                        parseTimestampToString(secondsRemaining)
-                    } ?: getString(R.string.empty_time)
+                    timerState.secondsRemaining?.parseSecondsToMinutesString() ?: getString(R.string.empty_time)
                 )
                 timerState.secondsRemaining?.let { secondsRemaining ->
                     if (secondsRemaining <= 0) {

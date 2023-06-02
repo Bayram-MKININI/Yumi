@@ -151,19 +151,16 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             USABLE -> getString(
                 R.string.expiry_date_value, parseToShortDate(voucher.voucherExpiryDate)
             )
-
             CONSUMED -> getString(
                 R.string.usage_date_value,
                 parseToShortDate(voucher.voucherUseDate),
                 parseTimeString(voucher.voucherUseTime)
             )
-
             CANCELLED -> getString(
                 R.string.cancellation_date_value,
                 parseToShortDate(voucher.voucherUseDate),
                 parseTimeString(voucher.voucherUseTime)
             )
-
             else -> ""
         }
 

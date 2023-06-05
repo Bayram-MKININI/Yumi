@@ -13,6 +13,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.HOURS_TIME_FORMAT
+import net.noliaware.yumi.commun.LONG_DATE_WITH_DAY_FORMAT
 import net.noliaware.yumi.commun.MESSAGE_ID
 import net.noliaware.yumi.commun.MESSAGE_PRIORITY
 import net.noliaware.yumi.commun.MESSAGE_SUBJECT_LABEL
@@ -20,8 +22,8 @@ import net.noliaware.yumi.commun.SEND_MESSAGES_FRAGMENT_TAG
 import net.noliaware.yumi.commun.presentation.mappers.PriorityMapper
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.parseTimeString
-import net.noliaware.yumi.commun.util.parseToLongDate
+import net.noliaware.yumi.commun.util.parseDateToFormat
+import net.noliaware.yumi.commun.util.parseTimeToFormat
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_message.domain.model.Message
@@ -89,15 +91,15 @@ class ReadInboxMailFragment : AppCompatDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.deleteMessageEventsHelper.stateFlow.collect { vmState ->
                 when (vmState) {
-                        is ViewModelState.LoadingState -> Unit
-                        is ViewModelState.DataState -> vmState.data?.let { result ->
-                            if (result) {
-                                viewModel.receivedMessageListShouldRefresh = true
-                                dismissAllowingStateLoss()
-                            }
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { result ->
+                        if (result) {
+                            viewModel.receivedMessageListShouldRefresh = true
+                            dismissAllowingStateLoss()
                         }
                     }
                 }
+            }
         }
     }
 
@@ -111,8 +113,8 @@ class ReadInboxMailFragment : AppCompatDialogFragment() {
             },
             time = getString(
                 R.string.received_at,
-                parseToLongDate(message.messageDate),
-                parseTimeString(message.messageTime)
+                message.messageDate.parseDateToFormat(LONG_DATE_WITH_DAY_FORMAT),
+                message.messageTime.parseTimeToFormat(HOURS_TIME_FORMAT)
             ),
             message = message.messageBody.orEmpty(),
             replyPossible = true

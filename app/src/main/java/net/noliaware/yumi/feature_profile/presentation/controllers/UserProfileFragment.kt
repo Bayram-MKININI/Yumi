@@ -11,10 +11,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.BO_SIGN_IN_FRAGMENT_TAG
+import net.noliaware.yumi.commun.LONG_DATE_WITH_DAY_FORMAT
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.formatNumber
 import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.parseToLongDate
+import net.noliaware.yumi.commun.util.parseDateToFormat
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileParentView
@@ -82,7 +83,7 @@ class UserProfileFragment : Fragment() {
             referent = userProfile.userReferent,
             birth = getString(
                 R.string.birth_data,
-                parseToLongDate(userProfile.birthDate),
+                userProfile.birthDate?.parseDateToFormat(LONG_DATE_WITH_DAY_FORMAT),
                 userProfile.birthCity
             ),
             phone = userProfile.cellPhoneNumber.orEmpty(),

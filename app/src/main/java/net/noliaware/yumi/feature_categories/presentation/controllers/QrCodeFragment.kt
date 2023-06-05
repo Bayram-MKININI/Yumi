@@ -14,10 +14,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.CATEGORY_UI
+import net.noliaware.yumi.commun.LONG_DATE_WITH_DAY_FORMAT
 import net.noliaware.yumi.commun.VOUCHER_CODE_DATA
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
-import net.noliaware.yumi.commun.util.parseToLongDate
+import net.noliaware.yumi.commun.util.parseDateToFormat
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.domain.model.VoucherCodeData
@@ -104,11 +105,11 @@ class QrCodeFragment : AppCompatDialogFragment() {
                     title = voucherCodeData.productLabel.orEmpty(),
                     creationDate = getString(
                         R.string.created_in,
-                        parseToLongDate(voucherCodeData.voucherDate)
+                        voucherCodeData.voucherDate?.parseDateToFormat(LONG_DATE_WITH_DAY_FORMAT)
                     ),
                     expiryDate = getString(
                         R.string.expiry_date_value,
-                        parseToLongDate(voucherCodeData.voucherExpiryDate)
+                        voucherCodeData.voucherExpiryDate?.parseDateToFormat(LONG_DATE_WITH_DAY_FORMAT)
                     )
                 )
             )

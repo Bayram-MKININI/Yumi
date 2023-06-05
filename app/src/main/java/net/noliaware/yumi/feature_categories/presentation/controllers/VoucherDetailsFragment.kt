@@ -15,15 +15,17 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.merge
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.CATEGORY_UI
+import net.noliaware.yumi.commun.HOURS_TIME_FORMAT
 import net.noliaware.yumi.commun.QR_CODE_FRAGMENT_TAG
+import net.noliaware.yumi.commun.SHORT_DATE_FORMAT
 import net.noliaware.yumi.commun.VOUCHER_ID
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.makeCall
 import net.noliaware.yumi.commun.util.openMap
 import net.noliaware.yumi.commun.util.openWebPage
-import net.noliaware.yumi.commun.util.parseTimeString
-import net.noliaware.yumi.commun.util.parseToShortDate
+import net.noliaware.yumi.commun.util.parseDateToFormat
+import net.noliaware.yumi.commun.util.parseTimeToFormat
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
 import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
@@ -103,13 +105,13 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         }
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.getVoucherStateDataEventsHelper.stateFlow.collect { vmState ->
-                    when (vmState) {
-                        is ViewModelState.LoadingState -> Unit
-                        is ViewModelState.DataState -> vmState.data?.let { voucherStateData ->
-                            handleVoucherStateDataUpdated(voucherStateData)
-                        }
+                when (vmState) {
+                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.DataState -> vmState.data?.let { voucherStateData ->
+                        handleVoucherStateDataUpdated(voucherStateData)
                     }
                 }
+            }
         }
     }
 
@@ -132,7 +134,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 title = voucher.productLabel.orEmpty(),
                 startDate = getString(
                     R.string.created_in_hyphen,
-                    parseToShortDate(voucher.voucherDate)
+                    voucher.voucherDate?.parseDateToFormat(SHORT_DATE_FORMAT)
                 ),
                 endDate = mapVoucherEndDate(voucher),
                 partnerAvailable = voucher.partnerInfoText?.isNotEmpty() == true,
@@ -146,23 +148,25 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         )
     }
 
-    private fun mapVoucherEndDate(voucher: Voucher) =
-        when (voucher.voucherStatus) {
-            USABLE -> getString(
-                R.string.expiry_date_value, parseToShortDate(voucher.voucherExpiryDate)
-            )
-            CONSUMED -> getString(
-                R.string.usage_date_value,
-                parseToShortDate(voucher.voucherUseDate),
-                parseTimeString(voucher.voucherUseTime)
-            )
-            CANCELLED -> getString(
-                R.string.cancellation_date_value,
-                parseToShortDate(voucher.voucherUseDate),
-                parseTimeString(voucher.voucherUseTime)
-            )
-            else -> ""
-        }
+    private fun mapVoucherEndDate(
+        voucher: Voucher
+    ) = when (voucher.voucherStatus) {
+        USABLE -> getString(
+            R.string.expiry_date_value,
+            voucher.voucherExpiryDate?.parseDateToFormat(SHORT_DATE_FORMAT)
+        )
+        CONSUMED -> getString(
+            R.string.usage_date_value,
+            voucher.voucherUseDate?.parseDateToFormat(SHORT_DATE_FORMAT),
+            voucher.voucherUseTime?.parseTimeToFormat(HOURS_TIME_FORMAT)
+        )
+        CANCELLED -> getString(
+            R.string.cancellation_date_value,
+            voucher.voucherUseDate?.parseDateToFormat(SHORT_DATE_FORMAT),
+            voucher.voucherUseTime?.parseTimeToFormat(HOURS_TIME_FORMAT)
+        )
+        else -> ""
+    }
 
     private fun mapVoucherStatus(voucherStatus: VoucherStatus?) =
         when (voucherStatus) {

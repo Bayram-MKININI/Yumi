@@ -53,7 +53,7 @@
             android:resource="@drawable/ic_push" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/salmon" />
+            android:resource="@color/vivid_yellow" />
     </application>
 
 </manifest>

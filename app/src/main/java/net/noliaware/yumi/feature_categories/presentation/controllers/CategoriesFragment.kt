@@ -69,9 +69,8 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun setUpViewPager() {
-        val viewPager = categoriesView?.getViewPager
         CategoriesFragmentStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle).apply {
-            viewPager?.adapter = this
+            categoriesView?.getViewPager?.adapter = this
         }
     }
 

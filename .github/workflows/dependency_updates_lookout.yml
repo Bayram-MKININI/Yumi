@@ -36,6 +36,9 @@ jobs:
           java-version: 17
           cache: gradle
 
+      - name: Make Gradle executable
+        run: chmod +x gradlew
+
       - name: Fetch updates
         run: ./gradlew dependencyUpdates -DoutputFormatter=html -DoutputDir=./app/build/reports/
 

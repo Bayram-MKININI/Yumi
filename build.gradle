@@ -21,6 +21,6 @@ tasks.named("dependencyUpdates").configure {
     checkForGradleUpdate = true
     revision = "release"
     outputFormatter = "html"
-    outputDir = "build/reports/"
+    outputDir = "./app/build/reports/"
     reportfileName = "yumi_dependency_update_report"
 }

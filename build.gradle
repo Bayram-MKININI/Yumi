@@ -19,7 +19,6 @@ tasks.named("dependencyUpdates").configure {
         isNonStable(it.candidate.version)
     }
     checkForGradleUpdate = true
-    gradleReleaseChannel = GradleReleaseChannel.RELEASE_CANDIDATE.id
     revision = "release"
     outputFormatter = "html"
     outputDir = "build/reports/"

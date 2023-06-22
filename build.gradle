@@ -15,9 +15,9 @@ def isNonStable = { String version ->
 }
 
 tasks.named("dependencyUpdates").configure {
-    rejectVersionIf {
-        isNonStable(it.candidate.version)
-    }
+    //rejectVersionIf {
+        //isNonStable(it.candidate.version)
+    //}
     checkForGradleUpdate = true
     revision = "release"
     outputFormatter = "html"

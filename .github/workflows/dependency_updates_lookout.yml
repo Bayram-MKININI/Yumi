@@ -1,0 +1,46 @@
+name: Dependency updates lookout
+
+  # ┌────────────── second (optional)
+  # │ ┌──────────── minute (0 - 59)
+  # │ │ ┌────────── hour (0 - 23)
+  # │ │ │ ┌──────── day of month (1 - 31)
+  # │ │ │ │ ┌────── month (1 - 12)
+  # │ │ │ │ │ ┌──── day of week (0 - 6)
+  # │ │ │ │ │ │
+  # │ │ │ │ │ │
+  # * * * * * *
+
+  #on:
+  #schedule:
+# - cron: "0 1 * * 1"
+
+on:
+  push:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  display_dependency_updates:
+    name: Check dependency updates
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set Up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: oracle
+          java-version: 17
+          cache: gradle
+
+      - name: Fetch updates
+        run: ./gradlew dependencyUpdates -DoutputFormatter=html -DoutputDir=./app/build/reports/
+
+      - name: Upload dependencies report
+        uses: actions/upload-artifact@v3
+        with:
+          name: Dependencies report
+          path: app/build/reports

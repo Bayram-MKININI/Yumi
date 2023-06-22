@@ -7,3 +7,21 @@ plugins {
     id 'com.google.firebase.crashlytics' version '2.9.5' apply false
     id 'com.github.ben-manes.versions' version '0.47.0'
 }
+
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+
+tasks.named("dependencyUpdates").configure {
+    rejectVersionIf {
+        isNonStable(it.candidate.version)
+    }
+    checkForGradleUpdate = true
+    gradleReleaseChannel = GradleReleaseChannel.RELEASE_CANDIDATE.id
+    revision = "release"
+    outputFormatter = "html"
+    outputDir = "build/reports/"
+    reportfileName = "yumi_dependency_update_report"
+}

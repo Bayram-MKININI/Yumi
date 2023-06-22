@@ -8,16 +8,11 @@ name: Dependency updates lookout
   # │ │ │ │ │ ┌──── day of week (0 - 6)
   # │ │ │ │ │ │
   # │ │ │ │ │ │
-  # * * * * * *
-
-  #on:
-  #schedule:
-# - cron: "0 1 * * 1"
+# * * * * * *
 
 on:
-  push:
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
 
 jobs:
 

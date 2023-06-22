@@ -40,7 +40,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Fetch updates
-        run: ./gradlew dependencyUpdates -DoutputFormatter=html -DoutputDir=./app/build/reports/
+        run: ./gradlew dependencyUpdates -Drevision=release -DoutputFormatter=html -DoutputDir=./app/build/reports/
 
       - name: Upload dependencies report
         uses: actions/upload-artifact@v3

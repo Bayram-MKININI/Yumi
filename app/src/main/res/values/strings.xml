@@ -2,7 +2,6 @@
 
     <string name="error_no_network">Erreur réseau. Vérifier vos paramètres de connexion.</string>
     <string name="error_contact_support">Une erreur est survenue, veuillez contacter le support technique.</string>
-    <string name="error_message">%s Essais restants: %d</string>
     <string name="update_app">Mise à jour disponible</string>
     <string name="update_message">Une nouvelle version de l\'application est disponible. Veuillez la télécharger maintenant pour continuer</string>
     <string name="update">Mettre à jour</string>
@@ -13,10 +12,8 @@
     <string name="enter_code_description">6 chiffres</string>
     <string name="login_empty_error">Le champ identifiant est vide</string>
     <string name="hint_login">Identifiant</string>
-    <string name="secret_code">Votre code secret</string>
     <string name="confirm">Valider</string>
     <string name="erase">Effacer</string>
-    <string name="correct">Corriger</string>
     <string name="ok">OK</string>
     <string name="cancel">Annuler</string>
 
@@ -98,8 +95,6 @@
     <string name="select_subject">Sélectionner un sujet</string>
     <string name="new_mail">Nouveau message</string>
     <string name="reply">Répondre</string>
-    <string name="send">Envoyer</string>
-    <string name="mail_object">Sélectionner l\'objet</string>
     <string name="mail_body">Message</string>
     <string name="delete">Suppression</string>
     <string name="delete_mail_confirmation">Voulez‑vous vraiment supprimer ce message ?</string>

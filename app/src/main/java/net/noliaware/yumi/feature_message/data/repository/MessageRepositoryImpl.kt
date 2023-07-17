@@ -4,14 +4,27 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import net.noliaware.yumi.commun.*
+import net.noliaware.yumi.commun.DELETE_INBOX_MESSAGE
+import net.noliaware.yumi.commun.DELETE_OUTBOX_MESSAGE
+import net.noliaware.yumi.commun.GET_INBOX_MESSAGE
+import net.noliaware.yumi.commun.GET_OUTBOX_MESSAGE
+import net.noliaware.yumi.commun.LIST_PAGE_SIZE
+import net.noliaware.yumi.commun.MESSAGE_BODY
+import net.noliaware.yumi.commun.MESSAGE_ID
+import net.noliaware.yumi.commun.MESSAGE_PRIORITY
+import net.noliaware.yumi.commun.MESSAGE_SUBJECT_ID
+import net.noliaware.yumi.commun.SEND_MESSAGE
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.ErrorType
+import net.noliaware.yumi.commun.util.Resource
+import net.noliaware.yumi.commun.util.generateToken
+import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.handleSessionWithNoFailure
 import net.noliaware.yumi.feature_message.domain.model.Message
 import okio.IOException
 import retrofit2.HttpException
-import java.util.*
+import java.util.UUID
 
 class MessageRepositoryImpl(
     private val api: RemoteApi,
@@ -133,7 +146,7 @@ class MessageRepositoryImpl(
     }
 
     override fun sendMessage(
-        messagePriority: Int,
+        messagePriority: Int?,
         messageId: String?,
         messageSubjectId: String?,
         messageBody: String
@@ -188,15 +201,15 @@ class MessageRepositoryImpl(
     }
 
     private fun generateSendMessageParams(
-        messagePriority: Int,
+        messagePriority: Int?,
         messageSubjectId: String? = null,
         messageId: String? = null,
         messageBody: String,
         tokenKey: String
     ) = mutableMapOf(
-        MESSAGE_PRIORITY to messagePriority.toString(),
         MESSAGE_BODY to messageBody
     ).also { map ->
+        messagePriority?.let { map[MESSAGE_PRIORITY] = messagePriority.toString() }
         messageSubjectId?.let { map[MESSAGE_SUBJECT_ID] = messageSubjectId }
         messageId?.let { map[MESSAGE_ID] = messageId }
         map.plusAssign(getCommonWSParams(sessionData, tokenKey))

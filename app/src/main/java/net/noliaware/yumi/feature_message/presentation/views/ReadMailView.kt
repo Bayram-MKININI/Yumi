@@ -1,6 +1,8 @@
 package net.noliaware.yumi.feature_message.presentation.views
 
 import android.content.Context
+import android.text.Spanned
+import android.text.SpannedString
 import android.util.AttributeSet
 import android.view.View
 import android.view.View.OnClickListener
@@ -11,7 +13,13 @@ import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.getStatusBarHeight
+import net.noliaware.yumi.commun.util.layoutToBottomLeft
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.layoutToTopRight
+import net.noliaware.yumi.commun.util.measureWrapContent
+import net.noliaware.yumi.commun.util.weak
 
 class ReadMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
@@ -41,7 +49,7 @@ class ReadMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         val priorityIconRes: Int,
         val subject: String = "",
         val time: String = "",
-        val message: String = "",
+        val message: Spanned = SpannedString(""),
         val replyPossible: Boolean = false
     )
 
@@ -146,8 +154,7 @@ class ReadMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
 
         if (composeButton.isVisible) {
             composeButton.measureWrapContent()
-            val availableSpaceForMessage =
-                messageParentView.measuredHeight - (composeButton.measuredHeight +
+            val availableSpaceForMessage = messageParentView.measuredHeight - (composeButton.measuredHeight +
                         convertDpToPx(30))
             val extraPadding = messageTextView.measuredHeight - availableSpaceForMessage
             if (extraPadding > 0) {

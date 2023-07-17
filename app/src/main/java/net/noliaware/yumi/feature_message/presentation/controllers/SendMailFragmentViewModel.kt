@@ -26,7 +26,7 @@ class SendMailFragmentViewModel @Inject constructor(
     val messageSentEventsHelper = EventsHelper<Boolean>()
 
     fun callSendMessage(
-        messagePriority: Int,
+        messagePriority: Int? = null,
         messageId: String? = null,
         messageSubjectId: String? = null,
         messageBody: String

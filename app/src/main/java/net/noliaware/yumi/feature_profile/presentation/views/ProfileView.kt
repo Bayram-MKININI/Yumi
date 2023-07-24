@@ -2,13 +2,18 @@ package net.noliaware.yumi.feature_profile.presentation.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.layoutToTopRight
+import net.noliaware.yumi.commun.util.measureWrapContent
+import net.noliaware.yumi.commun.util.weak
 import kotlin.math.max
 
 class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
@@ -44,6 +49,7 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
     private lateinit var usedValueTextView: TextView
     private lateinit var cancelledTitleTextView: TextView
     private lateinit var cancelledValueTextView: TextView
+    private lateinit var privacyPolicyLinkTextView: TextView
     var callback: ProfileParentViewCallback? by weak()
 
     data class ProfileViewAdapter(
@@ -54,14 +60,17 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         val birth: String = "",
         val phone: String = "",
         val address: String = "",
+        val twoFactorAuthModeText: String = "",
+        val twoFactorAuthModeActivated: Boolean = false,
         val emittedValue: String = "",
         val availableValue: String = "",
         val usedValue: String = "",
         val cancelledValue: String = ""
     )
 
-    fun interface ProfileParentViewCallback {
+    interface ProfileParentViewCallback {
         fun onGetCodeButtonClicked()
+        fun onPrivacyPolicyButtonClicked()
     }
 
     override fun onFinishInflate() {
@@ -90,7 +99,9 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         boAccessTextView = findViewById(R.id.bo_access_text_view)
         boAccessDescriptionTextView = findViewById(R.id.bo_access_description_text_view)
         accessButtonLayout = findViewById(R.id.access_button_layout)
-        accessButtonLayout.setOnClickListener { callback?.onGetCodeButtonClicked() }
+        accessButtonLayout.setOnClickListener {
+            callback?.onGetCodeButtonClicked()
+        }
 
         separator2View = findViewById(R.id.separator_2_view)
         myVouchersTextView = findViewById(R.id.my_vouchers_text_view)
@@ -102,6 +113,10 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         usedValueTextView = findViewById(R.id.used_value_text_view)
         cancelledTitleTextView = findViewById(R.id.cancelled_title_text_view)
         cancelledValueTextView = findViewById(R.id.cancelled_value_text_view)
+        privacyPolicyLinkTextView = findViewById(R.id.privacy_policy_link_text_view)
+        privacyPolicyLinkTextView.setOnClickListener {
+            callback?.onPrivacyPolicyButtonClicked()
+        }
     }
 
     fun fillViewWithData(profileViewAdapter: ProfileViewAdapter) {
@@ -119,6 +134,12 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         birthValueTextView.text = profileViewAdapter.birth
         phoneValueTextView.text = profileViewAdapter.phone
         addressValueTextView.text = profileViewAdapter.address
+
+        boAccessDescriptionTextView.text = profileViewAdapter.twoFactorAuthModeText
+        if (profileViewAdapter.twoFactorAuthModeActivated) {
+            boAccessDescriptionTextView.gravity = Gravity.CENTER
+        }
+        accessButtonLayout.isVisible = profileViewAdapter.twoFactorAuthModeActivated
 
         emittedValueTextView.text = profileViewAdapter.emittedValue
         availableValueTextView.text = profileViewAdapter.availableValue
@@ -162,10 +183,12 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
 
         boAccessTextView.measureWrapContent()
         boAccessDescriptionTextView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth * 9 / 10, MeasureSpec.AT_MOST),
+            MeasureSpec.makeMeasureSpec(viewWidth - convertDpToPx(40), MeasureSpec.AT_MOST),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
-        accessButtonLayout.measureWrapContent()
+        if (accessButtonLayout.isVisible) {
+            accessButtonLayout.measureWrapContent()
+        }
 
         separator2View.measure(
             MeasureSpec.makeMeasureSpec(viewWidth * 4 / 10, MeasureSpec.EXACTLY),
@@ -186,17 +209,27 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         cancelledTitleTextView.measureWrapContent()
         cancelledValueTextView.measureWrapContent()
 
-        viewHeight = myDataTextView.measuredHeight + loginValueTextView.measuredHeight + surnameValueTextView.measuredHeight +
-                    nameValueTextView.measuredHeight +
-                    if (referentTitleTextView.isVisible) {
-                        referentValueTextView.measuredHeight + convertDpToPx(15)
-                    } else {
-                        0
-                    } + birthValueTextView.measuredHeight + phoneValueTextView.measuredHeight + addressValueTextView.measuredHeight +
-                    separator1View.measuredHeight + boAccessTextView.measuredHeight + boAccessDescriptionTextView.measuredHeight +
-                    accessButtonLayout.measuredHeight + separator2View.measuredHeight + myVouchersTextView.measuredHeight +
-                    emittedValueTextView.measuredHeight + availableValueTextView.measuredHeight + usedValueTextView.measuredHeight +
-                    cancelledValueTextView.measuredHeight + convertDpToPx(195)
+        privacyPolicyLinkTextView.measureWrapContent()
+
+        viewHeight = myDataTextView.measuredHeight + loginValueTextView.measuredHeight +
+                surnameValueTextView.measuredHeight + nameValueTextView.measuredHeight +
+                if (referentTitleTextView.isVisible) {
+                    referentValueTextView.measuredHeight + convertDpToPx(15)
+                } else {
+                    0
+                } +
+                birthValueTextView.measuredHeight + phoneValueTextView.measuredHeight +
+                addressValueTextView.measuredHeight + separator1View.measuredHeight +
+                boAccessTextView.measuredHeight + boAccessDescriptionTextView.measuredHeight +
+                if (accessButtonLayout.isVisible) {
+                    accessButtonLayout.measuredHeight + convertDpToPx(15)
+                } else {
+                    0
+                } +
+                separator2View.measuredHeight + myVouchersTextView.measuredHeight +
+                emittedValueTextView.measuredHeight + availableValueTextView.measuredHeight +
+                usedValueTextView.measuredHeight + cancelledValueTextView.measuredHeight +
+                privacyPolicyLinkTextView.measuredHeight + convertDpToPx(215)
 
         setMeasuredDimension(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
@@ -304,18 +337,23 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         )
 
         boAccessDescriptionTextView.layoutToTopLeft(
-            (viewWidth - boAccessDescriptionTextView.measuredWidth) / 2,
+            myDataTextView.left,
             boAccessTextView.bottom + convertDpToPx(10)
         )
 
-        accessButtonLayout.layoutToTopLeft(
-            (viewWidth - accessButtonLayout.measuredWidth) / 2,
-            boAccessDescriptionTextView.bottom + convertDpToPx(15)
-        )
+        val boAccessBottom = if (accessButtonLayout.isVisible) {
+            accessButtonLayout.layoutToTopLeft(
+                (viewWidth - accessButtonLayout.measuredWidth) / 2,
+                boAccessDescriptionTextView.bottom + convertDpToPx(15)
+            )
+            accessButtonLayout.bottom
+        } else {
+            boAccessDescriptionTextView.bottom
+        }
 
         separator2View.layoutToTopLeft(
             (viewWidth - separator2View.measuredWidth) / 2,
-            accessButtonLayout.bottom + convertDpToPx(20)
+            boAccessBottom + convertDpToPx(20)
         )
 
         myVouchersTextView.layoutToTopLeft(
@@ -361,6 +399,11 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         cancelledValueTextView.layoutToTopLeft(
             cancelledTitleTextView.right + convertDpToPx(15),
             cancelledTitleTextView.top
+        )
+
+        privacyPolicyLinkTextView.layoutToTopLeft(
+            (viewWidth - privacyPolicyLinkTextView.measuredWidth) / 2,
+            cancelledTitleTextView.bottom + convertDpToPx(30)
         )
     }
 }

@@ -34,6 +34,15 @@ interface RemoteApi {
     ): ResponseDTO<AccountDataDTO>
 
     @FormUrlEncoded
+    @POST("$SET_PRIVACY_POLICY_READ_STATUS/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun updatePrivacyPolicyReadStatus(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<UpdatePrivacyPolicyResponseDTO>
+
+    @FormUrlEncoded
     @POST("$GET_AVAILABLE_DATA_PER_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
     suspend fun fetchAvailableDataByCategory(
         @Path(TIMESTAMP) timestamp: String,

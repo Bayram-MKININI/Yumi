@@ -24,7 +24,7 @@ import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView
 class AvailableCategoriesFragment : Fragment() {
 
     private var categoriesListView: CategoriesListView? = null
-    private val viewModel: CategoriesFragmentViewModel by activityViewModels()
+    private val viewModel by activityViewModels<CategoriesFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

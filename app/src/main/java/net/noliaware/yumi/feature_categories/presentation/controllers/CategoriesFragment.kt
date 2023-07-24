@@ -12,24 +12,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.ACCOUNT_DATA
 import net.noliaware.yumi.commun.util.formatNumber
 import net.noliaware.yumi.commun.util.inflate
-import net.noliaware.yumi.commun.util.withArgs
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
-import net.noliaware.yumi.feature_login.domain.model.AccountData
 
 @AndroidEntryPoint
 class CategoriesFragment : Fragment() {
 
-    companion object {
-        fun newInstance(
-            accountData: AccountData?
-        ) = CategoriesFragment().withArgs(ACCOUNT_DATA to accountData)
-    }
-
     private var categoriesView: CategoriesView? = null
-    private val viewModel: CategoriesFragmentViewModel by activityViewModels()
+    private val viewModel by activityViewModels<CategoriesFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

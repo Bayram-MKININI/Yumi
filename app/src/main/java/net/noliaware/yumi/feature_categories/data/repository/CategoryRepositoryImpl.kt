@@ -4,21 +4,77 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import net.noliaware.yumi.commun.*
+import net.noliaware.yumi.commun.GET_AVAILABLE_DATA_PER_CATEGORY
+import net.noliaware.yumi.commun.GET_CANCELLED_DATA_PER_CATEGORY
+import net.noliaware.yumi.commun.GET_USED_DATA_PER_CATEGORY
+import net.noliaware.yumi.commun.GET_VOUCHER
+import net.noliaware.yumi.commun.GET_VOUCHER_STATUS
+import net.noliaware.yumi.commun.LIST_PAGE_SIZE
+import net.noliaware.yumi.commun.SET_PRIVACY_POLICY_READ_STATUS
+import net.noliaware.yumi.commun.USE_VOUCHER
+import net.noliaware.yumi.commun.VOUCHER_ID
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.ErrorType
+import net.noliaware.yumi.commun.util.Resource
+import net.noliaware.yumi.commun.util.generateToken
+import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.handleSessionWithNoFailure
 import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStateData
 import okio.IOException
 import retrofit2.HttpException
-import java.util.*
+import java.util.UUID
 
 class CategoryRepositoryImpl(
     private val api: RemoteApi,
     private val sessionData: SessionData
 ) : CategoryRepository {
+
+    override fun updatePrivacyPolicyReadStatus(): Flow<Resource<Boolean>> = flow {
+
+        emit(Resource.Loading())
+
+        try {
+
+            val timestamp = System.currentTimeMillis().toString()
+            val randomString = UUID.randomUUID().toString()
+
+            val remoteData = api.updatePrivacyPolicyReadStatus(
+                timestamp = timestamp,
+                saltString = randomString,
+                token = generateToken(
+                    timestamp = timestamp,
+                    methodName = SET_PRIVACY_POLICY_READ_STATUS,
+                    randomString = randomString
+                ),
+                params = getCommonWSParams(sessionData, SET_PRIVACY_POLICY_READ_STATUS)
+            )
+
+            val sessionNoFailure = handleSessionWithNoFailure(
+                session = remoteData.session,
+                sessionData = sessionData,
+                tokenKey = SET_PRIVACY_POLICY_READ_STATUS,
+                appMessage = remoteData.message,
+                error = remoteData.error
+            )
+
+            if (sessionNoFailure) {
+                emit(
+                    Resource.Success(
+                        data = remoteData.data?.result == 1,
+                        appMessage = remoteData.message?.toAppMessage()
+                    )
+                )
+            }
+
+        } catch (ex: HttpException) {
+            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
+        } catch (ex: IOException) {
+            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        }
+    }
 
     override fun getAvailableCategories(): Flow<Resource<List<Category>>> = flow {
 

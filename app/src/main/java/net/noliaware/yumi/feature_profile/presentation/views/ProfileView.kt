@@ -211,24 +211,28 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
 
         privacyPolicyLinkTextView.measureWrapContent()
 
-        viewHeight = myDataTextView.measuredHeight + loginValueTextView.measuredHeight +
-                surnameValueTextView.measuredHeight + nameValueTextView.measuredHeight +
+        viewHeight = myDataTextView.measuredHeight +
+                max(loginTitleTextView.measuredHeight, loginValueTextView.measuredHeight) +
+                max(surnameTitleTextView.measuredHeight, surnameValueTextView.measuredHeight) +
+                max(nameTitleTextView.measuredHeight, nameValueTextView.measuredHeight) +
                 if (referentTitleTextView.isVisible) {
                     referentValueTextView.measuredHeight + convertDpToPx(15)
                 } else {
                     0
                 } +
-                birthValueTextView.measuredHeight + phoneValueTextView.measuredHeight +
-                addressValueTextView.measuredHeight + separator1View.measuredHeight +
-                boAccessTextView.measuredHeight + boAccessDescriptionTextView.measuredHeight +
+                max(birthTitleTextView.measuredHeight, birthValueTextView.measuredHeight) +
+                max(phoneTitleTextView.measuredHeight, phoneValueTextView.measuredHeight) +
+                max(addressTitleTextView.measuredHeight, addressValueTextView.measuredHeight) +
+                separator1View.measuredHeight + boAccessTextView.measuredHeight + boAccessDescriptionTextView.measuredHeight +
                 if (accessButtonLayout.isVisible) {
                     accessButtonLayout.measuredHeight + convertDpToPx(15)
                 } else {
                     0
-                } +
-                separator2View.measuredHeight + myVouchersTextView.measuredHeight +
-                emittedValueTextView.measuredHeight + availableValueTextView.measuredHeight +
-                usedValueTextView.measuredHeight + cancelledValueTextView.measuredHeight +
+                } + separator2View.measuredHeight + myVouchersTextView.measuredHeight +
+                max(emittedTitleTextView.measuredHeight, emittedValueTextView.measuredHeight) +
+                max(availableTitleTextView.measuredHeight, availableValueTextView.measuredHeight) +
+                max(usedTitleTextView.measuredHeight, usedValueTextView.measuredHeight) +
+                max(cancelledTitleTextView.measuredHeight, cancelledValueTextView.measuredHeight) +
                 privacyPolicyLinkTextView.measuredHeight + convertDpToPx(215)
 
         setMeasuredDimension(

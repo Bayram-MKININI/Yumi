@@ -2,12 +2,20 @@ package net.noliaware.yumi.feature_categories.data.repository
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import net.noliaware.yumi.commun.*
+import net.noliaware.yumi.commun.CATEGORY_ID
+import net.noliaware.yumi.commun.GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY
+import net.noliaware.yumi.commun.LIMIT
+import net.noliaware.yumi.commun.LIST_PAGE_SIZE
+import net.noliaware.yumi.commun.OFFSET
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.ErrorType
+import net.noliaware.yumi.commun.util.PaginationException
+import net.noliaware.yumi.commun.util.generateToken
+import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.handlePaginatedListErrorIfAny
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
-import java.util.*
+import java.util.UUID
 
 class VoucherPagingSource(
     private val api: RemoteApi,
@@ -55,15 +63,15 @@ class VoucherPagingSource(
                 throw PaginationException(errorType)
             }
 
-            val voucherRank = remoteData.data?.voucherDTOList?.last()?.voucherRank ?: nextPage
+            val voucherRank = remoteData.data?.voucherDTOList?.lastOrNull()?.voucherRank ?: nextPage
 
-            val moreItemsAvailable = remoteData.data?.voucherDTOList?.last()?.let { voucherDTO ->
-                if (voucherDTO.voucherRank != null && voucherDTO.voucherCount != null) {
-                    voucherDTO.voucherRank < voucherDTO.voucherCount
-                } else {
-                    false
+            val moreItemsAvailable = remoteData.data?.voucherDTOList?.lastOrNull()?.let { voucherDTO ->
+                    if (voucherDTO.voucherRank != null && voucherDTO.voucherCount != null) {
+                        voucherDTO.voucherRank < voucherDTO.voucherCount
+                    } else {
+                        false
+                    }
                 }
-            }
 
             val canLoadMore = moreItemsAvailable == true
 
@@ -77,7 +85,11 @@ class VoucherPagingSource(
         }
     }
 
-    private fun generateWSParams(categoryId: String, offset: Int, tokenKey: String) = mutableMapOf(
+    private fun generateWSParams(
+        categoryId: String,
+        offset: Int,
+        tokenKey: String
+    ) = mutableMapOf(
         CATEGORY_ID to categoryId,
         LIMIT to LIST_PAGE_SIZE.toString(),
         OFFSET to offset.toString()

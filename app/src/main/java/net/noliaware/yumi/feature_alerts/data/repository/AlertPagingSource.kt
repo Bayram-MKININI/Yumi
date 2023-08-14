@@ -8,9 +8,13 @@ import net.noliaware.yumi.commun.LIST_PAGE_SIZE
 import net.noliaware.yumi.commun.TIMESTAMP_OFFSET
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.ErrorType
+import net.noliaware.yumi.commun.util.PaginationException
+import net.noliaware.yumi.commun.util.generateToken
+import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.handlePaginatedListErrorIfAny
 import net.noliaware.yumi.feature_alerts.domain.model.Alert
-import java.util.*
+import java.util.UUID
 
 class AlertPagingSource(
     private val api: RemoteApi,
@@ -49,9 +53,9 @@ class AlertPagingSource(
             }
 
             val alertTimestamp =
-                remoteData.data?.alertDTOList?.last()?.alertTimestamp ?: nextTimestamp
+                remoteData.data?.alertDTOList?.lastOrNull()?.alertTimestamp ?: nextTimestamp
 
-            val moreItemsAvailable = remoteData.data?.alertDTOList?.last()?.let { alertDTO ->
+            val moreItemsAvailable = remoteData.data?.alertDTOList?.lastOrNull()?.let { alertDTO ->
                 alertDTO.alertRank < alertDTO.alertCount
             }
 

@@ -8,9 +8,13 @@ import net.noliaware.yumi.commun.LIST_PAGE_SIZE
 import net.noliaware.yumi.commun.OFFSET
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.ErrorType
+import net.noliaware.yumi.commun.util.PaginationException
+import net.noliaware.yumi.commun.util.generateToken
+import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.handlePaginatedListErrorIfAny
 import net.noliaware.yumi.feature_message.domain.model.Message
-import java.util.*
+import java.util.UUID
 
 class InboxMessagePagingSource(
     private val api: RemoteApi,
@@ -52,9 +56,9 @@ class InboxMessagePagingSource(
                 throw PaginationException(errorType)
             }
 
-            val messageRank = remoteData.data?.messageDTOList?.last()?.messageRank ?: nextPage
+            val messageRank = remoteData.data?.messageDTOList?.lastOrNull()?.messageRank ?: nextPage
 
-            val moreItemsAvailable = remoteData.data?.messageDTOList?.last()?.let { messageDTO ->
+            val moreItemsAvailable = remoteData.data?.messageDTOList?.lastOrNull()?.let { messageDTO ->
                 if (messageDTO.messageRank != null && messageDTO.messageCount != null) {
                     messageDTO.messageRank < messageDTO.messageCount
                 } else {

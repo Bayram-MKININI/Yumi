@@ -46,7 +46,11 @@ class CancelledVoucherPagingSource(
                     methodName = GET_CANCELLED_VOUCHER_LIST_BY_CATEGORY,
                     randomString = randomString
                 ),
-                params = generateWSParams(categoryId, nextPage, GET_CANCELLED_VOUCHER_LIST_BY_CATEGORY)
+                params = generateWSParams(
+                    categoryId,
+                    nextPage,
+                    GET_CANCELLED_VOUCHER_LIST_BY_CATEGORY
+                )
             )
 
             val errorType = handlePaginatedListErrorIfAny(
@@ -62,12 +66,12 @@ class CancelledVoucherPagingSource(
             val voucherRank = remoteData.data?.voucherDTOList?.lastOrNull()?.voucherRank ?: nextPage
 
             val moreItemsAvailable = remoteData.data?.voucherDTOList?.lastOrNull()?.let { voucherDTO ->
-                if (voucherDTO.voucherRank != null && voucherDTO.voucherCount != null) {
-                    voucherDTO.voucherRank < voucherDTO.voucherCount
-                } else {
-                    false
+                    if (voucherDTO.voucherRank != null && voucherDTO.voucherCount != null) {
+                        voucherDTO.voucherRank < voucherDTO.voucherCount
+                    } else {
+                        false
+                    }
                 }
-            }
 
             val canLoadMore = moreItemsAvailable == true
 
@@ -81,7 +85,11 @@ class CancelledVoucherPagingSource(
         }
     }
 
-    private fun generateWSParams(categoryId: String, offset: Int, tokenKey: String) = mutableMapOf(
+    private fun generateWSParams(
+        categoryId: String,
+        offset: Int,
+        tokenKey: String
+    ) = mutableMapOf(
         CATEGORY_ID to categoryId,
         LIMIT to LIST_PAGE_SIZE.toString(),
         OFFSET to offset.toString()

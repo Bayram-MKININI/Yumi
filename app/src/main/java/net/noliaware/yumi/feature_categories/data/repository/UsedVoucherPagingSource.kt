@@ -81,7 +81,11 @@ class UsedVoucherPagingSource(
         }
     }
 
-    private fun generateWSParams(categoryId: String, offset: Int, tokenKey: String) = mutableMapOf(
+    private fun generateWSParams(
+        categoryId: String,
+        offset: Int,
+        tokenKey: String
+    ) = mutableMapOf(
         CATEGORY_ID to categoryId,
         LIMIT to LIST_PAGE_SIZE.toString(),
         OFFSET to offset.toString()

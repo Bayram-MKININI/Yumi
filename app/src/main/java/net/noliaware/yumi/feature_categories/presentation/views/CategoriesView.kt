@@ -8,7 +8,11 @@ import android.widget.TextView
 import androidx.viewpager2.widget.ViewPager2
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.views.ClipartTabView
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.getStatusBarHeight
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.measureWrapContent
+import net.noliaware.yumi.commun.util.removeOverScroll
 
 class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
@@ -64,15 +68,9 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 when (position) {
-                    0 -> {
-                        setFirstTabSelected()
-                    }
-                    1 -> {
-                        setSecondTabSelected()
-                    }
-                    else -> {
-                        setThirdTabSelected()
-                    }
+                    0 -> setFirstTabSelected()
+                    1 -> setSecondTabSelected()
+                    else -> setThirdTabSelected()
                 }
             }
         })

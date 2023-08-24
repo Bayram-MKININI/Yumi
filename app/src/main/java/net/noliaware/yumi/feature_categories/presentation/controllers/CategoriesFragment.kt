@@ -66,8 +66,8 @@ class CategoriesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         categoriesView = null
+        super.onDestroyView()
     }
 
     private class CategoriesFragmentStateAdapter(

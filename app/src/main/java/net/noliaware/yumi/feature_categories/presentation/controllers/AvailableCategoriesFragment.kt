@@ -102,7 +102,7 @@ class AvailableCategoriesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         categoriesListView = null
+        super.onDestroyView()
     }
 }

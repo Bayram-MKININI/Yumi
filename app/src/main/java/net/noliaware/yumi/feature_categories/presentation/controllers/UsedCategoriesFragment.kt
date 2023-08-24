@@ -96,7 +96,7 @@ class UsedCategoriesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         categoriesListView = null
+        super.onDestroyView()
     }
 }

@@ -17,34 +17,5 @@ class LoginActivity : AppCompatActivity() {
             replace(R.id.main_fragment_container, LoginFragment())
             commit()
         }
-
-        /*val content: View = findViewById(android.R.id.content)
-
-        var delay = false
-
-        content.postDelayed({ delay = true }, 20000)
-
-        content.viewTreeObserver.addOnPreDrawListener(
-            object : ViewTreeObserver.OnPreDrawListener {
-                override fun onPreDraw(): Boolean {
-                    return if (delay) {
-                        content.viewTreeObserver.removeOnPreDrawListener(this)
-                        showLoginFragment.invoke()
-                        true
-                    } else {
-                        false
-                    }
-                }
-            }
-        )
-
-         */
-    }
-
-    private val showLoginFragment = {
-        supportFragmentManager.beginTransaction().run {
-            replace(R.id.main_fragment_container, LoginFragment())
-            commit()
-        }
     }
 }

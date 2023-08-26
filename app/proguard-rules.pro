@@ -20,6 +20,12 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+-keep class net.noliaware.yumi.feature_alerts.data.remote.dto.*
+-keep class net.noliaware.yumi.feature_categories.data.remote.dto.*
+-keep class net.noliaware.yumi.feature_login.data.remote.dto.*
+-keep class net.noliaware.yumi.feature_message.data.remote.dto.*
+-keep class net.noliaware.yumi.feature_profile.data.remote.dto.*
+
 -dontwarn javax.imageio.spi.ImageInputStreamSpi
 -dontwarn javax.imageio.spi.ImageOutputStreamSpi
 -dontwarn javax.imageio.spi.ImageReaderSpi

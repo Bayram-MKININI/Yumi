@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.time.delay
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ACCOUNT_DATA
 import net.noliaware.yumi.commun.PRIVACY_POLICY_FRAGMENT_TAG
@@ -21,6 +21,7 @@ import net.noliaware.yumi.feature_categories.presentation.views.HomeView
 import net.noliaware.yumi.feature_login.domain.model.AccountData
 import net.noliaware.yumi.feature_message.presentation.controllers.MessagingFragment
 import net.noliaware.yumi.feature_profile.presentation.controllers.UserProfileFragment
+import java.time.Duration
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -59,7 +60,7 @@ class HomeFragment : Fragment() {
             }
             if (accountData.shouldConfirmPrivacyPolicy) {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    delay(150)
+                    delay(Duration.ofMillis(150))
                     PrivacyPolicyFragment.newInstance(
                         privacyPolicyUrl = accountData.privacyPolicyUrl,
                         isConfirmationRequired = true

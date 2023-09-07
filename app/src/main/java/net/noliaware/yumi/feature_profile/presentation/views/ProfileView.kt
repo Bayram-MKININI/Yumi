@@ -2,14 +2,18 @@ package net.noliaware.yumi.feature_profile.presentation.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import net.noliaware.yumi.R
+import net.noliaware.yumi.commun.presentation.views.FillableTextWidget
 import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.getColorCompat
 import net.noliaware.yumi.commun.util.layoutToTopLeft
 import net.noliaware.yumi.commun.util.layoutToTopRight
 import net.noliaware.yumi.commun.util.measureWrapContent
@@ -20,35 +24,35 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
 
     private lateinit var myDataTextView: TextView
     private lateinit var loginTitleTextView: TextView
-    private lateinit var loginValueTextView: TextView
+    private lateinit var loginValueFillableTextWidget: FillableTextWidget
     private lateinit var surnameTitleTextView: TextView
-    private lateinit var surnameValueTextView: TextView
+    private lateinit var surnameValueFillableTextWidget: FillableTextWidget
     private lateinit var nameTitleTextView: TextView
-    private lateinit var nameValueTextView: TextView
+    private lateinit var nameValueFillableTextWidget: FillableTextWidget
     private lateinit var referentTitleTextView: TextView
-    private lateinit var referentValueTextView: TextView
+    private lateinit var referentValueFillableTextWidget: FillableTextWidget
     private lateinit var birthTitleTextView: TextView
-    private lateinit var birthValueTextView: TextView
+    private lateinit var birthValueFillableTextWidget: FillableTextWidget
     private lateinit var phoneTitleTextView: TextView
-    private lateinit var phoneValueTextView: TextView
+    private lateinit var phoneValueFillableTextWidget: FillableTextWidget
     private lateinit var addressTitleTextView: TextView
-    private lateinit var addressValueTextView: TextView
+    private lateinit var addressValueFillableTextWidget: FillableTextWidget
 
     private lateinit var separator1View: View
     private lateinit var boAccessTextView: TextView
-    private lateinit var boAccessDescriptionTextView: TextView
+    private lateinit var boAccessDescriptionFillableTextWidget: FillableTextWidget
     private lateinit var accessButtonLayout: LinearLayoutCompat
 
     private lateinit var separator2View: View
     private lateinit var myVouchersTextView: TextView
     private lateinit var emittedTitleTextView: TextView
-    private lateinit var emittedValueTextView: TextView
+    private lateinit var emittedValueFillableTextWidget: FillableTextWidget
     private lateinit var availableTitleTextView: TextView
-    private lateinit var availableValueTextView: TextView
+    private lateinit var availableValueFillableTextWidget: FillableTextWidget
     private lateinit var usedTitleTextView: TextView
-    private lateinit var usedValueTextView: TextView
+    private lateinit var usedValueFillableTextWidget: FillableTextWidget
     private lateinit var cancelledTitleTextView: TextView
-    private lateinit var cancelledValueTextView: TextView
+    private lateinit var cancelledValueFillableTextWidget: FillableTextWidget
     private lateinit var privacyPolicyLinkTextView: TextView
     var callback: ProfileParentViewCallback? by weak()
 
@@ -80,24 +84,42 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
 
     private fun initView() {
         myDataTextView = findViewById(R.id.my_data_text_view)
+
         loginTitleTextView = findViewById(R.id.login_title_text_view)
-        loginValueTextView = findViewById(R.id.login_value_text_view)
+        loginValueFillableTextWidget = findViewById(R.id.login_value_fillable_text_view)
+        loginValueFillableTextWidget.setUpValueTextView()
+
         surnameTitleTextView = findViewById(R.id.surname_title_text_view)
-        surnameValueTextView = findViewById(R.id.surname_value_text_view)
+        surnameValueFillableTextWidget = findViewById(R.id.surname_value_fillable_text_view)
+        surnameValueFillableTextWidget.setUpValueTextView()
+
         nameTitleTextView = findViewById(R.id.name_title_text_view)
-        nameValueTextView = findViewById(R.id.name_value_text_view)
+        nameValueFillableTextWidget = findViewById(R.id.name_value_fillable_text_view)
+        nameValueFillableTextWidget.setUpValueTextView()
+
         referentTitleTextView = findViewById(R.id.referent_title_text_view)
-        referentValueTextView = findViewById(R.id.referent_value_text_view)
+        referentValueFillableTextWidget = findViewById(R.id.referent_value_fillable_text_view)
+        referentValueFillableTextWidget.setUpValueTextView()
+
         birthTitleTextView = findViewById(R.id.birth_title_text_view)
-        birthValueTextView = findViewById(R.id.birth_value_text_view)
+        birthValueFillableTextWidget = findViewById(R.id.birth_value_fillable_text_view)
+        birthValueFillableTextWidget.setUpValueTextView()
+
         phoneTitleTextView = findViewById(R.id.phone_title_text_view)
-        phoneValueTextView = findViewById(R.id.phone_value_text_view)
+        phoneValueFillableTextWidget = findViewById(R.id.phone_value_fillable_text_view)
+        phoneValueFillableTextWidget.setUpValueTextView()
+
         addressTitleTextView = findViewById(R.id.address_title_text_view)
-        addressValueTextView = findViewById(R.id.address_value_text_view)
+        addressValueFillableTextWidget = findViewById(R.id.address_value_fillable_text_view)
+        addressValueFillableTextWidget.setUpValueTextView()
 
         separator1View = findViewById(R.id.separator_1_view)
         boAccessTextView = findViewById(R.id.bo_access_text_view)
-        boAccessDescriptionTextView = findViewById(R.id.bo_access_description_text_view)
+
+        boAccessDescriptionFillableTextWidget = findViewById(R.id.bo_access_description_fillable_text_view)
+        boAccessDescriptionFillableTextWidget.setUpValueTextView()
+        boAccessDescriptionFillableTextWidget.setFixedWidth(true)
+
         accessButtonLayout = findViewById(R.id.access_button_layout)
         accessButtonLayout.setOnClickListener {
             callback?.onGetCodeButtonClicked()
@@ -105,46 +127,63 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
 
         separator2View = findViewById(R.id.separator_2_view)
         myVouchersTextView = findViewById(R.id.my_vouchers_text_view)
+
         emittedTitleTextView = findViewById(R.id.emitted_title_text_view)
-        emittedValueTextView = findViewById(R.id.emitted_value_text_view)
+        emittedValueFillableTextWidget = findViewById(R.id.emitted_value_fillable_text_view)
+        emittedValueFillableTextWidget.setUpValueTextView()
+
         availableTitleTextView = findViewById(R.id.available_title_text_view)
-        availableValueTextView = findViewById(R.id.available_value_text_view)
+        availableValueFillableTextWidget = findViewById(R.id.available_value_fillable_text_view)
+        availableValueFillableTextWidget.setUpValueTextView()
+
         usedTitleTextView = findViewById(R.id.used_title_text_view)
-        usedValueTextView = findViewById(R.id.used_value_text_view)
+        usedValueFillableTextWidget = findViewById(R.id.used_value_fillable_text_view)
+        usedValueFillableTextWidget.setUpValueTextView()
+
         cancelledTitleTextView = findViewById(R.id.cancelled_title_text_view)
-        cancelledValueTextView = findViewById(R.id.cancelled_value_text_view)
+        cancelledValueFillableTextWidget = findViewById(R.id.cancelled_value_fillable_text_view)
+        cancelledValueFillableTextWidget.setUpValueTextView()
+
         privacyPolicyLinkTextView = findViewById(R.id.privacy_policy_link_text_view)
         privacyPolicyLinkTextView.setOnClickListener {
             callback?.onPrivacyPolicyButtonClicked()
         }
     }
 
+    private fun FillableTextWidget.setUpValueTextView() {
+        textView.apply {
+            typeface = ResourcesCompat.getFont(context, R.font.omnes_semibold_regular)
+            setTextColor(context.getColorCompat(R.color.grey_2))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+        }
+    }
+
     fun fillViewWithData(profileViewAdapter: ProfileViewAdapter) {
 
-        loginValueTextView.text = profileViewAdapter.login
-        surnameValueTextView.text = profileViewAdapter.surname
-        nameValueTextView.text = profileViewAdapter.name
+        loginValueFillableTextWidget.setText(profileViewAdapter.login)
+        surnameValueFillableTextWidget.setText(profileViewAdapter.surname)
+        nameValueFillableTextWidget.setText(profileViewAdapter.name)
 
         profileViewAdapter.referent?.let {
             referentTitleTextView.isVisible = true
-            referentValueTextView.isVisible = true
-            referentValueTextView.text = profileViewAdapter.referent
+            referentValueFillableTextWidget.isVisible = true
+            referentValueFillableTextWidget.setText(profileViewAdapter.referent)
         }
 
-        birthValueTextView.text = profileViewAdapter.birth
-        phoneValueTextView.text = profileViewAdapter.phone
-        addressValueTextView.text = profileViewAdapter.address
+        birthValueFillableTextWidget.setText(profileViewAdapter.birth)
+        phoneValueFillableTextWidget.setText(profileViewAdapter.phone)
+        addressValueFillableTextWidget.setText(profileViewAdapter.address)
 
-        boAccessDescriptionTextView.text = profileViewAdapter.twoFactorAuthModeText
+        boAccessDescriptionFillableTextWidget.setText(profileViewAdapter.twoFactorAuthModeText)
         if (profileViewAdapter.twoFactorAuthModeActivated) {
-            boAccessDescriptionTextView.gravity = Gravity.CENTER
+            boAccessDescriptionFillableTextWidget.textView.gravity = Gravity.CENTER
         }
         accessButtonLayout.isVisible = profileViewAdapter.twoFactorAuthModeActivated
 
-        emittedValueTextView.text = profileViewAdapter.emittedValue
-        availableValueTextView.text = profileViewAdapter.availableValue
-        usedValueTextView.text = profileViewAdapter.usedValue
-        cancelledValueTextView.text = profileViewAdapter.cancelledValue
+        emittedValueFillableTextWidget.setText(profileViewAdapter.emittedValue)
+        availableValueFillableTextWidget.setText(profileViewAdapter.availableValue)
+        usedValueFillableTextWidget.setText(profileViewAdapter.usedValue)
+        cancelledValueFillableTextWidget.setText(profileViewAdapter.cancelledValue)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -154,27 +193,33 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         myDataTextView.measureWrapContent()
 
         loginTitleTextView.measureWrapContent()
-        loginValueTextView.measureWrapContent()
+        loginValueFillableTextWidget.measureTextWidgetWithWidth(viewWidth * 5 / 10)
 
         surnameTitleTextView.measureWrapContent()
-        surnameValueTextView.measureWrapContent()
+        surnameValueFillableTextWidget.measureTextWidgetWithWidth(viewWidth * 2 / 10)
 
         nameTitleTextView.measureWrapContent()
-        nameValueTextView.measureWrapContent()
+        nameValueFillableTextWidget.measureTextWidgetWithWidth(viewWidth * 2 / 10)
 
         if (referentTitleTextView.isVisible) {
             referentTitleTextView.measureWrapContent()
-            referentValueTextView.measureWrapContent()
+            referentValueFillableTextWidget.measureTextWidgetWithWidth(viewWidth * 3 / 10)
         }
 
         birthTitleTextView.measureWrapContent()
-        birthValueTextView.measureWrapContent()
+        birthValueFillableTextWidget.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth * 1 / 2, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(35), MeasureSpec.EXACTLY)
+        )
 
         phoneTitleTextView.measureWrapContent()
-        phoneValueTextView.measureWrapContent()
+        phoneValueFillableTextWidget.measureTextWidgetWithWidth(viewWidth * 3 / 10)
 
         addressTitleTextView.measureWrapContent()
-        addressValueTextView.measureWrapContent()
+        addressValueFillableTextWidget.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth * 1 / 2, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(35), MeasureSpec.EXACTLY)
+        )
 
         separator1View.measure(
             MeasureSpec.makeMeasureSpec(viewWidth * 4 / 10, MeasureSpec.EXACTLY),
@@ -182,9 +227,9 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         )
 
         boAccessTextView.measureWrapContent()
-        boAccessDescriptionTextView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth - convertDpToPx(40), MeasureSpec.AT_MOST),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        boAccessDescriptionFillableTextWidget.measure(
+            MeasureSpec.makeMeasureSpec(viewWidth - convertDpToPx(40), MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(35), MeasureSpec.EXACTLY)
         )
         if (accessButtonLayout.isVisible) {
             accessButtonLayout.measureWrapContent()
@@ -198,46 +243,54 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         myVouchersTextView.measureWrapContent()
 
         emittedTitleTextView.measureWrapContent()
-        emittedValueTextView.measureWrapContent()
+        emittedValueFillableTextWidget.measureTextWidgetWithWidth(viewWidth * 3 / 10)
 
         availableTitleTextView.measureWrapContent()
-        availableValueTextView.measureWrapContent()
+        availableValueFillableTextWidget.measureTextWidgetWithWidth(viewWidth * 3 / 10)
 
         usedTitleTextView.measureWrapContent()
-        usedValueTextView.measureWrapContent()
+        usedValueFillableTextWidget.measureTextWidgetWithWidth(viewWidth * 3 / 10)
 
         cancelledTitleTextView.measureWrapContent()
-        cancelledValueTextView.measureWrapContent()
+        cancelledValueFillableTextWidget.measureTextWidgetWithWidth(viewWidth * 3 / 10)
 
         privacyPolicyLinkTextView.measureWrapContent()
 
         viewHeight = myDataTextView.measuredHeight +
-                max(loginTitleTextView.measuredHeight, loginValueTextView.measuredHeight) +
-                max(surnameTitleTextView.measuredHeight, surnameValueTextView.measuredHeight) +
-                max(nameTitleTextView.measuredHeight, nameValueTextView.measuredHeight) +
+                max(loginTitleTextView.measuredHeight, loginValueFillableTextWidget.measuredHeight) +
+                max(surnameTitleTextView.measuredHeight, surnameValueFillableTextWidget.measuredHeight) +
+                max(nameTitleTextView.measuredHeight, nameValueFillableTextWidget.measuredHeight) +
                 if (referentTitleTextView.isVisible) {
-                    referentValueTextView.measuredHeight + convertDpToPx(15)
+                    referentValueFillableTextWidget.measuredHeight + convertDpToPx(15)
                 } else {
                     0
                 } +
-                max(birthTitleTextView.measuredHeight, birthValueTextView.measuredHeight) +
-                max(phoneTitleTextView.measuredHeight, phoneValueTextView.measuredHeight) +
-                max(addressTitleTextView.measuredHeight, addressValueTextView.measuredHeight) +
-                separator1View.measuredHeight + boAccessTextView.measuredHeight + boAccessDescriptionTextView.measuredHeight +
+                max(birthTitleTextView.measuredHeight, birthValueFillableTextWidget.measuredHeight) +
+                max(phoneTitleTextView.measuredHeight, phoneValueFillableTextWidget.measuredHeight) +
+                max(addressTitleTextView.measuredHeight, addressValueFillableTextWidget.measuredHeight) +
+                separator1View.measuredHeight + boAccessTextView.measuredHeight +
+                boAccessDescriptionFillableTextWidget.measuredHeight +
                 if (accessButtonLayout.isVisible) {
                     accessButtonLayout.measuredHeight + convertDpToPx(15)
                 } else {
                     0
                 } + separator2View.measuredHeight + myVouchersTextView.measuredHeight +
-                max(emittedTitleTextView.measuredHeight, emittedValueTextView.measuredHeight) +
-                max(availableTitleTextView.measuredHeight, availableValueTextView.measuredHeight) +
-                max(usedTitleTextView.measuredHeight, usedValueTextView.measuredHeight) +
-                max(cancelledTitleTextView.measuredHeight, cancelledValueTextView.measuredHeight) +
+                max(emittedTitleTextView.measuredHeight, emittedValueFillableTextWidget.measuredHeight) +
+                max(availableTitleTextView.measuredHeight, availableValueFillableTextWidget.measuredHeight) +
+                max(usedTitleTextView.measuredHeight, usedValueFillableTextWidget.measuredHeight) +
+                max(cancelledTitleTextView.measuredHeight, cancelledValueFillableTextWidget.measuredHeight) +
                 privacyPolicyLinkTextView.measuredHeight + convertDpToPx(215)
 
         setMeasuredDimension(
             MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(viewHeight, MeasureSpec.EXACTLY)
+        )
+    }
+
+    private fun View.measureTextWidgetWithWidth(width: Int) {
+        measure(
+            MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(convertDpToPx(18), MeasureSpec.EXACTLY)
         )
     }
 
@@ -257,9 +310,9 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             myDataTextView.bottom + convertDpToPx(15)
         )
 
-        loginValueTextView.layoutToTopLeft(
+        loginValueFillableTextWidget.layoutToTopLeft(
             loginTitleTextView.right + convertDpToPx(15),
-            loginTitleTextView.top
+            loginTitleTextView.top + (loginTitleTextView.measuredHeight - loginValueFillableTextWidget.measuredHeight) / 2
         )
 
         surnameTitleTextView.layoutToTopRight(
@@ -267,9 +320,9 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             loginTitleTextView.bottom + convertDpToPx(10)
         )
 
-        surnameValueTextView.layoutToTopLeft(
+        surnameValueFillableTextWidget.layoutToTopLeft(
             surnameTitleTextView.right + convertDpToPx(15),
-            surnameTitleTextView.top
+            surnameTitleTextView.top + (surnameTitleTextView.measuredHeight - surnameValueFillableTextWidget.measuredHeight) / 2
         )
 
         nameTitleTextView.layoutToTopRight(
@@ -277,21 +330,21 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             surnameTitleTextView.bottom + convertDpToPx(10)
         )
 
-        nameValueTextView.layoutToTopLeft(
+        nameValueFillableTextWidget.layoutToTopLeft(
             nameTitleTextView.right + convertDpToPx(15),
-            nameTitleTextView.top
+            nameTitleTextView.top + (nameTitleTextView.measuredHeight - nameValueFillableTextWidget.measuredHeight) / 2
         )
 
         val referentViewBottom = if (referentTitleTextView.isVisible) {
 
             referentTitleTextView.layoutToTopRight(
                 edge,
-                nameValueTextView.bottom + convertDpToPx(10)
+                nameValueFillableTextWidget.bottom + convertDpToPx(10)
             )
 
-            referentValueTextView.layoutToTopLeft(
+            referentValueFillableTextWidget.layoutToTopLeft(
                 referentTitleTextView.right + convertDpToPx(15),
-                referentTitleTextView.top
+                referentTitleTextView.top + (referentTitleTextView.measuredHeight - referentValueFillableTextWidget.measuredHeight) / 2
             )
 
             referentTitleTextView.bottom
@@ -305,19 +358,19 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             referentViewBottom + convertDpToPx(10)
         )
 
-        birthValueTextView.layoutToTopLeft(
+        birthValueFillableTextWidget.layoutToTopLeft(
             birthTitleTextView.right + convertDpToPx(15),
-            birthTitleTextView.top
+            birthTitleTextView.top + (birthTitleTextView.measuredHeight - birthValueFillableTextWidget.measuredHeight) / 2
         )
 
         phoneTitleTextView.layoutToTopRight(
             edge,
-            max(birthTitleTextView.bottom, birthValueTextView.bottom) + convertDpToPx(10)
+            max(birthTitleTextView.bottom, birthValueFillableTextWidget.bottom) + convertDpToPx(10)
         )
 
-        phoneValueTextView.layoutToTopLeft(
+        phoneValueFillableTextWidget.layoutToTopLeft(
             phoneTitleTextView.right + convertDpToPx(15),
-            phoneTitleTextView.top
+            phoneTitleTextView.top + (phoneTitleTextView.measuredHeight - phoneValueFillableTextWidget.measuredHeight) / 2
         )
 
         addressTitleTextView.layoutToTopRight(
@@ -325,14 +378,14 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             phoneTitleTextView.bottom + convertDpToPx(10)
         )
 
-        addressValueTextView.layoutToTopLeft(
+        addressValueFillableTextWidget.layoutToTopLeft(
             addressTitleTextView.right + convertDpToPx(15),
             addressTitleTextView.top
         )
 
         separator1View.layoutToTopLeft(
             (viewWidth - separator1View.measuredWidth) / 2,
-            max(addressTitleTextView.bottom, addressValueTextView.bottom) + convertDpToPx(15)
+            max(addressTitleTextView.bottom, addressValueFillableTextWidget.bottom) + convertDpToPx(15)
         )
 
         boAccessTextView.layoutToTopLeft(
@@ -340,7 +393,7 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             separator1View.bottom + convertDpToPx(15)
         )
 
-        boAccessDescriptionTextView.layoutToTopLeft(
+        boAccessDescriptionFillableTextWidget.layoutToTopLeft(
             myDataTextView.left,
             boAccessTextView.bottom + convertDpToPx(10)
         )
@@ -348,11 +401,11 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
         val boAccessBottom = if (accessButtonLayout.isVisible) {
             accessButtonLayout.layoutToTopLeft(
                 (viewWidth - accessButtonLayout.measuredWidth) / 2,
-                boAccessDescriptionTextView.bottom + convertDpToPx(15)
+                boAccessDescriptionFillableTextWidget.bottom + convertDpToPx(15)
             )
             accessButtonLayout.bottom
         } else {
-            boAccessDescriptionTextView.bottom
+            boAccessDescriptionFillableTextWidget.bottom
         }
 
         separator2View.layoutToTopLeft(
@@ -370,9 +423,9 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             myVouchersTextView.bottom + convertDpToPx(10)
         )
 
-        emittedValueTextView.layoutToTopLeft(
+        emittedValueFillableTextWidget.layoutToTopLeft(
             emittedTitleTextView.right + convertDpToPx(15),
-            emittedTitleTextView.top
+            emittedTitleTextView.top + (emittedTitleTextView.measuredHeight - emittedValueFillableTextWidget.measuredHeight) / 2
         )
 
         availableTitleTextView.layoutToTopRight(
@@ -380,9 +433,9 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             emittedTitleTextView.bottom + convertDpToPx(10)
         )
 
-        availableValueTextView.layoutToTopLeft(
+        availableValueFillableTextWidget.layoutToTopLeft(
             availableTitleTextView.right + convertDpToPx(15),
-            availableTitleTextView.top
+            availableTitleTextView.top + (availableTitleTextView.measuredHeight - availableValueFillableTextWidget.measuredHeight) / 2
         )
 
         usedTitleTextView.layoutToTopRight(
@@ -390,9 +443,9 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             availableTitleTextView.bottom + convertDpToPx(10)
         )
 
-        usedValueTextView.layoutToTopLeft(
+        usedValueFillableTextWidget.layoutToTopLeft(
             usedTitleTextView.right + convertDpToPx(15),
-            usedTitleTextView.top
+            usedTitleTextView.top + (usedTitleTextView.measuredHeight - usedValueFillableTextWidget.measuredHeight) / 2
         )
 
         cancelledTitleTextView.layoutToTopRight(
@@ -400,9 +453,9 @@ class ProfileView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
             usedTitleTextView.bottom + convertDpToPx(10)
         )
 
-        cancelledValueTextView.layoutToTopLeft(
+        cancelledValueFillableTextWidget.layoutToTopLeft(
             cancelledTitleTextView.right + convertDpToPx(15),
-            cancelledTitleTextView.top
+            cancelledTitleTextView.top + (cancelledTitleTextView.measuredHeight - cancelledValueFillableTextWidget.measuredHeight) / 2
         )
 
         privacyPolicyLinkTextView.layoutToTopLeft(

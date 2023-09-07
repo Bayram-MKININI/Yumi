@@ -135,6 +135,8 @@ class CategoryRepositoryImpl(
 
     override fun getUsedCategories(): Flow<Resource<List<Category>>> = flow {
 
+        emit(Resource.Loading())
+
         try {
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()
@@ -186,6 +188,9 @@ class CategoryRepositoryImpl(
     }.flow
 
     override fun getCancelledCategories(): Flow<Resource<List<Category>>> = flow {
+
+        emit(Resource.Loading())
+
         try {
             val timestamp = System.currentTimeMillis().toString()
             val randomString = UUID.randomUUID().toString()

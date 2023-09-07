@@ -96,8 +96,9 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.getVoucherEventsHelper.stateFlow.collect { vmState ->
                 when (vmState) {
-                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.LoadingState -> vouchersDetailsContainerView?.setLoadingVisible(true)
                     is ViewModelState.DataState -> vmState.data?.let { voucher ->
+                        vouchersDetailsContainerView?.setLoadingVisible(false)
                         bindViewToData(voucher)
                     }
                 }

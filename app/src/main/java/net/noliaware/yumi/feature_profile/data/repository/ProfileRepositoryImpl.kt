@@ -6,12 +6,16 @@ import net.noliaware.yumi.commun.GET_ACCOUNT
 import net.noliaware.yumi.commun.GET_BACK_OFFICE_SIGN_IN_CODE
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.ErrorType
+import net.noliaware.yumi.commun.util.Resource
+import net.noliaware.yumi.commun.util.generateToken
+import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.handleSessionWithNoFailure
 import net.noliaware.yumi.feature_profile.domain.model.BOSignIn
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import okio.IOException
 import retrofit2.HttpException
-import java.util.*
+import java.util.UUID
 
 class ProfileRepositoryImpl(
     private val api: RemoteApi,
@@ -19,6 +23,8 @@ class ProfileRepositoryImpl(
 ) : ProfileRepository {
 
     override fun getUserProfile(): Flow<Resource<UserProfile>> = flow {
+
+        emit(Resource.Loading())
 
         try {
 
@@ -64,6 +70,8 @@ class ProfileRepositoryImpl(
     }
 
     override fun getBackOfficeSignInCode(): Flow<Resource<BOSignIn>> = flow {
+
+        emit(Resource.Loading())
 
         try {
 

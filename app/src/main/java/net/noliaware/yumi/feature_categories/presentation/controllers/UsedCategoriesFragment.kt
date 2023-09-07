@@ -57,8 +57,9 @@ class UsedCategoriesFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.usedCategoriesEventsHelper.stateFlow.collect { vmState ->
                 when (vmState) {
-                    is ViewModelState.LoadingState -> Unit
+                    is ViewModelState.LoadingState -> categoriesListView?.setLoadingVisible(true)
                     is ViewModelState.DataState -> vmState.data?.let { categories ->
+                        categoriesListView?.setLoadingVisible(false)
                         bindViewToData(categories)
                     }
                 }

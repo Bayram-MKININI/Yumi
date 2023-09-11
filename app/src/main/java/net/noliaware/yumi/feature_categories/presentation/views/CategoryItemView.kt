@@ -6,9 +6,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.views.ElevatedCardView
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.drawableIdByName
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.layoutToTopRight
+import net.noliaware.yumi.commun.util.measureWrapContent
 
-class CategoryItemView(context: Context, attrs: AttributeSet?) : ElevatedCardView(context, attrs) {
+class CategoryItemView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : ElevatedCardView(context, attrs, defStyle) {
 
     private lateinit var countTextView: TextView
     private lateinit var iconImageView: ImageView

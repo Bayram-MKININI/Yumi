@@ -2,11 +2,11 @@ package net.noliaware.yumi.feature_categories.data.repository
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import net.noliaware.yumi.commun.CATEGORY_ID
-import net.noliaware.yumi.commun.GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY
-import net.noliaware.yumi.commun.LIMIT
-import net.noliaware.yumi.commun.LIST_PAGE_SIZE
-import net.noliaware.yumi.commun.OFFSET
+import net.noliaware.yumi.commun.ApiConstants.GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY
+import net.noliaware.yumi.commun.ApiParameters.CATEGORY_ID
+import net.noliaware.yumi.commun.ApiParameters.LIMIT
+import net.noliaware.yumi.commun.ApiParameters.LIST_PAGE_SIZE
+import net.noliaware.yumi.commun.ApiParameters.OFFSET
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.ErrorType

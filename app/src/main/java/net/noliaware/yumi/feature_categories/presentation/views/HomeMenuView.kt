@@ -15,7 +15,11 @@ import net.noliaware.yumi.commun.util.layoutToTopLeft
 import net.noliaware.yumi.commun.util.measureWrapContent
 import net.noliaware.yumi.commun.util.weak
 
-class HomeMenuView(context: Context, attrs: AttributeSet?) : MaterialCardView(context, attrs) {
+class HomeMenuView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : MaterialCardView(context, attrs, defStyle) {
 
     private lateinit var homeImageView: ImageView
     private lateinit var profileImageView: ImageView

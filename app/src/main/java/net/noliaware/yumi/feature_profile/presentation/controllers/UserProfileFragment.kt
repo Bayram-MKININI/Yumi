@@ -10,10 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.ACCOUNT_DATA
-import net.noliaware.yumi.commun.BO_SIGN_IN_FRAGMENT_TAG
-import net.noliaware.yumi.commun.LONG_DATE_WITH_DAY_FORMAT
-import net.noliaware.yumi.commun.PRIVACY_POLICY_FRAGMENT_TAG
+import net.noliaware.yumi.commun.Args.ACCOUNT_DATA
+import net.noliaware.yumi.commun.DateTime.LONG_DATE_WITH_DAY_FORMAT
+import net.noliaware.yumi.commun.FragmentTags.BO_SIGN_IN_FRAGMENT_TAG
+import net.noliaware.yumi.commun.FragmentTags.PRIVACY_POLICY_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.formatNumber
 import net.noliaware.yumi.commun.util.handleSharedEvent

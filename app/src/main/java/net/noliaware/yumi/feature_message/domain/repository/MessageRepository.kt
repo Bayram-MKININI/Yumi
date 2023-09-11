@@ -1,4 +1,4 @@
-package net.noliaware.yumi.feature_message.data.repository
+package net.noliaware.yumi.feature_message.domain.repository
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow

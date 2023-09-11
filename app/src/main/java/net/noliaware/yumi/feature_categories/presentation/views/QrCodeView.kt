@@ -12,12 +12,22 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.GOLDEN_RATIO
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.UI.GOLDEN_RATIO
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.drawableIdByName
+import net.noliaware.yumi.commun.util.getStatusBarHeight
+import net.noliaware.yumi.commun.util.layoutToBottomLeft
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.measureWrapContent
+import net.noliaware.yumi.commun.util.weak
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class QrCodeView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
+class QrCodeView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : ViewGroup(context, attrs, defStyle) {
 
     private lateinit var backgroundView: View
     private lateinit var headerView: View

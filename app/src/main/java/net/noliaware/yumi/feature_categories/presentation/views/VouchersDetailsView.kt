@@ -20,7 +20,11 @@ import net.noliaware.yumi.commun.util.measureWrapContent
 import net.noliaware.yumi.feature_categories.presentation.views.VouchersDetailsContainerView.VouchersDetailsViewAdapter
 import java.lang.Integer.max
 
-class VouchersDetailsView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
+class VouchersDetailsView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : ViewGroup(context, attrs, defStyle) {
 
     private lateinit var titleFillableTextWidget: FillableTextWidget
     private lateinit var crossOutView: View

@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import net.noliaware.yumi.commun.CATEGORY
-import net.noliaware.yumi.commun.DATA_SHOULD_REFRESH
-import net.noliaware.yumi.feature_categories.data.repository.CategoryRepository
+import net.noliaware.yumi.commun.Args.CATEGORY
+import net.noliaware.yumi.commun.Args.DATA_SHOULD_REFRESH
 import net.noliaware.yumi.feature_categories.domain.model.Category
+import net.noliaware.yumi.feature_categories.domain.repository.CategoryRepository
 import javax.inject.Inject
 
 @HiltViewModel

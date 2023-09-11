@@ -25,8 +25,11 @@ import net.noliaware.yumi.commun.util.measureWrapContent
 import net.noliaware.yumi.commun.util.weak
 import kotlin.math.max
 
-
-class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
+class SendMailView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : ViewGroup(context, attrs, defStyle) {
 
     private lateinit var backgroundView: View
     private lateinit var headerView: View
@@ -172,8 +175,7 @@ class SendMailView(context: Context, attrs: AttributeSet?) : ViewGroup(context, 
         sendButton.measureWrapContent()
 
         val screenHeight = viewHeight - getStatusBarHeight()
-        val messageBackgroundViewHeight =
-            contentView.measuredHeight - (titleTextView.measuredHeight + sendButton.measuredHeight / 2 +
+        val messageBackgroundViewHeight = contentView.measuredHeight - (titleTextView.measuredHeight + sendButton.measuredHeight / 2 +
                     if (visibleRect.height() == screenHeight) {
                         convertDpToPx(40)
                     } else {

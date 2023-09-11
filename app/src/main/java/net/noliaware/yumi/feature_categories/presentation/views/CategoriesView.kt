@@ -14,7 +14,11 @@ import net.noliaware.yumi.commun.util.layoutToTopLeft
 import net.noliaware.yumi.commun.util.measureWrapContent
 import net.noliaware.yumi.commun.util.removeOverScroll
 
-class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
+class CategoriesView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : ViewGroup(context, attrs, defStyle) {
 
     private lateinit var headerView: View
     private lateinit var helloTextView: TextView
@@ -136,7 +140,8 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
         val contentViewWidth = viewWidth * 95 / 100
         val sideMargin = viewWidth * 5 / 100 / 2
 
-        val tabWidthExtra = (contentViewWidth - (availableTabView.measuredWidth + usedTabView.measuredWidth +
+        val tabWidthExtra =
+            (contentViewWidth - (availableTabView.measuredWidth + usedTabView.measuredWidth +
                     cancelledTabView.measuredWidth + convertDpToPx(16))) / 3
 
         availableTabView.measure(
@@ -163,7 +168,8 @@ class CategoriesView(context: Context, attrs: AttributeSet?) : ViewGroup(context
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         )
 
-        val contentViewHeight = viewHeight - (headerView.measuredHeight + availableTabView.measuredHeight +
+        val contentViewHeight =
+            viewHeight - (headerView.measuredHeight + availableTabView.measuredHeight +
                     sideMargin + convertDpToPx(50))
         contentView.measure(
             MeasureSpec.makeMeasureSpec(contentViewWidth, MeasureSpec.EXACTLY),

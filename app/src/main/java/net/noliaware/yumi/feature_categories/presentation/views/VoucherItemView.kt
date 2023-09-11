@@ -6,9 +6,18 @@ import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.views.ElevatedCardView
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.convertDpToPx
+import net.noliaware.yumi.commun.util.getDrawableCompat
+import net.noliaware.yumi.commun.util.layoutToTopLeft
+import net.noliaware.yumi.commun.util.layoutToTopRight
+import net.noliaware.yumi.commun.util.measureWrapContent
+import net.noliaware.yumi.commun.util.tint
 
-class VoucherItemView(context: Context, attrs: AttributeSet?) : ElevatedCardView(context, attrs) {
+class VoucherItemView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : ElevatedCardView(context, attrs, defStyle) {
 
     private lateinit var highlightLayout: LinearLayoutCompat
     private lateinit var highlightDescriptionTextView: TextView

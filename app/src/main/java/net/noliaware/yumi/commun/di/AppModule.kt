@@ -9,37 +9,36 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import net.noliaware.yumi.BuildConfig
-import net.noliaware.yumi.commun.BASE_URL
+import net.noliaware.yumi.commun.ApiConstants.BASE_ENDPOINT
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.feature_alerts.data.repository.AlertsRepository
 import net.noliaware.yumi.feature_alerts.data.repository.AlertsRepositoryImpl
-import net.noliaware.yumi.feature_categories.data.repository.CategoryRepository
+import net.noliaware.yumi.feature_alerts.domain.repository.AlertsRepository
 import net.noliaware.yumi.feature_categories.data.repository.CategoryRepositoryImpl
-import net.noliaware.yumi.feature_login.data.repository.DataStoreRepository
+import net.noliaware.yumi.feature_categories.domain.repository.CategoryRepository
 import net.noliaware.yumi.feature_login.data.repository.DataStoreRepositoryImpl
-import net.noliaware.yumi.feature_login.data.repository.LoginRepository
 import net.noliaware.yumi.feature_login.data.repository.LoginRepositoryImpl
-import net.noliaware.yumi.feature_message.data.repository.MessageRepository
+import net.noliaware.yumi.feature_login.domain.repository.DataStoreRepository
+import net.noliaware.yumi.feature_login.domain.repository.LoginRepository
 import net.noliaware.yumi.feature_message.data.repository.MessageRepositoryImpl
-import net.noliaware.yumi.feature_profile.data.repository.ProfileRepository
+import net.noliaware.yumi.feature_message.domain.repository.MessageRepository
 import net.noliaware.yumi.feature_profile.data.repository.ProfileRepositoryImpl
+import net.noliaware.yumi.feature_profile.domain.repository.ProfileRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
-@InstallIn(SingletonComponent::class)
 @Module
-class AppModule {
+@InstallIn(SingletonComponent::class)
+object AppModule {
 
     @Provides
     @Singleton
     fun provideSessionData() = SessionData()
 
     @Provides
-    @Singleton
     fun provideOkHttpClient() = if (BuildConfig.DEBUG) {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -53,17 +52,14 @@ class AppModule {
         .build()
 
     @Provides
-    @Singleton
-    fun provideRetrofit(
-        okHttpClient: OkHttpClient
-    ): Retrofit = Retrofit.Builder()
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit.Builder = Retrofit.Builder()
+        .baseUrl(BASE_ENDPOINT)
+        .client(okHttpClient)
         .addConverterFactory(
             MoshiConverterFactory.create(
                 Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
             )
-        ).baseUrl(BASE_URL)
-        .client(okHttpClient)
-        .build()
+        )
 
     @Provides
     @Singleton
@@ -72,7 +68,8 @@ class AppModule {
     }
 
     @Provides
-    fun provideApiService(retrofit: Retrofit): RemoteApi = retrofit.create(RemoteApi::class.java)
+    @Singleton
+    fun provideApi(builder: Retrofit.Builder): RemoteApi = builder.build().create(RemoteApi::class.java)
 
     @Provides
     fun provideLoginRepository(api: RemoteApi, sessionData: SessionData): LoginRepository {

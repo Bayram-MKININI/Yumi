@@ -2,8 +2,8 @@ package net.noliaware.yumi.feature_profile.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import net.noliaware.yumi.commun.GET_ACCOUNT
-import net.noliaware.yumi.commun.GET_BACK_OFFICE_SIGN_IN_CODE
+import net.noliaware.yumi.commun.ApiConstants.GET_ACCOUNT
+import net.noliaware.yumi.commun.ApiConstants.GET_BACK_OFFICE_SIGN_IN_CODE
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.ErrorType
@@ -13,6 +13,7 @@ import net.noliaware.yumi.commun.util.getCommonWSParams
 import net.noliaware.yumi.commun.util.handleSessionWithNoFailure
 import net.noliaware.yumi.feature_profile.domain.model.BOSignIn
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
+import net.noliaware.yumi.feature_profile.domain.repository.ProfileRepository
 import okio.IOException
 import retrofit2.HttpException
 import java.util.UUID

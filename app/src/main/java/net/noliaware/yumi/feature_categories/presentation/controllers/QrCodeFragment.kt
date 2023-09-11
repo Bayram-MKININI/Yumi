@@ -13,9 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.CATEGORY_UI
-import net.noliaware.yumi.commun.LONG_DATE_WITH_DAY_FORMAT
-import net.noliaware.yumi.commun.VOUCHER_CODE_DATA
+import net.noliaware.yumi.commun.ApiParameters.VOUCHER_CODE_DATA
+import net.noliaware.yumi.commun.Args.CATEGORY_UI
+import net.noliaware.yumi.commun.DateTime.LONG_DATE_WITH_DAY_FORMAT
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.parseDateToFormat

@@ -20,7 +20,11 @@ import net.noliaware.yumi.commun.util.layoutToTopLeft
 import net.noliaware.yumi.commun.util.measureWrapContent
 import net.noliaware.yumi.feature_alerts.presentation.adapters.AlertAdapter
 
-class AlertsView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
+class AlertsView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : ViewGroup(context, attrs, defStyle) {
 
     private lateinit var headerView: View
     private lateinit var titleTextView: TextView
@@ -109,8 +113,9 @@ class AlertsView(context: Context, attrs: AttributeSet?) : ViewGroup(context, at
 
         val contentViewWidth = viewWidth * 95 / 100
         val sideMargin = viewWidth * 5 / 100 / 2
-        val contentViewHeight = viewHeight - (headerView.measuredHeight + notificationIconView.measuredHeight / 2
-                + sideMargin + convertDpToPx(35))
+        val contentViewHeight =
+            viewHeight - (headerView.measuredHeight + notificationIconView.measuredHeight / 2
+                    + sideMargin + convertDpToPx(35))
 
         contentView.measure(
             MeasureSpec.makeMeasureSpec(contentViewWidth, MeasureSpec.EXACTLY),

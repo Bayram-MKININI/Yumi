@@ -24,7 +24,11 @@ import net.noliaware.yumi.commun.util.measureWrapContent
 import net.noliaware.yumi.commun.util.weak
 import net.noliaware.yumi.feature_categories.presentation.adapters.VoucherAdapter
 
-class VouchersListView(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
+class VouchersListView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : ViewGroup(context, attrs, defStyle) {
 
     private lateinit var backgroundView: View
     private lateinit var headerView: View

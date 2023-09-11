@@ -7,12 +7,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import net.noliaware.yumi.commun.CATEGORY_UI
-import net.noliaware.yumi.commun.VOUCHER_ID
+import net.noliaware.yumi.commun.ApiParameters.VOUCHER_ID
+import net.noliaware.yumi.commun.Args.CATEGORY_UI
 import net.noliaware.yumi.commun.presentation.EventsHelper
-import net.noliaware.yumi.feature_categories.data.repository.CategoryRepository
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStateData
+import net.noliaware.yumi.feature_categories.domain.repository.CategoryRepository
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryUI
 import javax.inject.Inject
 

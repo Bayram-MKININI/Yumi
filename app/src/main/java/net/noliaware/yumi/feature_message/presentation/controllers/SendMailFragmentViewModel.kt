@@ -7,12 +7,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import net.noliaware.yumi.commun.MESSAGE
-import net.noliaware.yumi.commun.MESSAGE_SUBJECTS_DATA
+import net.noliaware.yumi.commun.ApiParameters.MESSAGE
+import net.noliaware.yumi.commun.Args.MESSAGE_SUBJECTS_DATA
 import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.feature_login.domain.model.MessageSubject
-import net.noliaware.yumi.feature_message.data.repository.MessageRepository
 import net.noliaware.yumi.feature_message.domain.model.Message
+import net.noliaware.yumi.feature_message.domain.repository.MessageRepository
 import javax.inject.Inject
 
 @HiltViewModel

@@ -27,8 +27,9 @@ import net.noliaware.yumi.feature_categories.domain.repository.CategoryRepositor
 import okio.IOException
 import retrofit2.HttpException
 import java.util.UUID
+import javax.inject.Inject
 
-class CategoryRepositoryImpl(
+class CategoryRepositoryImpl @Inject constructor(
     private val api: RemoteApi,
     private val sessionData: SessionData
 ) : CategoryRepository {

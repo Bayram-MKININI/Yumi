@@ -6,8 +6,9 @@ import net.noliaware.yumi.commun.ApiParameters.LIST_PAGE_SIZE
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.feature_alerts.domain.repository.AlertsRepository
+import javax.inject.Inject
 
-class AlertsRepositoryImpl(
+class AlertsRepositoryImpl @Inject constructor(
     private val api: RemoteApi,
     private val sessionData: SessionData
 ) : AlertsRepository {

@@ -6,6 +6,8 @@ import net.noliaware.yumi.feature_profile.domain.model.BOSignIn
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 
 interface ProfileRepository {
+
     fun getUserProfile(): Flow<Resource<UserProfile>>
+
     fun getBackOfficeSignInCode(): Flow<Resource<BOSignIn>>
 }

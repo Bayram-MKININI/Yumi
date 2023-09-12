@@ -51,7 +51,7 @@ class CategoriesListView @JvmOverloads constructor(
                 it.adapter = this
             }
         }
-        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView = findViewById(R.id.categories_recycler_view)
         recyclerView.also {
             it.setUp()
             it.setHasFixedSize(true)

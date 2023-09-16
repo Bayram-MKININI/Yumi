@@ -46,6 +46,7 @@ class AvailableCategoriesFragment : Fragment() {
     private fun collectFlows() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.availableCategoriesEventsHelper.eventFlow.collectLatest { sharedEvent ->
+                categoriesListView?.stopLoading()
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreenFromSharedEvent(sharedEvent)
             }

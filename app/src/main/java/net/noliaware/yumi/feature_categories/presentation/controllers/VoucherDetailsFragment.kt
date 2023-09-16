@@ -12,7 +12,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.merge
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.ApiParameters.VOUCHER_ID
 import net.noliaware.yumi.commun.Args.CATEGORY_UI
@@ -85,10 +84,8 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
     private fun collectFlows() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            merge(
-                viewModel.getVoucherEventsHelper.eventFlow,
-                viewModel.getVoucherStateDataEventsHelper.eventFlow
-            ).collectLatest { sharedEvent ->
+            viewModel.getVoucherEventsHelper.eventFlow.collectLatest { sharedEvent ->
+                vouchersDetailsContainerView?.activateLoading(false)
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreenFromSharedEvent(sharedEvent)
             }
@@ -96,12 +93,17 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.getVoucherEventsHelper.stateFlow.collect { vmState ->
                 when (vmState) {
-                    is ViewModelState.LoadingState -> vouchersDetailsContainerView?.setLoadingVisible(true)
+                    is ViewModelState.LoadingState -> vouchersDetailsContainerView?.activateLoading(true)
                     is ViewModelState.DataState -> vmState.data?.let { voucher ->
-                        vouchersDetailsContainerView?.setLoadingVisible(false)
+                        vouchersDetailsContainerView?.activateLoading(false)
                         bindViewToData(voucher)
                     }
                 }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.getVoucherStateDataEventsHelper.eventFlow.collectLatest { sharedEvent ->
+                redirectToLoginScreenFromSharedEvent(sharedEvent)
             }
         }
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {

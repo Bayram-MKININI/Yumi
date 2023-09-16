@@ -15,6 +15,7 @@ import com.facebook.shimmer.ShimmerFrameLayout
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.adapters.BaseAdapter
 import net.noliaware.yumi.commun.util.MarginItemDecoration
+import net.noliaware.yumi.commun.util.activateShimmer
 import net.noliaware.yumi.commun.util.convertDpToPx
 import net.noliaware.yumi.commun.util.drawableIdByName
 import net.noliaware.yumi.commun.util.getStatusBarHeight
@@ -98,14 +99,19 @@ class VouchersListView @JvmOverloads constructor(
     }
 
     fun setLoadingVisible(visible: Boolean) {
+        shimmerView.activateShimmer(visible)
         if (visible) {
             shimmerView.isVisible = true
             recyclerView.isGone = true
-            shimmerView.startShimmer()
         } else {
             shimmerView.isGone = true
             recyclerView.isVisible = true
-            shimmerView.stopShimmer()
+        }
+    }
+
+    fun stopLoading() {
+        if (shimmerView.isVisible) {
+            shimmerView.activateShimmer(false)
         }
     }
 
@@ -144,7 +150,7 @@ class VouchersListView @JvmOverloads constructor(
         if (shimmerView.isVisible) {
             shimmerView.measure(
                 MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+                MeasureSpec.makeMeasureSpec(recyclerViewHeight, MeasureSpec.EXACTLY)
             )
         }
 

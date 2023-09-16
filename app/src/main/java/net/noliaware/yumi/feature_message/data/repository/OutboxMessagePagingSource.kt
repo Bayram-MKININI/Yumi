@@ -12,7 +12,8 @@ import net.noliaware.yumi.commun.util.ErrorType
 import net.noliaware.yumi.commun.util.PaginationException
 import net.noliaware.yumi.commun.util.generateToken
 import net.noliaware.yumi.commun.util.getCommonWSParams
-import net.noliaware.yumi.commun.util.handlePaginatedListErrorIfAny
+import net.noliaware.yumi.commun.util.handlePagingSourceError
+import net.noliaware.yumi.commun.util.resolvePaginatedListErrorIfAny
 import net.noliaware.yumi.feature_message.domain.model.Message
 import java.util.UUID
 
@@ -47,7 +48,7 @@ class OutboxMessagePagingSource(
                 params = generateGetMessagesListParams(nextPage, GET_OUTBOX_MESSAGE_LIST)
             )
 
-            val errorType = handlePaginatedListErrorIfAny(
+            val errorType = resolvePaginatedListErrorIfAny(
                 session = remoteData.session,
                 sessionData = sessionData,
                 tokenKey = GET_OUTBOX_MESSAGE_LIST
@@ -74,8 +75,8 @@ class OutboxMessagePagingSource(
                 prevKey = null,// Only paging forward.
                 nextKey = if (canLoadMore) messageRank else null
             )
-        } catch (e: Exception) {
-            return LoadResult.Error(e)
+        } catch (ex: Exception) {
+            return handlePagingSourceError(ex)
         }
     }
 

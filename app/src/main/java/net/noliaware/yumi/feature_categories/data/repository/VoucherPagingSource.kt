@@ -13,7 +13,8 @@ import net.noliaware.yumi.commun.util.ErrorType
 import net.noliaware.yumi.commun.util.PaginationException
 import net.noliaware.yumi.commun.util.generateToken
 import net.noliaware.yumi.commun.util.getCommonWSParams
-import net.noliaware.yumi.commun.util.handlePaginatedListErrorIfAny
+import net.noliaware.yumi.commun.util.handlePagingSourceError
+import net.noliaware.yumi.commun.util.resolvePaginatedListErrorIfAny
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import java.util.UUID
 
@@ -53,7 +54,7 @@ class VoucherPagingSource(
                 )
             )
 
-            val errorType = handlePaginatedListErrorIfAny(
+            val errorType = resolvePaginatedListErrorIfAny(
                 session = remoteData.session,
                 sessionData = sessionData,
                 tokenKey = GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY
@@ -80,8 +81,8 @@ class VoucherPagingSource(
                 prevKey = null,// Only paging forward.
                 nextKey = if (canLoadMore) voucherRank else null
             )
-        } catch (e: Exception) {
-            return LoadResult.Error(e)
+        } catch (ex: Exception) {
+            return handlePagingSourceError(ex)
         }
     }
 

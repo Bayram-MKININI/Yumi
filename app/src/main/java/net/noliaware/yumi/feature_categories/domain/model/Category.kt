@@ -1,8 +1,10 @@
 package net.noliaware.yumi.feature_categories.domain.model
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import kotlinx.parcelize.Parcelize
 
+@Keep
 @Parcelize
 data class Category(
     val categoryId: String,

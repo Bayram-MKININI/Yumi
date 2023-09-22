@@ -1,8 +1,10 @@
 package net.noliaware.yumi.feature_message.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import net.noliaware.yumi.commun.domain.model.Priority
-import java.io.Serializable
 
+@Parcelize
 data class Message(
     val messageId: String,
     val messageDate: String,
@@ -13,4 +15,4 @@ data class Message(
     val messagePreview: String?,
     val isMessageRead: Boolean,
     val messageBody: String?
-) : Serializable
+) : Parcelable

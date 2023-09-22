@@ -5,12 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.FragmentTags.CANCELLED_VOUCHERS_LIST_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.formatNumber
 import net.noliaware.yumi.commun.util.handleSharedEvent
@@ -21,10 +21,14 @@ import net.noliaware.yumi.feature_categories.presentation.views.CategoriesListVi
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryItemView.CategoryItemViewAdapter
 
 @AndroidEntryPoint
-class CancelledCategoriesFragment : Fragment() {
+class AvailableCategoriesListFragment : Fragment() {
 
     private var categoriesListView: CategoriesListView? = null
-    private val viewModel by activityViewModels<CategoriesFragmentViewModel>()
+    private val viewModel by viewModels<CategoriesFragmentViewModel>(
+        ownerProducer = {
+            requireParentFragment()
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,21 +44,27 @@ class CancelledCategoriesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         collectFlows()
-        viewModel.callGetCancelledCategories()
+        categoriesListView?.setLoadingVisible(true)
+        viewModel.callGetAvailableCategories()
     }
 
     private fun collectFlows() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.cancelledCategoriesEventsHelper.eventFlow.collectLatest { sharedEvent ->
+            viewModel.onAvailableCategoriesListRefreshedEventFlow.collectLatest {
+                viewModel.callGetAvailableCategories()
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.availableCategoriesEventsHelper.eventFlow.collectLatest { sharedEvent ->
                 categoriesListView?.stopLoading()
                 handleSharedEvent(sharedEvent)
                 redirectToLoginScreenFromSharedEvent(sharedEvent)
             }
         }
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.cancelledCategoriesEventsHelper.stateFlow.collect { vmState ->
+            viewModel.availableCategoriesEventsHelper.stateFlow.collect { vmState ->
                 when (vmState) {
-                    is ViewModelState.LoadingState -> categoriesListView?.setLoadingVisible(true)
+                    is ViewModelState.LoadingState -> Unit
                     is ViewModelState.DataState -> vmState.data?.let { categories ->
                         categoriesListView?.setLoadingVisible(false)
                         bindViewToData(categories)
@@ -65,10 +75,15 @@ class CancelledCategoriesFragment : Fragment() {
     }
 
     private fun bindViewToData(categories: List<Category>) {
+        viewModel.setBadgeCountValue(
+            categories.sumOf {
+                it.availableVoucherCount
+            }
+        )
         val categoryItemViewAdapters = mutableListOf<CategoryItemViewAdapter>()
         categories.map { category ->
             CategoryItemViewAdapter(
-                count = category.cancelledVoucherCount.formatNumber(),
+                count = category.availableVoucherCount.formatNumber(),
                 iconName = category.categoryIcon.orEmpty(),
                 title = category.categoryShortLabel
             ).also {
@@ -80,13 +95,12 @@ class CancelledCategoriesFragment : Fragment() {
 
     private val categoriesListViewCallback: CategoriesListViewCallback by lazy {
         CategoriesListViewCallback { index ->
-            viewModel.cancelledCategoriesEventsHelper.stateData?.let { categories ->
+            viewModel.availableCategoriesEventsHelper.stateData?.let { categories ->
                 categories[index].apply {
-                    CancelledVouchersListFragment.newInstance(
-                        this
-                    ).show(
-                        childFragmentManager.beginTransaction(),
-                        CANCELLED_VOUCHERS_LIST_FRAGMENT_TAG
+                    findNavController().navigate(
+                        CategoriesFragmentDirections.actionCategoriesFragmentToAvailableVouchersListFragment(
+                            this
+                        )
                     )
                 }
             }

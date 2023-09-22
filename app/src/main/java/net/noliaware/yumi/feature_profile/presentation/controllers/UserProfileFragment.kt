@@ -7,21 +7,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.Args.ACCOUNT_DATA
 import net.noliaware.yumi.commun.DateTime.LONG_DATE_WITH_DAY_FORMAT
-import net.noliaware.yumi.commun.FragmentTags.BO_SIGN_IN_FRAGMENT_TAG
-import net.noliaware.yumi.commun.FragmentTags.PRIVACY_POLICY_FRAGMENT_TAG
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.formatNumber
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.parseDateToFormat
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
-import net.noliaware.yumi.commun.util.withArgs
-import net.noliaware.yumi.feature_categories.presentation.controllers.PrivacyPolicyFragment
-import net.noliaware.yumi.feature_login.domain.model.AccountData
 import net.noliaware.yumi.feature_login.domain.model.TFAMode
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileParentView
@@ -31,13 +27,8 @@ import net.noliaware.yumi.feature_profile.presentation.views.ProfileView.Profile
 @AndroidEntryPoint
 class UserProfileFragment : Fragment() {
 
-    companion object {
-        fun newInstance(
-            accountData: AccountData?
-        ) = UserProfileFragment().withArgs(ACCOUNT_DATA to accountData)
-    }
-
     private var profileDataParentView: ProfileParentView? = null
+    private val args: UserProfileFragmentArgs by navArgs()
     private val viewModel by viewModels<UserProfileFragmentViewModel>()
 
     override fun onCreateView(
@@ -101,8 +92,8 @@ class UserProfileFragment : Fragment() {
                 userProfile.birthCity
             ),
             phone = userProfile.cellPhoneNumber.orEmpty(),
-            twoFactorAuthModeText = map2FAModeText(viewModel.accountData?.twoFactorAuthMode),
-            twoFactorAuthModeActivated = map2FAModeActivation(viewModel.accountData?.twoFactorAuthMode),
+            twoFactorAuthModeText = map2FAModeText(args.accountData.twoFactorAuthMode),
+            twoFactorAuthModeActivated = map2FAModeActivation(args.accountData.twoFactorAuthMode),
             emittedValue = resources.getQuantityString(
                 R.plurals.voucher_stat_format,
                 userProfile.assignedVoucherCount,
@@ -130,7 +121,7 @@ class UserProfileFragment : Fragment() {
     }
 
     private fun map2FAModeText(
-        twoFactorAuthMode: TFAMode?
+        twoFactorAuthMode: TFAMode
     ) = when (twoFactorAuthMode) {
         TFAMode.APP -> getString(R.string.bo_two_factor_auth_by_app)
         TFAMode.MAIL -> getString(R.string.bo_two_factor_auth_by_mail)
@@ -138,7 +129,7 @@ class UserProfileFragment : Fragment() {
     }
 
     private fun map2FAModeActivation(
-        twoFactorAuthMode: TFAMode?
+        twoFactorAuthMode: TFAMode
     ) = when (twoFactorAuthMode) {
         TFAMode.APP -> true
         else -> false
@@ -147,19 +138,17 @@ class UserProfileFragment : Fragment() {
     private val profileParentViewCallback: ProfileParentViewCallback by lazy {
         object : ProfileParentViewCallback {
             override fun onGetCodeButtonClicked() {
-                BOSignInFragment.newInstance().show(
-                    childFragmentManager.beginTransaction(),
-                    BO_SIGN_IN_FRAGMENT_TAG
+                findNavController().navigate(
+                    UserProfileFragmentDirections.actionUserProfileFragmentToBOSignInFragment()
                 )
             }
 
             override fun onPrivacyPolicyButtonClicked() {
-                PrivacyPolicyFragment.newInstance(
-                    privacyPolicyUrl = viewModel.accountData?.privacyPolicyUrl.orEmpty(),
-                    isConfirmationRequired = false
-                ).show(
-                    childFragmentManager.beginTransaction(),
-                    PRIVACY_POLICY_FRAGMENT_TAG
+                findNavController().navigate(
+                    UserProfileFragmentDirections.actionUserProfileFragmentToPrivacyPolicyFragment(
+                        privacyPolicyUrl = args.accountData.privacyPolicyUrl,
+                        isPrivacyPolicyConfirmationRequired = false
+                    )
                 )
             }
         }

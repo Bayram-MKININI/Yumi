@@ -24,7 +24,7 @@ class CategoriesFragmentViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val accountData get() = savedStateHandle.get<AccountData>(ACCOUNT_DATA)
+    private val accountData get() = savedStateHandle.get<AccountData>(ACCOUNT_DATA)
     val availableCategoriesEventsHelper = EventsHelper<List<Category>>()
     val cancelledCategoriesEventsHelper = EventsHelper<List<Category>>()
     val usedCategoriesEventsHelper = EventsHelper<List<Category>>()
@@ -34,8 +34,11 @@ class CategoriesFragmentViewModel @Inject constructor(
     )
     val badgeCountFlow = _badgeCountFlow.asStateFlow()
 
-    private val _onDataRefreshedEventFlow = MutableSharedFlow<Unit>()
-    val onDataRefreshedEventFlow = _onDataRefreshedEventFlow.asSharedFlow()
+    private val _onAvailableCategoriesListRefreshedEventFlow = MutableSharedFlow<Unit>()
+    val onAvailableCategoriesListRefreshedEventFlow = _onAvailableCategoriesListRefreshedEventFlow.asSharedFlow()
+
+    private val _onUsedCategoriesListRefreshedEventFlow = MutableSharedFlow<Unit>()
+    val onUsedCategoriesListRefreshedEventFlow = _onUsedCategoriesListRefreshedEventFlow.asSharedFlow()
 
     fun callGetAvailableCategories() {
         viewModelScope.launch {
@@ -65,9 +68,12 @@ class CategoriesFragmentViewModel @Inject constructor(
         _badgeCountFlow.value = count
     }
 
-    fun sendDataRefreshedEvent() {
+    fun sendCategoriesListsRefreshedEvent() {
         viewModelScope.launch {
-            _onDataRefreshedEventFlow.emit(Unit)
+            _onAvailableCategoriesListRefreshedEventFlow.emit(Unit)
+        }
+        viewModelScope.launch {
+            _onUsedCategoriesListRefreshedEventFlow.emit(Unit)
         }
     }
 }

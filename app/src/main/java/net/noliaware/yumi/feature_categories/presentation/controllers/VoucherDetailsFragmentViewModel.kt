@@ -8,21 +8,17 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import net.noliaware.yumi.commun.ApiParameters.VOUCHER_ID
-import net.noliaware.yumi.commun.Args.CATEGORY_UI
 import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStateData
 import net.noliaware.yumi.feature_categories.domain.repository.CategoryRepository
-import net.noliaware.yumi.feature_categories.presentation.views.CategoryUI
 import javax.inject.Inject
 
 @HiltViewModel
 class VoucherDetailsFragmentViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val repository: CategoryRepository
 ) : ViewModel() {
-
-    val categoryUI get() = savedStateHandle.get<CategoryUI>(CATEGORY_UI)
 
     val getVoucherEventsHelper = EventsHelper<Voucher>()
     val getVoucherStateDataEventsHelper = EventsHelper<VoucherStateData>()

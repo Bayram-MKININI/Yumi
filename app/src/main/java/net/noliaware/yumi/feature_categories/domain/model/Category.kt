@@ -1,7 +1,9 @@
 package net.noliaware.yumi.feature_categories.domain.model
 
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Category(
     val categoryId: String,
     val categoryColor: Int,
@@ -12,4 +14,4 @@ data class Category(
     val availableVoucherCount: Int,
     val usedVoucherCount: Int,
     val cancelledVoucherCount: Int
-) : Serializable
+) : Parcelable

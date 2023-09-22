@@ -5,42 +5,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.Args.ACCOUNT_DATA
-import net.noliaware.yumi.commun.FragmentTags.PRIVACY_POLICY_FRAGMENT_TAG
-import net.noliaware.yumi.commun.util.inflate
-import net.noliaware.yumi.commun.util.withArgs
-import net.noliaware.yumi.feature_alerts.presentation.controllers.AlertsFragment
 import net.noliaware.yumi.feature_categories.presentation.views.HomeMenuView
 import net.noliaware.yumi.feature_categories.presentation.views.HomeView
-import net.noliaware.yumi.feature_login.domain.model.AccountData
-import net.noliaware.yumi.feature_message.presentation.controllers.MessagingFragment
-import net.noliaware.yumi.feature_profile.presentation.controllers.UserProfileFragment
+import net.noliaware.yumi.feature_message.presentation.controllers.MessagingFragmentArgs
+import net.noliaware.yumi.feature_profile.presentation.controllers.UserProfileFragmentArgs
 import java.time.Duration
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
-    companion object {
-        fun newInstance(
-            accountData: AccountData
-        ) = HomeFragment().withArgs(ACCOUNT_DATA to accountData)
-    }
-
     private var homeView: HomeView? = null
-    private val viewModel by viewModels<HomeFragmentViewModel>()
+    private val args: HomeFragmentArgs by navArgs()
+    private val homeNavController by lazy {
+        (childFragmentManager.findFragmentById(
+            R.id.home_nav_host_fragment
+        ) as NavHostFragment).findNavController()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return container?.inflate(R.layout.home_layout)?.apply {
+        return inflater.inflate(R.layout.home_layout, container, false)?.apply {
             homeView = this as HomeView
             homeView?.homeMenuView?.callback = homeMenuViewCallback
         }
@@ -48,8 +44,12 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        displayCategoriesFragment()
-        viewModel.accountData?.let { accountData ->
+        homeView?.selectHomeButton()
+        homeNavController.setGraph(
+            R.navigation.home_nav_graph,
+            CategoriesFragmentArgs(args.accountData).toBundle()
+        )
+        args.accountData.let { accountData ->
             homeView?.homeMenuView?.let { homeMenuView ->
                 if (accountData.newMessageCount > 0) {
                     homeMenuView.setBadgeForMailButton(accountData.newMessageCount)
@@ -61,12 +61,11 @@ class HomeFragment : Fragment() {
             if (accountData.shouldConfirmPrivacyPolicy) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(Duration.ofMillis(150))
-                    PrivacyPolicyFragment.newInstance(
-                        privacyPolicyUrl = accountData.privacyPolicyUrl,
-                        isConfirmationRequired = true
-                    ).show(
-                        childFragmentManager.beginTransaction(),
-                        PRIVACY_POLICY_FRAGMENT_TAG
+                    findNavController().navigate(
+                        HomeFragmentDirections.actionHomeFragmentToPrivacyPolicyFragment(
+                            privacyPolicyUrl = accountData.privacyPolicyUrl,
+                            isPrivacyPolicyConfirmationRequired = true
+                        )
                     )
                 }
             }
@@ -75,49 +74,56 @@ class HomeFragment : Fragment() {
 
     private val homeMenuViewCallback: HomeMenuView.HomeMenuViewCallback by lazy {
         object : HomeMenuView.HomeMenuViewCallback {
-            override fun onCategoryButtonClicked() {
-                displayCategoriesFragment()
+            override fun onHomeButtonClicked() {
+                homeView?.selectHomeButton()
+                val navOption = NavOptions.Builder().setPopUpTo(
+                    R.id.categories_fragment,
+                    true
+                ).build()
+                homeNavController.navigate(
+                    R.id.categories_fragment,
+                    CategoriesFragmentArgs(args.accountData).toBundle(),
+                    navOption
+                )
             }
 
             override fun onProfileButtonClicked() {
-                childFragmentManager.beginTransaction().run {
-                    replace(
-                        R.id.main_fragment_container,
-                        UserProfileFragment.newInstance(viewModel.accountData)
-                    )
-                    commit()
-                }
+                val navOption = NavOptions.Builder().setPopUpTo(
+                    R.id.user_profile_fragment,
+                    true
+                ).build()
+                homeNavController.navigate(
+                    R.id.user_profile_fragment,
+                    UserProfileFragmentArgs(args.accountData).toBundle(),
+                    navOption
+                )
             }
 
             override fun onMailButtonClicked() {
                 homeView?.homeMenuView?.hideMailButtonBadge()
-                childFragmentManager.beginTransaction().run {
-                    replace(
-                        R.id.main_fragment_container,
-                        MessagingFragment.newInstance(viewModel.accountData?.messageSubjects)
-                    )
-                    commit()
-                }
+                val navOption = NavOptions.Builder().setPopUpTo(
+                    R.id.messaging_fragment,
+                    true
+                ).build()
+                homeNavController.navigate(
+                    R.id.messaging_fragment,
+                    MessagingFragmentArgs(args.accountData.messageSubjects.toTypedArray()).toBundle(),
+                    navOption
+                )
             }
 
             override fun onNotificationButtonClicked() {
                 homeView?.homeMenuView?.hideNotificationButtonBadge()
-                childFragmentManager.beginTransaction().run {
-                    replace(R.id.main_fragment_container, AlertsFragment())
-                    commit()
-                }
+                val navOption = NavOptions.Builder().setPopUpTo(
+                    R.id.alerts_fragment,
+                    true
+                ).build()
+                homeNavController.navigate(
+                    R.id.alerts_fragment,
+                    null,
+                    navOption
+                )
             }
-        }
-    }
-
-    private fun displayCategoriesFragment() {
-        childFragmentManager.beginTransaction().run {
-            replace(
-                R.id.main_fragment_container,
-                CategoriesFragment()
-            )
-            commit()
-            homeView?.selectHomeButton()
         }
     }
 

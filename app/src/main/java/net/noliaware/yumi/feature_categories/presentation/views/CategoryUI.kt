@@ -1,9 +1,11 @@
 package net.noliaware.yumi.feature_categories.presentation.views
 
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class CategoryUI(
-    val categoryColor: Int?,
+    val categoryColor: Int,
     val categoryIcon: String?,
-    val categoryLabel: String?
-) : Serializable
+    val categoryLabel: String
+) : Parcelable

@@ -91,9 +91,7 @@ class UsedCategoriesListFragment : Fragment() {
             viewModel.usedCategoriesEventsHelper.stateData?.let { categories ->
                 categories[index].apply {
                     findNavController().navigate(
-                        CategoriesFragmentDirections.actionCategoriesFragmentToUsedVouchersListFragment(
-                            this
-                        )
+                        CategoriesFragmentDirections.actionCategoriesFragmentToUsedVouchersListFragment(this)
                     )
                 }
             }

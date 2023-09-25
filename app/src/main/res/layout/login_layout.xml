@@ -35,7 +35,7 @@
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:text="@string/enter_login_message"
                     android:textColor="@color/grey_2"
-                    android:textSize="18sp" />
+                    android:textSize="19sp" />
 
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/input_layout_login_shimmer_view"
@@ -64,7 +64,8 @@
                             android:hint="@string/hint_login"
                             android:imeOptions="actionDone|flagNoExtractUi"
                             android:inputType="textEmailAddress"
-                            android:textColor="@color/grey_2" />
+                            android:textColor="@color/grey_2"
+                            android:textSize="15sp" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </com.facebook.shimmer.ShimmerFrameLayout>
 
@@ -82,7 +83,7 @@
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:text="@string/confirm"
                     android:textColor="@color/black_font"
-                    android:textSize="18sp" />
+                    android:textSize="19sp" />
 
             </net.noliaware.yumi.feature_login.presentation.views.LoginView>
 
@@ -113,7 +114,7 @@
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:text="@string/enter_code_message"
                     android:textColor="@color/grey_2"
-                    android:textSize="18sp" />
+                    android:textSize="19sp" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/description_text_view"
@@ -353,7 +354,7 @@
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:text="@string/erase"
                     android:textColor="@color/orange_font"
-                    android:textSize="18sp" />
+                    android:textSize="19sp" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/confirm_pass_image_view"
@@ -369,7 +370,7 @@
                     android:fontFamily="@font/omnes_semibold_regular"
                     android:text="@string/confirm"
                     android:textColor="@color/black_font"
-                    android:textSize="18sp" />
+                    android:textSize="19sp" />
             </net.noliaware.yumi.feature_login.presentation.views.PasswordView>
 
             <androidx.appcompat.widget.AppCompatImageView

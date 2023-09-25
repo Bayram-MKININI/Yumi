@@ -101,6 +101,10 @@ class HomeMenuView @JvmOverloads constructor(
         }
     }
 
+    fun performClickOnHomeButton() {
+        onButtonClickListener.onClick(homeImageView)
+    }
+
     fun selectHomeButton() {
         homeImageView.setBackgroundResource(R.drawable.circle_primary)
         homeImageView.isSelected = true

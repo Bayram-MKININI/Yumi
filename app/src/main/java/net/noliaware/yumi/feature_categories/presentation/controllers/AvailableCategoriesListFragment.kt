@@ -98,9 +98,7 @@ class AvailableCategoriesListFragment : Fragment() {
             viewModel.availableCategoriesEventsHelper.stateData?.let { categories ->
                 categories[index].apply {
                     findNavController().navigate(
-                        CategoriesFragmentDirections.actionCategoriesFragmentToAvailableVouchersListFragment(
-                            this
-                        )
+                        CategoriesFragmentDirections.actionCategoriesFragmentToAvailableVouchersListFragment(this)
                     )
                 }
             }

@@ -216,10 +216,11 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
             override fun onLocationClicked() {
                 viewModel.getVoucherEventsHelper.stateData?.let { voucher ->
-                    val latitude = voucher.retailerAddressLatitude
-                    val longitude = voucher.retailerAddressLongitude
-                    val label = voucher.retailerLabel
-                    openMap(context, latitude, longitude, label)
+                    context.openMap(
+                        voucher.retailerAddressLatitude,
+                        voucher.retailerAddressLongitude,
+                        voucher.retailerLabel
+                    )
                 }
             }
 

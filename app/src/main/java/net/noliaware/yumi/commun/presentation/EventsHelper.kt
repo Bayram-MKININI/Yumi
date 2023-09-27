@@ -5,7 +5,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.util.*
+import net.noliaware.yumi.commun.util.ErrorType
+import net.noliaware.yumi.commun.util.Resource
+import net.noliaware.yumi.commun.util.UIEvent
+import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.ViewModelState.DataState
 import net.noliaware.yumi.commun.util.ViewModelState.LoadingState
 
@@ -63,6 +66,6 @@ class EventsHelper<S> {
                     else -> Unit
                 }
             }
-        }.exhaustive
+        }
     }
 }

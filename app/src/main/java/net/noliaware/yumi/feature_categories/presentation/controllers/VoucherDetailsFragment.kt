@@ -147,6 +147,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 partnerAvailable = voucher.partnerInfoText?.isNotEmpty() == true,
                 partnerLabel = voucher.partnerInfoText,
                 voucherDescription = voucher.productDescription,
+                moreActionAvailable = voucher.productWebpage?.isNotEmpty() == true,
                 retailerLabel = voucher.retailerLabel.orEmpty(),
                 retailerAddress = retailerAddress,
                 displayVoucherActionNotAvailable = voucher.voucherStatus != USABLE,
@@ -201,6 +202,14 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
             override fun onPartnerInfoClicked() {
                 viewModel.getVoucherEventsHelper.stateData?.let { voucher ->
                     voucher.partnerInfoURL?.let { url ->
+                        context?.openWebPage(url)
+                    }
+                }
+            }
+
+            override fun onMoreButtonClicked() {
+                viewModel.getVoucherEventsHelper.stateData?.let { voucher ->
+                    voucher.productWebpage?.let { url ->
                         context?.openWebPage(url)
                     }
                 }

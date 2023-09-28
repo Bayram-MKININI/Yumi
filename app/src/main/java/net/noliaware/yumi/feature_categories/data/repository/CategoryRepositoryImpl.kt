@@ -17,16 +17,17 @@ import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
 import net.noliaware.yumi.commun.util.ErrorType
 import net.noliaware.yumi.commun.util.Resource
+import net.noliaware.yumi.commun.util.currentTimeInMillis
 import net.noliaware.yumi.commun.util.generateToken
 import net.noliaware.yumi.commun.util.getCommonWSParams
 import net.noliaware.yumi.commun.util.handleSessionWithNoFailure
+import net.noliaware.yumi.commun.util.randomString
 import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStateData
 import net.noliaware.yumi.feature_categories.domain.repository.CategoryRepository
 import okio.IOException
 import retrofit2.HttpException
-import java.util.UUID
 import javax.inject.Inject
 
 class CategoryRepositoryImpl @Inject constructor(
@@ -39,9 +40,8 @@ class CategoryRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
 
         try {
-
-            val timestamp = System.currentTimeMillis().toString()
-            val randomString = UUID.randomUUID().toString()
+            val timestamp = currentTimeInMillis()
+            val randomString = randomString()
 
             val remoteData = api.updatePrivacyPolicyReadStatus(
                 timestamp = timestamp,
@@ -83,9 +83,8 @@ class CategoryRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
 
         try {
-
-            val timestamp = System.currentTimeMillis().toString()
-            val randomString = UUID.randomUUID().toString()
+            val timestamp = currentTimeInMillis()
+            val randomString = randomString()
 
             val remoteData = api.fetchAvailableDataByCategory(
                 timestamp = timestamp,
@@ -140,8 +139,8 @@ class CategoryRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
 
         try {
-            val timestamp = System.currentTimeMillis().toString()
-            val randomString = UUID.randomUUID().toString()
+            val timestamp = currentTimeInMillis()
+            val randomString = randomString()
 
             val remoteData = api.fetchUsedDataByCategory(
                 timestamp = timestamp,
@@ -194,8 +193,8 @@ class CategoryRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
 
         try {
-            val timestamp = System.currentTimeMillis().toString()
-            val randomString = UUID.randomUUID().toString()
+            val timestamp = currentTimeInMillis()
+            val randomString = randomString()
 
             val remoteData = api.fetchCancelledDataByCategory(
                 timestamp = timestamp,
@@ -248,9 +247,8 @@ class CategoryRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
 
         try {
-
-            val timestamp = System.currentTimeMillis().toString()
-            val randomString = UUID.randomUUID().toString()
+            val timestamp = currentTimeInMillis()
+            val randomString = randomString()
 
             val remoteData = api.fetchVoucherForId(
                 timestamp = timestamp,
@@ -294,9 +292,8 @@ class CategoryRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
 
         try {
-
-            val timestamp = System.currentTimeMillis().toString()
-            val randomString = UUID.randomUUID().toString()
+            val timestamp = currentTimeInMillis()
+            val randomString = randomString()
 
             val remoteData = api.fetchVoucherStatusForId(
                 timestamp = timestamp,
@@ -340,9 +337,8 @@ class CategoryRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
 
         try {
-
-            val timestamp = System.currentTimeMillis().toString()
-            val randomString = UUID.randomUUID().toString()
+            val timestamp = currentTimeInMillis()
+            val randomString = randomString()
 
             val remoteData = api.useVoucher(
                 timestamp = timestamp,

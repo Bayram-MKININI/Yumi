@@ -21,11 +21,12 @@ import net.noliaware.yumi.commun.presentation.EventsHelper
 import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.ViewModelState.DataState
 import net.noliaware.yumi.commun.util.ViewModelState.LoadingState
-import net.noliaware.yumi.feature_login.domain.repository.DataStoreRepository
-import net.noliaware.yumi.feature_login.domain.repository.LoginRepository
+import net.noliaware.yumi.commun.util.recordNonFatal
 import net.noliaware.yumi.feature_login.domain.model.AccountData
 import net.noliaware.yumi.feature_login.domain.model.InitData
 import net.noliaware.yumi.feature_login.domain.model.UserPreferences
+import net.noliaware.yumi.feature_login.domain.repository.DataStoreRepository
+import net.noliaware.yumi.feature_login.domain.repository.LoginRepository
 import org.json.JSONArray
 import javax.inject.Inject
 
@@ -115,7 +116,7 @@ class LoginFragmentViewModel @Inject constructor(
                 if (pushToken.isNullOrBlank())
                     pushToken = FirebaseMessaging.getInstance().token.await()
             } catch (e: Exception) {
-                e.printStackTrace()
+                e.recordNonFatal()
             }
 
             repository.getInitData(
@@ -145,7 +146,7 @@ class LoginFragmentViewModel @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.recordNonFatal()
         }
         return false
     }

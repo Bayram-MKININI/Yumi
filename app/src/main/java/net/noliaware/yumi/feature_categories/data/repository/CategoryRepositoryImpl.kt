@@ -15,19 +15,17 @@ import net.noliaware.yumi.commun.ApiParameters.LIST_PAGE_SIZE
 import net.noliaware.yumi.commun.ApiParameters.VOUCHER_ID
 import net.noliaware.yumi.commun.data.remote.RemoteApi
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.ErrorType
 import net.noliaware.yumi.commun.util.Resource
 import net.noliaware.yumi.commun.util.currentTimeInMillis
 import net.noliaware.yumi.commun.util.generateToken
 import net.noliaware.yumi.commun.util.getCommonWSParams
+import net.noliaware.yumi.commun.util.handleRemoteCallError
 import net.noliaware.yumi.commun.util.handleSessionWithNoFailure
 import net.noliaware.yumi.commun.util.randomString
 import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStateData
 import net.noliaware.yumi.feature_categories.domain.repository.CategoryRepository
-import okio.IOException
-import retrofit2.HttpException
 import javax.inject.Inject
 
 class CategoryRepositoryImpl @Inject constructor(
@@ -71,10 +69,8 @@ class CategoryRepositoryImpl @Inject constructor(
                 )
             }
 
-        } catch (ex: HttpException) {
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-        } catch (ex: IOException) {
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        } catch (ex: Exception) {
+            handleRemoteCallError(ex)
         }
     }
 
@@ -118,10 +114,8 @@ class CategoryRepositoryImpl @Inject constructor(
                 }
             }
 
-        } catch (ex: HttpException) {
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-        } catch (ex: IOException) {
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        } catch (ex: Exception) {
+            handleRemoteCallError(ex)
         }
     }
 
@@ -172,10 +166,8 @@ class CategoryRepositoryImpl @Inject constructor(
                 }
             }
 
-        } catch (ex: HttpException) {
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-        } catch (ex: IOException) {
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        } catch (ex: Exception) {
+            handleRemoteCallError(ex)
         }
     }
 
@@ -226,10 +218,8 @@ class CategoryRepositoryImpl @Inject constructor(
                 }
             }
 
-        } catch (ex: HttpException) {
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-        } catch (ex: IOException) {
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        } catch (ex: Exception) {
+            handleRemoteCallError(ex)
         }
     }
 
@@ -280,10 +270,8 @@ class CategoryRepositoryImpl @Inject constructor(
                 }
             }
 
-        } catch (ex: HttpException) {
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-        } catch (ex: IOException) {
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        } catch (ex: Exception) {
+            handleRemoteCallError(ex)
         }
     }
 
@@ -325,10 +313,8 @@ class CategoryRepositoryImpl @Inject constructor(
                 }
             }
 
-        } catch (ex: HttpException) {
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-        } catch (ex: IOException) {
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        } catch (ex: Exception) {
+            handleRemoteCallError(ex)
         }
     }
 
@@ -368,10 +354,8 @@ class CategoryRepositoryImpl @Inject constructor(
                 )
             }
 
-        } catch (ex: HttpException) {
-            emit(Resource.Error(errorType = ErrorType.SYSTEM_ERROR))
-        } catch (ex: IOException) {
-            emit(Resource.Error(errorType = ErrorType.NETWORK_ERROR))
+        } catch (ex: Exception) {
+            handleRemoteCallError(ex)
         }
     }
 

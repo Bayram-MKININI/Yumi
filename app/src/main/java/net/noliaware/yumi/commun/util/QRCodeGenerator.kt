@@ -22,7 +22,7 @@ object QRCodeGenerator {
             return bitmap
 
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.recordNonFatal()
         }
 
         return null

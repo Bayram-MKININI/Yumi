@@ -18,6 +18,7 @@ import net.noliaware.yumi.commun.util.formatNumber
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.parseDateToFormat
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
+import net.noliaware.yumi.commun.util.safeNavigate
 import net.noliaware.yumi.feature_login.domain.model.TFAMode
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileParentView
@@ -138,13 +139,13 @@ class UserProfileFragment : Fragment() {
     private val profileParentViewCallback: ProfileParentViewCallback by lazy {
         object : ProfileParentViewCallback {
             override fun onGetCodeButtonClicked() {
-                findNavController().navigate(
+                findNavController().safeNavigate(
                     UserProfileFragmentDirections.actionUserProfileFragmentToBOSignInFragment()
                 )
             }
 
             override fun onPrivacyPolicyButtonClicked() {
-                findNavController().navigate(
+                findNavController().safeNavigate(
                     UserProfileFragmentDirections.actionUserProfileFragmentToPrivacyPolicyFragment(
                         privacyPolicyUrl = args.accountData.privacyPolicyUrl,
                         isPrivacyPolicyConfirmationRequired = false

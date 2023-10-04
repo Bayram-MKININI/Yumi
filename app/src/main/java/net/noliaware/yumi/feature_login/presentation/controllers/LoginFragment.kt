@@ -25,6 +25,7 @@ import net.noliaware.yumi.commun.Push.PUSH_TITLE
 import net.noliaware.yumi.commun.util.ViewModelState.DataState
 import net.noliaware.yumi.commun.util.ViewModelState.LoadingState
 import net.noliaware.yumi.commun.util.handleSharedEvent
+import net.noliaware.yumi.commun.util.safeNavigate
 import net.noliaware.yumi.commun.util.startWebBrowserAtURL
 import net.noliaware.yumi.feature_login.presentation.views.LoginLayout
 import net.noliaware.yumi.feature_login.presentation.views.LoginView.LoginViewCallback
@@ -151,7 +152,7 @@ class LoginFragment : Fragment() {
                     is LoadingState -> loginLayout?.setPasswordViewProgressVisible(true)
                     is DataState -> vmState.data?.let { accountData ->
                         loginLayout?.setPasswordViewProgressVisible(false)
-                        findNavController().navigate(
+                        findNavController().safeNavigate(
                             LoginFragmentDirections.actionLoginFragmentToHomeFragment(accountData)
                         )
                     }

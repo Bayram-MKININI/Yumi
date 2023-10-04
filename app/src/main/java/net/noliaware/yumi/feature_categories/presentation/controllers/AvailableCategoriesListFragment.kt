@@ -15,6 +15,7 @@ import net.noliaware.yumi.commun.util.ViewModelState
 import net.noliaware.yumi.commun.util.formatNumber
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
+import net.noliaware.yumi.commun.util.safeNavigate
 import net.noliaware.yumi.feature_categories.domain.model.Category
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesListView
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesListView.CategoriesListViewCallback
@@ -97,7 +98,7 @@ class AvailableCategoriesListFragment : Fragment() {
         CategoriesListViewCallback { index ->
             viewModel.availableCategoriesEventsHelper.stateData?.let { categories ->
                 categories[index].apply {
-                    findNavController().navigate(
+                    findNavController().safeNavigate(
                         CategoriesFragmentDirections.actionCategoriesFragmentToAvailableVouchersListFragment(this)
                     )
                 }

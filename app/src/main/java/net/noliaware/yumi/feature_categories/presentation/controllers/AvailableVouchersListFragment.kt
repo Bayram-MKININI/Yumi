@@ -26,6 +26,7 @@ import net.noliaware.yumi.commun.util.decorateText
 import net.noliaware.yumi.commun.util.getColorCompat
 import net.noliaware.yumi.commun.util.handlePaginationError
 import net.noliaware.yumi.commun.util.navDismiss
+import net.noliaware.yumi.commun.util.safeNavigate
 import net.noliaware.yumi.feature_categories.presentation.adapters.VoucherAdapter
 import net.noliaware.yumi.feature_categories.presentation.mappers.AvailableVoucherMapper
 import net.noliaware.yumi.feature_categories.presentation.views.CategoryUI
@@ -55,7 +56,7 @@ class AvailableVouchersListFragment : AppCompatDialogFragment() {
                 color = args.selectedCategory.categoryColor,
                 voucherMapper = AvailableVoucherMapper()
             ) { voucher ->
-                findNavController().navigate(
+                findNavController().safeNavigate(
                     AvailableVouchersListFragmentDirections.actionAvailableVouchersListFragmentToVoucherDetailsFragment(
                         categoryUI = CategoryUI(
                             categoryColor = args.selectedCategory.categoryColor,

@@ -31,8 +31,12 @@ import net.noliaware.yumi.commun.util.openWebPage
 import net.noliaware.yumi.commun.util.parseDateToFormat
 import net.noliaware.yumi.commun.util.parseTimeToFormat
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
+import net.noliaware.yumi.commun.util.safeNavigate
 import net.noliaware.yumi.feature_categories.domain.model.Voucher
 import net.noliaware.yumi.feature_categories.domain.model.VoucherCodeData
+import net.noliaware.yumi.feature_categories.domain.model.VoucherRetrievalMode
+import net.noliaware.yumi.feature_categories.domain.model.VoucherRetrievalMode.BOTH
+import net.noliaware.yumi.feature_categories.domain.model.VoucherRetrievalMode.CONTRIBUTOR
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStateData
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStatus
 import net.noliaware.yumi.feature_categories.domain.model.VoucherStatus.CANCELLED
@@ -150,11 +154,18 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 moreActionAvailable = voucher.productWebpage?.isNotEmpty() == true,
                 retailerLabel = voucher.retailerLabel.orEmpty(),
                 retailerAddress = retailerAddress,
-                displayVoucherActionNotAvailable = voucher.voucherStatus != USABLE,
+                retrievalMode = mapRetrievalMode(voucher.voucherRetrievalMode),
+                retrievalModeTextColorRes = mapRetrievalModeTextColor(voucher),
+                openVoucherActionNotAvailable = mapOpenVoucherActionNotAvailable(voucher),
+                voucherStatusAvailable = voucher.voucherStatus != USABLE,
                 voucherStatus = mapVoucherStatus(voucher.voucherStatus)
             )
         )
     }
+
+    private fun mapOpenVoucherActionNotAvailable(
+        voucher: Voucher
+    ) = voucher.voucherStatus != USABLE || voucher.voucherRetrievalMode == CONTRIBUTOR
 
     private fun mapVoucherEndDate(
         voucher: Voucher
@@ -176,15 +187,34 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         else -> ""
     }
 
-    private fun mapVoucherStatus(voucherStatus: VoucherStatus?) =
-        when (voucherStatus) {
-            CONSUMED -> getString(R.string.voucher_consumed)
-            CANCELLED -> getString(R.string.voucher_canceled)
-            INEXISTENT -> getString(R.string.voucher_inexistent)
-            else -> ""
-        }
+    private fun mapRetrievalMode(
+        retrievalMode: VoucherRetrievalMode?
+    ) = when (retrievalMode) {
+        CONTRIBUTOR -> getString(R.string.retrievable_by_contributor_only)
+        BOTH -> getString(R.string.retrievable_by_contributor_also)
+        else -> null
+    }
 
-    private fun handleVoucherStateDataUpdated(voucherStateData: VoucherStateData) {
+    private fun mapRetrievalModeTextColor(
+        voucher: Voucher
+    ) = when {
+        voucher.voucherStatus != USABLE -> R.color.grey_2
+        voucher.voucherRetrievalMode == CONTRIBUTOR -> R.color.color_bittersweet
+        else -> R.color.grey_2
+    }
+
+    private fun mapVoucherStatus(
+        voucherStatus: VoucherStatus?
+    ) = when (voucherStatus) {
+        CONSUMED -> getString(R.string.voucher_consumed)
+        CANCELLED -> getString(R.string.voucher_canceled)
+        INEXISTENT -> getString(R.string.voucher_inexistent)
+        else -> ""
+    }
+
+    private fun handleVoucherStateDataUpdated(
+        voucherStateData: VoucherStateData
+    ) {
         val updatedVoucher = viewModel.getVoucherEventsHelper.stateData?.copy(
             voucherStatus = voucherStateData.voucherStatus,
             voucherUseDate = voucherStateData.voucherUseDate,
@@ -235,7 +265,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
 
             override fun onDisplayVoucherButtonClicked() {
                 viewModel.getVoucherEventsHelper.stateData?.let { voucher ->
-                    findNavController().navigate(
+                    findNavController().safeNavigate(
                         VoucherDetailsFragmentDirections.actionVoucherDetailsFragmentToQrCodeFragment(
                             args.categoryUI,
                             VoucherCodeData(

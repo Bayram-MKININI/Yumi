@@ -16,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.FragmentKeys.REFRESH_RECEIVED_MESSAGES_REQUEST_KEY
 import net.noliaware.yumi.commun.FragmentKeys.REFRESH_SENT_MESSAGES_REQUEST_KEY
+import net.noliaware.yumi.commun.util.safeNavigate
 import net.noliaware.yumi.feature_message.presentation.views.MessagingView
 import net.noliaware.yumi.feature_message.presentation.views.MessagingView.MailViewCallback
 
@@ -60,7 +61,7 @@ class MessagingFragment : Fragment() {
 
     private val messagingViewCallback: MailViewCallback by lazy {
         MailViewCallback {
-            findNavController().navigate(
+            findNavController().safeNavigate(
                 MessagingFragmentDirections.actionMessagingFragmentToSendMailFragment(args.subjects)
             )
         }

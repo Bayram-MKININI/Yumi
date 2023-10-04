@@ -51,6 +51,8 @@
     <string name="information">i</string>
     <string name="more">Voir plus</string>
     <string name="go_to_retailer">Rendez-vous chez :</string>
+    <string name="retrievable_by_contributor_also">Coupon également récupérable par un intervenant</string>
+    <string name="retrievable_by_contributor_only">Coupon uniquement récupérable par un intervenant</string>
     <string name="call">Appeler</string>
     <string name="write_email">Écrire un e-mail</string>
     <string name="see_directions">Voir l\'itinéraire</string>

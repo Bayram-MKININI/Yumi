@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.util.ViewModelState
+import net.noliaware.yumi.commun.util.ViewState.DataState
+import net.noliaware.yumi.commun.util.ViewState.LoadingState
+import net.noliaware.yumi.commun.util.collectLifecycleAware
 import net.noliaware.yumi.commun.util.formatNumber
 import net.noliaware.yumi.commun.util.handleSharedEvent
 import net.noliaware.yumi.commun.util.redirectToLoginScreenFromSharedEvent
@@ -50,26 +50,20 @@ class AvailableCategoriesListFragment : Fragment() {
     }
 
     private fun collectFlows() {
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.onAvailableCategoriesListRefreshedEventFlow.collectLatest {
-                viewModel.callGetAvailableCategories()
-            }
+        viewModel.onAvailableCategoriesListRefreshedEventFlow.collectLifecycleAware(viewLifecycleOwner) {
+            viewModel.callGetAvailableCategories()
         }
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.availableCategoriesEventsHelper.eventFlow.collectLatest { sharedEvent ->
-                categoriesListView?.stopLoading()
-                handleSharedEvent(sharedEvent)
-                redirectToLoginScreenFromSharedEvent(sharedEvent)
-            }
+        viewModel.availableCategoriesEventsHelper.eventFlow.collectLifecycleAware(viewLifecycleOwner) { sharedEvent ->
+            categoriesListView?.stopLoading()
+            handleSharedEvent(sharedEvent)
+            redirectToLoginScreenFromSharedEvent(sharedEvent)
         }
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.availableCategoriesEventsHelper.stateFlow.collect { vmState ->
-                when (vmState) {
-                    is ViewModelState.LoadingState -> Unit
-                    is ViewModelState.DataState -> vmState.data?.let { categories ->
-                        categoriesListView?.setLoadingVisible(false)
-                        bindViewToData(categories)
-                    }
+        viewModel.availableCategoriesEventsHelper.stateFlow.collectLifecycleAware(viewLifecycleOwner) { viewState ->
+            when (viewState) {
+                is LoadingState -> Unit
+                is DataState -> viewState.data?.let { categories ->
+                    categoriesListView?.setLoadingVisible(false)
+                    bindViewToData(categories)
                 }
             }
         }

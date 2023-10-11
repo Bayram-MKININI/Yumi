@@ -29,15 +29,19 @@ class CategoriesFragmentViewModel @Inject constructor(
     val cancelledCategoriesEventsHelper = EventsHelper<List<Category>>()
     val usedCategoriesEventsHelper = EventsHelper<List<Category>>()
 
-    private val _badgeCountFlow: MutableStateFlow<Int> = MutableStateFlow(
-        accountData?.availableVoucherCount ?: 0
-    )
+    private val _badgeCountFlow: MutableStateFlow<Int> by lazy {
+        MutableStateFlow(accountData?.availableVoucherCount ?: 0)
+    }
     val badgeCountFlow = _badgeCountFlow.asStateFlow()
 
-    private val _onAvailableCategoriesListRefreshedEventFlow = MutableSharedFlow<Unit>()
+    private val _onAvailableCategoriesListRefreshedEventFlow: MutableSharedFlow<Unit> by lazy {
+        MutableSharedFlow()
+    }
     val onAvailableCategoriesListRefreshedEventFlow = _onAvailableCategoriesListRefreshedEventFlow.asSharedFlow()
 
-    private val _onUsedCategoriesListRefreshedEventFlow = MutableSharedFlow<Unit>()
+    private val _onUsedCategoriesListRefreshedEventFlow: MutableSharedFlow<Unit> by lazy {
+        MutableSharedFlow()
+    }
     val onUsedCategoriesListRefreshedEventFlow = _onUsedCategoriesListRefreshedEventFlow.asSharedFlow()
 
     fun callGetAvailableCategories() {

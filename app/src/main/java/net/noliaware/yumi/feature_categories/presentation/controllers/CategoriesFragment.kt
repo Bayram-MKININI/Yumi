@@ -9,12 +9,12 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.FragmentKeys.AVAILABLE_VOUCHERS_LIST_REQUEST_KEY
+import net.noliaware.yumi.commun.util.collectLifecycleAware
 import net.noliaware.yumi.commun.util.formatNumber
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
 
@@ -58,16 +58,14 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun collectFlow() {
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.badgeCountFlow.collect { badgeCount ->
-                categoriesView?.setAvailableVouchersBadgeValue(
-                    badgeCount.formatNumber(),
-                    resources.getQuantityString(
-                        R.plurals.available_vouchers,
-                        badgeCount
-                    )
+        viewModel.badgeCountFlow.collectLifecycleAware(viewLifecycleOwner) { badgeCount ->
+            categoriesView?.setAvailableVouchersBadgeValue(
+                badgeCount.formatNumber(),
+                resources.getQuantityString(
+                    R.plurals.available_vouchers,
+                    badgeCount
                 )
-            }
+            )
         }
     }
 

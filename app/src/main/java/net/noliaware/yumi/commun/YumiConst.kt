@@ -56,6 +56,11 @@ object ApiParameters {
     const val TIMESTAMP_OFFSET = "timestampOffset"
 }
 
+object ActionTypes {
+    const val DELETE_CACHED_DEVICE_ID = "delete_cached_device_id"
+    const val MONITOR = "monitor"
+}
+
 object Args {
     const val ACCOUNT_DATA = "accountData"
     const val SELECTED_CATEGORY = "selectedCategory"

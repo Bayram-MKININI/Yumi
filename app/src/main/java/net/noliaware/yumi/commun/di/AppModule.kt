@@ -11,7 +11,10 @@ import dagger.hilt.components.SingletonComponent
 import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.commun.ApiConstants.BASE_ENDPOINT
 import net.noliaware.yumi.commun.data.remote.RemoteApi
+import net.noliaware.yumi.commun.data.repository.ActionsRepositoryImpl
 import net.noliaware.yumi.commun.domain.model.SessionData
+import net.noliaware.yumi.commun.domain.repository.ActionsRepository
+import net.noliaware.yumi.commun.util.ActionParamAdapter
 import net.noliaware.yumi.feature_login.data.repository.DataStoreRepositoryImpl
 import net.noliaware.yumi.feature_login.domain.repository.DataStoreRepository
 import okhttp3.OkHttpClient
@@ -48,7 +51,10 @@ object AppModule {
         .client(okHttpClient)
         .addConverterFactory(
             MoshiConverterFactory.create(
-                Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
+                Moshi.Builder()
+                    .add(ActionParamAdapter())
+                    .addLast(KotlinJsonAdapterFactory())
+                    .build()
             )
         )
 
@@ -64,5 +70,15 @@ object AppModule {
         @ApplicationContext context: Context
     ): DataStoreRepository {
         return DataStoreRepositoryImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideActionsRepository(
+        api: RemoteApi,
+        sessionData: SessionData,
+        dataStoreRepository: DataStoreRepository
+    ): ActionsRepository {
+        return ActionsRepositoryImpl(api, sessionData, dataStoreRepository)
     }
 }

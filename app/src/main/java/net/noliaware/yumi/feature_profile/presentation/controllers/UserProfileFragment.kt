@@ -22,8 +22,8 @@ import net.noliaware.yumi.commun.util.safeNavigate
 import net.noliaware.yumi.feature_login.domain.model.TFAMode
 import net.noliaware.yumi.feature_profile.domain.model.UserProfile
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileParentView
-import net.noliaware.yumi.feature_profile.presentation.views.ProfileView.ProfileParentViewCallback
 import net.noliaware.yumi.feature_profile.presentation.views.ProfileView.ProfileViewAdapter
+import net.noliaware.yumi.feature_profile.presentation.views.ProfileView.ProfileViewCallback
 
 @AndroidEntryPoint
 class UserProfileFragment : Fragment() {
@@ -133,8 +133,8 @@ class UserProfileFragment : Fragment() {
         else -> false
     }
 
-    private val profileParentViewCallback: ProfileParentViewCallback by lazy {
-        object : ProfileParentViewCallback {
+    private val profileParentViewCallback: ProfileViewCallback by lazy {
+        object : ProfileViewCallback {
             override fun onGetCodeButtonClicked() {
                 findNavController().safeNavigate(
                     UserProfileFragmentDirections.actionUserProfileFragmentToBOSignInFragment()

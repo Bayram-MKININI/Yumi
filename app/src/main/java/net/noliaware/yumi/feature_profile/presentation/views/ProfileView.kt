@@ -58,7 +58,7 @@ class ProfileView @JvmOverloads constructor(
     private lateinit var cancelledTitleTextView: TextView
     private lateinit var cancelledValueFillableTextWidget: FillableTextWidget
     private lateinit var privacyPolicyLinkTextView: TextView
-    var callback: ProfileParentViewCallback? by weak()
+    var callback: ProfileViewCallback? by weak()
 
     data class ProfileViewAdapter(
         val login: String = "",
@@ -76,7 +76,7 @@ class ProfileView @JvmOverloads constructor(
         val cancelledValue: String = ""
     )
 
-    interface ProfileParentViewCallback {
+    interface ProfileViewCallback {
         fun onGetCodeButtonClicked()
         fun onPrivacyPolicyButtonClicked()
     }

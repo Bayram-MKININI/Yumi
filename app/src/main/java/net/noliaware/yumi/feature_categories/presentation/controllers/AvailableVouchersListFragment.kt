@@ -39,7 +39,7 @@ import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
 class AvailableVouchersListFragment : AppCompatDialogFragment() {
 
     private var vouchersListView: VouchersListView? = null
-    private val args: AvailableVouchersListFragmentArgs by navArgs()
+    private val args by navArgs<AvailableVouchersListFragmentArgs>()
     private val viewModel by viewModels<AvailableVouchersListFragmentViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -137,7 +137,7 @@ class AvailableVouchersListFragment : AppCompatDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        if (viewModel.dataShouldRefresh == true) {
+        if (viewModel.dataShouldRefresh) {
             setFragmentResult(
                 AVAILABLE_VOUCHERS_LIST_REQUEST_KEY,
                 bundleOf()

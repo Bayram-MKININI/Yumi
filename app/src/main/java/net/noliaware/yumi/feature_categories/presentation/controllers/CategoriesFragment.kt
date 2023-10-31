@@ -22,7 +22,7 @@ import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
 class CategoriesFragment : Fragment() {
 
     private var categoriesView: CategoriesView? = null
-    private val args: CategoriesFragmentArgs by navArgs()
+    private val args by navArgs<CategoriesFragmentArgs>()
     private val viewModel by viewModels<CategoriesFragmentViewModel>()
 
     override fun onCreateView(

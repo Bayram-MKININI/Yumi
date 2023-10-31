@@ -33,7 +33,7 @@ import net.noliaware.yumi.feature_categories.presentation.views.VouchersListView
 class CancelledVouchersListFragment : AppCompatDialogFragment() {
 
     private var vouchersListView: VouchersListView? = null
-    private val args: CancelledVouchersListFragmentArgs by navArgs()
+    private val args by navArgs<CancelledVouchersListFragmentArgs>()
     private val viewModel by viewModels<CancelledVouchersListFragmentViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {

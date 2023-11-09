@@ -75,7 +75,7 @@ dependencies {
 
     implementation("androidx.core:core-splashscreen:1.0.1")
 
-    implementation(platform("com.google.firebase:firebase-bom:32.4.1"))
+    implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-config-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -87,6 +87,7 @@ dependencies {
 
     // Support Libraries
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
 
     // Network
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
@@ -123,9 +124,7 @@ dependencies {
 
     // Utils
     implementation("com.google.zxing:zxingorg:3.5.1")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
-
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha13")
 }

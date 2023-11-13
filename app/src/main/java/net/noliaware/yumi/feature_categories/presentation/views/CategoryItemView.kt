@@ -51,9 +51,10 @@ class CategoryItemView @JvmOverloads constructor(
 
         countTextView.measureWrapContent()
 
+        val iconSize = viewWidth / 2
         iconImageView.measure(
-            MeasureSpec.makeMeasureSpec(viewWidth / 2, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(viewWidth / 2, MeasureSpec.EXACTLY)
+            MeasureSpec.makeMeasureSpec(iconSize, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(iconSize, MeasureSpec.EXACTLY)
         )
 
         titleTextView.measure(

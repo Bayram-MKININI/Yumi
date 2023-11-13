@@ -156,10 +156,6 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         )
     }
 
-    private fun mapOpenVoucherActionNotAvailable(
-        voucher: Voucher
-    ) = voucher.voucherStatus != USABLE || voucher.voucherRetrievalMode == CONTRIBUTOR
-
     private fun mapVoucherEndDate(
         voucher: Voucher
     ) = when (voucher.voucherStatus) {
@@ -195,6 +191,10 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         voucher.voucherRetrievalMode == CONTRIBUTOR -> R.color.color_bittersweet
         else -> R.color.grey_2
     }
+
+    private fun mapOpenVoucherActionNotAvailable(
+        voucher: Voucher
+    ) = voucher.voucherStatus != USABLE || voucher.voucherRetrievalMode == CONTRIBUTOR
 
     private fun mapVoucherStatus(
         voucherStatus: VoucherStatus?

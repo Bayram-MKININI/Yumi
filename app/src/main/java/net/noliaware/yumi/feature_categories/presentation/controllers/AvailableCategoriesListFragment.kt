@@ -35,11 +35,13 @@ class AvailableCategoriesListFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.categories_list_layout, container, false).apply {
-            categoriesListView = this as CategoriesListView
-            categoriesListView?.callback = categoriesListViewCallback
-        }
+    ): View? = inflater.inflate(
+        R.layout.categories_list_layout,
+        container,
+        false
+    ).apply {
+        categoriesListView = this as CategoriesListView
+        categoriesListView?.callback = categoriesListViewCallback
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -93,7 +95,10 @@ class AvailableCategoriesListFragment : Fragment() {
             viewModel.availableCategoriesEventsHelper.stateData?.let { categories ->
                 categories[index].apply {
                     findNavController().safeNavigate(
-                        CategoriesFragmentDirections.actionCategoriesFragmentToAvailableVouchersListFragment(this)
+                        CategoriesFragmentDirections.actionCategoriesFragmentToAvailableVouchersListFragment(
+                            this,
+                            viewModel.accountData?.voucherRequestTypes?.toTypedArray() ?: arrayOf()
+                        )
                     )
                 }
             }

@@ -10,6 +10,8 @@ object ApiConstants {
     const val GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY = "getAvailableVoucherListByCategory"
     const val GET_VOUCHER = "getVoucher"
     const val GET_VOUCHER_STATUS = "getVoucherStatus"
+    const val SEND_VOUCHER_REQUEST = "sendVoucherRequest"
+    const val GET_VOUCHER_REQUEST_LIST = "getVoucherRequestList"
     const val USE_VOUCHER = "useVoucher"
     const val GET_ACCOUNT = "getAccount"
     const val GET_BACK_OFFICE_SIGN_IN_CODE = "getBackOfficeSignInCode"
@@ -45,6 +47,8 @@ object ApiParameters {
     const val TOKEN = "token"
     const val CATEGORY_ID = "categoryId"
     const val VOUCHER_ID = "voucherId"
+    const val VOUCHER_REQUEST_TYPE_ID = "voucherRequestTypeId"
+    const val VOUCHER_REQUEST_COMMENT = "voucherRequestComment"
     const val VOUCHER_CODE_DATA = "voucherCodeData"
     const val LIMIT = "limit"
     const val LIST_PAGE_SIZE = 20
@@ -58,6 +62,7 @@ object ApiParameters {
 
 object ActionTypes {
     const val DELETE_CACHED_DEVICE_ID = "delete_cached_device_id"
+    const val RECONNECT = "reconnect"
     const val MONITOR = "monitor"
 }
 

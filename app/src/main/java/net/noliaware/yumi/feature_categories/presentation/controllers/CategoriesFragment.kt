@@ -29,10 +29,12 @@ class CategoriesFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.categories_layout, container, false)?.apply {
-            categoriesView = this as CategoriesView
-        }
+    ): View? = inflater.inflate(
+        R.layout.categories_layout,
+        container,
+        false
+    )?.apply {
+        categoriesView = this as CategoriesView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

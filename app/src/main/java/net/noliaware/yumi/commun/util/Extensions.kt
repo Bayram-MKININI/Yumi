@@ -13,9 +13,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -23,15 +20,22 @@ import android.view.View
 import android.view.View.MeasureSpec
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.*
+import androidx.annotation.CheckResult
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.Dimension
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
@@ -56,7 +60,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import net.noliaware.yumi.BuildConfig
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.ApiParameters.APP_VERSION
 import net.noliaware.yumi.commun.ApiParameters.DEVICE_ID
 import net.noliaware.yumi.commun.ApiParameters.LOGIN
@@ -70,8 +73,11 @@ import net.noliaware.yumi.commun.data.remote.dto.ErrorDTO
 import net.noliaware.yumi.commun.data.remote.dto.SessionDTO
 import net.noliaware.yumi.commun.domain.model.AppMessageType
 import net.noliaware.yumi.commun.domain.model.SessionData
-import net.noliaware.yumi.commun.util.ErrorUI.*
-import net.noliaware.yumi.commun.util.ServiceError.*
+import net.noliaware.yumi.commun.util.ErrorUI.ErrUINetwork
+import net.noliaware.yumi.commun.util.ErrorUI.ErrUISystem
+import net.noliaware.yumi.commun.util.ServiceError.ErrNetwork
+import net.noliaware.yumi.commun.util.ServiceError.ErrNone
+import net.noliaware.yumi.commun.util.ServiceError.ErrSystem
 import retrofit2.HttpException
 import java.io.IOException
 import java.math.BigInteger
@@ -81,7 +87,7 @@ import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 fun isNetworkReachable(
     context: Context
@@ -327,7 +333,7 @@ fun <T> Flow<T>.collectLifecycleAware(
 ) {
     owner.lifecycleScope.launch {
         this@collectLifecycleAware.flowWithLifecycle(owner.lifecycle).collectLatest {
-           action.invoke(it)
+            action.invoke(it)
         }
     }
 }
@@ -387,6 +393,10 @@ fun Context?.toast(
     Toast.makeText(it, textId, duration).show()
 }
 
+fun Context.getFontFromResources(
+    fontRes: Int
+) = ResourcesCompat.getFont(this, fontRes)
+
 fun View.layoutToTopLeft(
     left: Int,
     top: Int
@@ -421,6 +431,14 @@ fun View.layoutToBottomRight(
     val left = right - measuredWidth
     val top = bottom - measuredHeight
     layout(left, top, right, bottom)
+}
+
+fun View.sizeForVisible(
+    visibleSize: () -> Int
+) = if (isVisible) {
+    visibleSize.invoke()
+} else {
+    0
 }
 
 fun View.getLocationRectOnScreen(): Rect {
@@ -544,32 +562,6 @@ fun Drawable.tint(
 }
 
 fun Number.formatNumber(): String = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
-
-fun String.decorateText(
-    coloredText1: String,
-    color1: Int,
-    coloredText2: String,
-    color2: Int
-) = SpannableString(this).apply {
-    val colorSpan1 = ForegroundColorSpan(color1)
-    val startIndex1 = indexOf(coloredText1)
-    val endIndex1 = startIndex1 + coloredText1.length
-    setSpan(
-        colorSpan1,
-        startIndex1,
-        endIndex1,
-        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-    )
-    val colorSpan2 = ForegroundColorSpan(color2)
-    val startIndex2 = indexOf(coloredText2)
-    val endIndex2 = startIndex2 + coloredText2.length
-    setSpan(
-        colorSpan2,
-        startIndex2,
-        endIndex2,
-        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-    )
-}
 
 fun Context?.openMap(
     latitude: String?,

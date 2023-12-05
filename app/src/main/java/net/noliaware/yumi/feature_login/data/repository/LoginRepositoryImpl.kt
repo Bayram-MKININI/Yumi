@@ -21,9 +21,11 @@ import net.noliaware.yumi.commun.ApiConstants.GET_OUTBOX_MESSAGE_LIST
 import net.noliaware.yumi.commun.ApiConstants.GET_USED_DATA_PER_CATEGORY
 import net.noliaware.yumi.commun.ApiConstants.GET_USED_VOUCHER_LIST_BY_CATEGORY
 import net.noliaware.yumi.commun.ApiConstants.GET_VOUCHER
+import net.noliaware.yumi.commun.ApiConstants.GET_VOUCHER_REQUEST_LIST
 import net.noliaware.yumi.commun.ApiConstants.GET_VOUCHER_STATUS
 import net.noliaware.yumi.commun.ApiConstants.INIT
 import net.noliaware.yumi.commun.ApiConstants.SEND_MESSAGE
+import net.noliaware.yumi.commun.ApiConstants.SEND_VOUCHER_REQUEST
 import net.noliaware.yumi.commun.ApiConstants.SET_PRIVACY_POLICY_READ_STATUS
 import net.noliaware.yumi.commun.ApiConstants.USE_VOUCHER
 import net.noliaware.yumi.commun.ApiParameters.APP_VERSION
@@ -190,6 +192,8 @@ class LoginRepositoryImpl @Inject constructor(
         this.sessionTokens[GET_AVAILABLE_DATA_PER_CATEGORY] = sessionDTO.sessionToken
         this.sessionTokens[GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY] = sessionDTO.sessionToken
         this.sessionTokens[GET_VOUCHER] = sessionDTO.sessionToken
+        this.sessionTokens[SEND_VOUCHER_REQUEST] = sessionDTO.sessionToken
+        this.sessionTokens[GET_VOUCHER_REQUEST_LIST] = sessionDTO.sessionToken
         this.sessionTokens[GET_VOUCHER_STATUS] = sessionDTO.sessionToken
         this.sessionTokens[USE_VOUCHER] = sessionDTO.sessionToken
         this.sessionTokens[GET_ACCOUNT] = sessionDTO.sessionToken

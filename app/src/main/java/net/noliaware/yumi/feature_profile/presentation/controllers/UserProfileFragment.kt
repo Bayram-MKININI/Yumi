@@ -36,11 +36,13 @@ class UserProfileFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.profile_layout, container, false).apply {
-            profileDataParentView = this as ProfileParentView
-            profileDataParentView?.getProfileView?.callback = profileParentViewCallback
-        }
+    ): View? = inflater.inflate(
+        R.layout.profile_layout,
+        container,
+        false
+    ).apply {
+        profileDataParentView = this as ProfileParentView
+        profileDataParentView?.getProfileView?.callback = profileParentViewCallback
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

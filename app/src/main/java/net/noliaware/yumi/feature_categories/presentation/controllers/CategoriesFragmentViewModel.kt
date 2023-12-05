@@ -24,7 +24,7 @@ class CategoriesFragmentViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val accountData get() = savedStateHandle.get<AccountData>(ACCOUNT_DATA)
+    val accountData get() = savedStateHandle.get<AccountData>(ACCOUNT_DATA)
     val availableCategoriesEventsHelper = EventsHelper<List<Category>>()
     val cancelledCategoriesEventsHelper = EventsHelper<List<Category>>()
     val usedCategoriesEventsHelper = EventsHelper<List<Category>>()

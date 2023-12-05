@@ -32,6 +32,9 @@
         <argument
             android:name="selectedCategory"
             app:argType="net.noliaware.yumi.feature_categories.domain.model.Category" />
+        <argument
+            android:name="requestTypes"
+            app:argType="net.noliaware.yumi.feature_login.domain.model.VoucherRequestType[]" />
         <action
             android:id="@+id/action_AvailableVouchersListFragment_to_VoucherDetailsFragment"
             app:destination="@id/voucher_detail_fragment" />
@@ -74,9 +77,30 @@
         <argument
             android:name="voucherId"
             app:argType="string" />
+        <argument
+            android:name="requestTypes"
+            android:defaultValue="@null"
+            app:argType="net.noliaware.yumi.feature_login.domain.model.VoucherRequestType[]"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_VoucherDetailsFragment_to_VoucherOngoingRequestListFragment"
+            app:destination="@id/voucher_ongoing_requests_fragment" />
         <action
             android:id="@+id/action_VoucherDetailsFragment_to_QrCodeFragment"
             app:destination="@id/qr_code_fragment" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/voucher_ongoing_requests_fragment"
+        android:name="net.noliaware.yumi.feature_categories.presentation.controllers.VoucherOngoingRequestListFragment"
+        android:label="@string/voucher_ongoing_requests_fragment_screen_label"
+        tools:layout="@layout/voucher_ongoing_request_list_layout">
+        <argument
+            android:name="categoryUI"
+            app:argType="net.noliaware.yumi.feature_categories.presentation.views.CategoryUI" />
+        <argument
+            android:name="voucherId"
+            app:argType="string" />
     </dialog>
 
     <dialog
@@ -112,7 +136,7 @@
         android:id="@+id/bo_sign_in_fragment"
         android:name="net.noliaware.yumi.feature_profile.presentation.controllers.BOSignInFragment"
         android:label="@string/bo_sign_in_fragment_screen_label"
-        tools:layout="@layout/bo_sign_in_layout"/>
+        tools:layout="@layout/bo_sign_in_layout" />
 
     <dialog
         android:id="@+id/privacy_policy_fragment"

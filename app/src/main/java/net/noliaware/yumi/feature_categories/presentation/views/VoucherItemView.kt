@@ -1,9 +1,13 @@
 package net.noliaware.yumi.feature_categories.presentation.views
 
 import android.content.Context
+import android.text.SpannableString
 import android.util.AttributeSet
+import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.presentation.views.ElevatedCardView
 import net.noliaware.yumi.commun.util.convertDpToPx
@@ -19,17 +23,18 @@ class VoucherItemView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : ElevatedCardView(context, attrs, defStyle) {
 
-    private lateinit var highlightLayout: LinearLayoutCompat
-    private lateinit var highlightDescriptionTextView: TextView
-    private lateinit var highlightValueTextView: TextView
+    private lateinit var highlightLayout: View
+    private lateinit var highlightTextView: TextView
+    private lateinit var ongoingRequestsImageView: ImageView
     private lateinit var titleTextView: TextView
     private lateinit var retrieveTextView: TextView
     private lateinit var retailerTextView: TextView
 
     data class VoucherItemViewAdapter(
+        val isDeactivated: Boolean = false,
         val color: Int,
-        val highlightDescription: String = "",
-        val highlightValue: String = "",
+        val highlight: SpannableString,
+        val hasOngoingRequests: Boolean = false,
         val title: String = "",
         val retailerDescription: String = "",
         val retailerValue: String? = ""
@@ -42,19 +47,28 @@ class VoucherItemView @JvmOverloads constructor(
 
     private fun initView() {
         highlightLayout = findViewById(R.id.highlight_layout)
-        highlightDescriptionTextView = highlightLayout.findViewById(R.id.highlight_description_text_view)
-        highlightValueTextView = highlightLayout.findViewById(R.id.highlight_value_text_view)
+        highlightTextView = highlightLayout.findViewById(R.id.highlight_text_view)
+        ongoingRequestsImageView = highlightLayout.findViewById(R.id.ongoing_requests_image_view)
         titleTextView = findViewById(R.id.title_text_view)
         retrieveTextView = findViewById(R.id.retrieve_text_view)
         retailerTextView = findViewById(R.id.retailer_text_view)
     }
 
     fun fillViewWithData(voucherItemViewAdapter: VoucherItemViewAdapter) {
-        highlightDescriptionTextView.text = voucherItemViewAdapter.highlightDescription
-        highlightValueTextView.text = voucherItemViewAdapter.highlightValue
+        alpha = if (voucherItemViewAdapter.isDeactivated) {
+            0.4f
+        } else {
+            1f
+        }
+        highlightTextView.text = voucherItemViewAdapter.highlight
         highlightLayout.background = context.getDrawableCompat(
             R.drawable.rectangle_rounded_15dp
         )?.tint(voucherItemViewAdapter.color)
+        if (voucherItemViewAdapter.hasOngoingRequests) {
+            ongoingRequestsImageView.isVisible = true
+        } else {
+            ongoingRequestsImageView.isGone = true
+        }
         titleTextView.text = voucherItemViewAdapter.title
         retrieveTextView.text = voucherItemViewAdapter.retailerDescription
         retailerTextView.text = voucherItemViewAdapter.retailerValue
@@ -63,9 +77,9 @@ class VoucherItemView @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val viewWidth = MeasureSpec.getSize(widthMeasureSpec)
 
-        titleTextView.measureWrapContent()
-
         highlightLayout.measureWrapContent()
+
+        titleTextView.measureWrapContent()
 
         retrieveTextView.measureWrapContent()
 

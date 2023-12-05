@@ -18,9 +18,11 @@ import net.noliaware.yumi.commun.ApiConstants.GET_OUTBOX_MESSAGE_LIST
 import net.noliaware.yumi.commun.ApiConstants.GET_USED_DATA_PER_CATEGORY
 import net.noliaware.yumi.commun.ApiConstants.GET_USED_VOUCHER_LIST_BY_CATEGORY
 import net.noliaware.yumi.commun.ApiConstants.GET_VOUCHER
+import net.noliaware.yumi.commun.ApiConstants.GET_VOUCHER_REQUEST_LIST
 import net.noliaware.yumi.commun.ApiConstants.GET_VOUCHER_STATUS
 import net.noliaware.yumi.commun.ApiConstants.INIT
 import net.noliaware.yumi.commun.ApiConstants.SEND_MESSAGE
+import net.noliaware.yumi.commun.ApiConstants.SEND_VOUCHER_REQUEST
 import net.noliaware.yumi.commun.ApiConstants.SET_PRIVACY_POLICY_READ_STATUS
 import net.noliaware.yumi.commun.ApiConstants.USE_VOUCHER
 import net.noliaware.yumi.commun.ApiParameters.SALT_STRING
@@ -111,6 +113,24 @@ interface RemoteApi {
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
     ): ResponseDTO<GetVoucherDTO>
+
+    @FormUrlEncoded
+    @POST("${SEND_VOUCHER_REQUEST}/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun sendVoucherRequestWithId(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<SendVoucherRequestDTO>
+
+    @FormUrlEncoded
+    @POST("$GET_VOUCHER_REQUEST_LIST/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun fetchVoucherRequestListForId(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<VoucherRequestsDTO>
 
     @FormUrlEncoded
     @POST("$GET_VOUCHER_STATUS/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")

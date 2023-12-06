@@ -18,7 +18,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
 import net.noliaware.yumi.commun.DateTime.HOURS_TIME_FORMAT
-import net.noliaware.yumi.commun.DateTime.LONG_DATE_WITH_DAY_FORMAT
 import net.noliaware.yumi.commun.DateTime.SHORT_DATE_FORMAT
 import net.noliaware.yumi.commun.FragmentKeys.QR_CODE_REQUEST_KEY
 import net.noliaware.yumi.commun.FragmentKeys.VOUCHER_DETAILS_REQUEST_KEY
@@ -210,7 +209,6 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 )
             }
         }
-
         USED -> {
             val usageDate = voucher.voucherUseDate?.parseDateToFormat(SHORT_DATE_FORMAT).orEmpty()
             val usageTime = voucher.voucherUseTime?.parseTimeToFormat(HOURS_TIME_FORMAT).orEmpty()
@@ -222,7 +220,6 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 listOf(usageDate, usageTime)
             )
         }
-
         CANCELLED -> {
             val cancellationDate = voucher.voucherUseDate?.parseDateToFormat(SHORT_DATE_FORMAT).orEmpty()
             val cancellationTime = voucher.voucherUseTime?.parseTimeToFormat(HOURS_TIME_FORMAT).orEmpty()
@@ -267,7 +264,6 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 else -> ""
             }
         }
-
         USED -> getString(R.string.voucher_used)
         CANCELLED -> getString(R.string.voucher_canceled)
         INEXISTENT -> getString(R.string.voucher_inexistent)
@@ -357,7 +353,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                             VoucherCodeData(
                                 voucherId = voucher.voucherId,
                                 productLabel = voucher.productLabel,
-                                voucherDate = mapVoucherCodeDate(voucher),
+                                voucherDate = voucher.voucherExpiryDate.orEmpty(),
                                 voucherCode = voucher.voucherCode,
                                 voucherCodeSize = resources.displayMetrics.widthPixels
                             )
@@ -366,20 +362,6 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 }
             }
         }
-    }
-
-    private fun mapVoucherCodeDate(
-        voucher: Voucher
-    ) = if (voucher.voucherExpiryDate != null) {
-        getString(
-            R.string.usable_end_date,
-            voucher.voucherExpiryDate.parseDateToFormat(LONG_DATE_WITH_DAY_FORMAT)
-        )
-    } else {
-        getString(
-            R.string.usable_start_date,
-            voucher.voucherStartDate?.parseDateToFormat(SHORT_DATE_FORMAT).orEmpty()
-        )
     }
 
     private fun displayDialogForRequestType(selectedRequestType: VoucherRequestType) {

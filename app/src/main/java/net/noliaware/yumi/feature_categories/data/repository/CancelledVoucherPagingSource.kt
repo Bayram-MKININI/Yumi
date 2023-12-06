@@ -83,7 +83,8 @@ class CancelledVoucherPagingSource(
                 nextKey = if (canLoadMore) voucherRank else null
             )
         } catch (ex: Exception) {
-            return handlePagingSourceError(ex)        }
+            return handlePagingSourceError(ex)
+        }
     }
 
     private fun generateWSParams(
@@ -95,6 +96,6 @@ class CancelledVoucherPagingSource(
         LIMIT to LIST_PAGE_SIZE.toString(),
         OFFSET to offset.toString()
     ).also {
-        it.plusAssign(getCommonWSParams(sessionData, tokenKey))
+        it += getCommonWSParams(sessionData, tokenKey)
     }.toMap()
 }

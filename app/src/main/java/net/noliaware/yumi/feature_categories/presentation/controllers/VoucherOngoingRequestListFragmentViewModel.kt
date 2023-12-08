@@ -16,21 +16,31 @@ import javax.inject.Inject
 @HiltViewModel
 class VoucherOngoingRequestListFragmentViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
-    savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private val voucherId get() = savedStateHandle.get<String>(ApiParameters.VOUCHER_ID)
     val getVoucherRequestsEventsHelper = EventsHelper<List<VoucherRequest>>()
+    val deleteVoucherRequestEventsHelper = EventsHelper<Boolean>()
 
     init {
-        savedStateHandle.get<String>(ApiParameters.VOUCHER_ID)?.let {
-            callGetVoucherById(it)
+        callGetVoucherRequestList()
+    }
+
+    fun callGetVoucherRequestList() {
+        voucherId?.let {
+            viewModelScope.launch {
+                categoryRepository.getVoucherRequestListById(it).onEach { result ->
+                    getVoucherRequestsEventsHelper.handleResponse(result)
+                }.launchIn(this)
+            }
         }
     }
 
-    private fun callGetVoucherById(voucherId: String) {
+    fun callRemoveVoucherRequestById(requestId: String) {
         viewModelScope.launch {
-            categoryRepository.getVoucherRequestListById(voucherId).onEach { result ->
-                getVoucherRequestsEventsHelper.handleResponse(result)
+            categoryRepository.removeVoucherRequestById(requestId).onEach { result ->
+                deleteVoucherRequestEventsHelper.handleResponse(result)
             }.launchIn(this)
         }
     }

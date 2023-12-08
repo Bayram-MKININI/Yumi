@@ -20,8 +20,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.FragmentKeys.AVAILABLE_VOUCHERS_LIST_REQUEST_KEY
-import net.noliaware.yumi.commun.FragmentKeys.VOUCHER_DETAILS_REQUEST_KEY
+import net.noliaware.yumi.commun.FragmentKeys.REFRESH_VOUCHER_CATEGORY_LIST_REQUEST_KEY
+import net.noliaware.yumi.commun.FragmentKeys.REFRESH_VOUCHER_LIST_REQUEST_KEY
 import net.noliaware.yumi.commun.presentation.adapters.ListLoadStateAdapter
 import net.noliaware.yumi.commun.util.DecoratedText
 import net.noliaware.yumi.commun.util.decorateWords
@@ -86,7 +86,7 @@ class AvailableVouchersListFragment : AppCompatDialogFragment() {
 
     private fun setUpFragmentListener() {
         setFragmentResultListener(
-            VOUCHER_DETAILS_REQUEST_KEY
+            REFRESH_VOUCHER_LIST_REQUEST_KEY
         ) { _, _ ->
             vouchersListView?.voucherAdapter?.refresh()
             viewModel.dataShouldRefresh = true
@@ -106,8 +106,7 @@ class AvailableVouchersListFragment : AppCompatDialogFragment() {
                     wordsToDecorate = listOf(
                         DecoratedText(
                             textToDecorate = getString(R.string.available).lowercase(),
-                            color = context?.getColorCompat(R.color.colorPrimary)
-                                ?: Color.TRANSPARENT
+                            color = context?.getColorCompat(R.color.colorPrimary) ?: Color.TRANSPARENT
                         ),
                         DecoratedText(
                             textToDecorate = args.selectedCategory.categoryLabel,
@@ -152,7 +151,7 @@ class AvailableVouchersListFragment : AppCompatDialogFragment() {
         super.onDismiss(dialog)
         if (viewModel.dataShouldRefresh) {
             setFragmentResult(
-                AVAILABLE_VOUCHERS_LIST_REQUEST_KEY,
+                REFRESH_VOUCHER_CATEGORY_LIST_REQUEST_KEY,
                 bundleOf()
             )
         }

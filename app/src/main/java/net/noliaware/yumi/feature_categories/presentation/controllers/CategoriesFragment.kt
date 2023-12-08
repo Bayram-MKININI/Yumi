@@ -13,7 +13,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import net.noliaware.yumi.R
-import net.noliaware.yumi.commun.FragmentKeys.AVAILABLE_VOUCHERS_LIST_REQUEST_KEY
+import net.noliaware.yumi.commun.FragmentKeys.REFRESH_VOUCHER_CATEGORY_LIST_REQUEST_KEY
 import net.noliaware.yumi.commun.util.collectLifecycleAware
 import net.noliaware.yumi.commun.util.formatNumber
 import net.noliaware.yumi.feature_categories.presentation.views.CategoriesView
@@ -47,7 +47,7 @@ class CategoriesFragment : Fragment() {
 
     private fun setUpFragmentListener() {
         setFragmentResultListener(
-            AVAILABLE_VOUCHERS_LIST_REQUEST_KEY
+            REFRESH_VOUCHER_CATEGORY_LIST_REQUEST_KEY
         ) { _, _ ->
             viewModel.sendCategoriesListsRefreshedEvent()
         }

@@ -34,6 +34,8 @@ interface CategoryRepository {
 
     fun getVoucherRequestListById(voucherId: String): Flow<Resource<List<VoucherRequest>>>
 
+    fun removeVoucherRequestById(requestId: String): Flow<Resource<Boolean>>
+
     fun getVoucherStateDataById(voucherId: String): Flow<Resource<VoucherStateData>>
 
     fun useVoucherById(voucherId: String): Flow<Resource<Boolean>>

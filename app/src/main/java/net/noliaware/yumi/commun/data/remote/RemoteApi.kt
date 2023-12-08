@@ -4,6 +4,7 @@ import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.ApiConstants.CONNECT
 import net.noliaware.yumi.commun.ApiConstants.DELETE_INBOX_MESSAGE
 import net.noliaware.yumi.commun.ApiConstants.DELETE_OUTBOX_MESSAGE
+import net.noliaware.yumi.commun.ApiConstants.DELETE_VOUCHER_REQUEST
 import net.noliaware.yumi.commun.ApiConstants.GET_ACCOUNT
 import net.noliaware.yumi.commun.ApiConstants.GET_ALERT_LIST
 import net.noliaware.yumi.commun.ApiConstants.GET_AVAILABLE_DATA_PER_CATEGORY
@@ -131,6 +132,15 @@ interface RemoteApi {
         @Path(TOKEN) token: String,
         @FieldMap params: Map<String, String>
     ): ResponseDTO<VoucherRequestsDTO>
+
+    @FormUrlEncoded
+    @POST("$DELETE_VOUCHER_REQUEST/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
+    suspend fun deleteVoucherRequestById(
+        @Path(TIMESTAMP) timestamp: String,
+        @Path(SALT_STRING) saltString: String,
+        @Path(TOKEN) token: String,
+        @FieldMap params: Map<String, String>
+    ): ResponseDTO<DeleteVoucherRequestDTO>
 
     @FormUrlEncoded
     @POST("$GET_VOUCHER_STATUS/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")

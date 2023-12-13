@@ -130,6 +130,7 @@ class CancelledVouchersListFragment : AppCompatDialogFragment() {
     }
 
     override fun onDestroyView() {
+        vouchersListView?.callback = null
         vouchersListView = null
         super.onDestroyView()
     }

@@ -81,18 +81,18 @@ class CategoriesFragment : Fragment() {
         categoriesView = null
         super.onDestroyView()
     }
+}
 
-    private class CategoriesFragmentStateAdapter(
-        fragmentManager: FragmentManager,
-        lifecycle: Lifecycle
-    ) : FragmentStateAdapter(fragmentManager, lifecycle) {
-        override fun getItemCount() = 3
-        override fun createFragment(position: Int): Fragment {
-            return when (position) {
-                0 -> AvailableCategoriesListFragment()
-                1 -> UsedCategoriesListFragment()
-                else -> CancelledCategoriesListFragment()
-            }
-        }
+private class CategoriesFragmentStateAdapter(
+    fragmentManager: FragmentManager,
+    lifecycle: Lifecycle
+) : FragmentStateAdapter(fragmentManager, lifecycle) {
+    override fun getItemCount() = 3
+    override fun createFragment(
+        position: Int
+    ) = when (position) {
+        0 -> AvailableCategoriesListFragment()
+        1 -> UsedCategoriesListFragment()
+        else -> CancelledCategoriesListFragment()
     }
 }

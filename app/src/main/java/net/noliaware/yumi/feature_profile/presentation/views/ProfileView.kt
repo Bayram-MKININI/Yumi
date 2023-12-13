@@ -17,7 +17,6 @@ import net.noliaware.yumi.commun.util.layoutToTopLeft
 import net.noliaware.yumi.commun.util.layoutToTopRight
 import net.noliaware.yumi.commun.util.measureWrapContent
 import net.noliaware.yumi.commun.util.sizeForVisible
-import net.noliaware.yumi.commun.util.weak
 import kotlin.math.max
 
 class ProfileView @JvmOverloads constructor(
@@ -58,7 +57,7 @@ class ProfileView @JvmOverloads constructor(
     private lateinit var cancelledTitleTextView: TextView
     private lateinit var cancelledValueFillableTextWidget: FillableTextWidget
     private lateinit var privacyPolicyLinkTextView: TextView
-    var callback: ProfileViewCallback? by weak()
+    var callback: ProfileViewCallback? = null
 
     data class ProfileViewAdapter(
         val login: String = "",

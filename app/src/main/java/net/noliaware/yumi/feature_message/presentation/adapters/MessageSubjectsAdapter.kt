@@ -13,11 +13,13 @@ class MessageSubjectsAdapter(
     objects: List<String>
 ) : ArrayAdapter<String>(context, 0, objects) {
 
-    override fun getCount(): Int {
-        return super.getCount() - 1
-    }
+    override fun getCount() = super.getCount() - 1
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup
+    ): View {
         val subjectTextView = (convertView ?: parent.inflate(
             R.layout.message_subject_selected_item_layout
         )) as TextView
@@ -31,7 +33,11 @@ class MessageSubjectsAdapter(
         return subjectTextView
     }
 
-    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getDropDownView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup
+    ): View {
         val subjectTextView = (convertView ?: parent.inflate(
             R.layout.label_dropdown_item_layout,
         )) as TextView

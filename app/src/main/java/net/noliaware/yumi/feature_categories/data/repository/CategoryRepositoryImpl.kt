@@ -134,7 +134,7 @@ class CategoryRepositoryImpl @Inject constructor(
             enablePlaceholders = false
         )
     ) {
-        VoucherPagingSource(api, sessionData, categoryId)
+        AvailableVoucherPagingSource(api, sessionData, categoryId)
     }.flow
 
     override fun getUsedCategories(): Flow<Resource<List<Category>>> = flow {

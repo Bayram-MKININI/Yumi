@@ -99,7 +99,7 @@ interface RemoteApi {
 
     @FormUrlEncoded
     @POST("$GET_AVAILABLE_VOUCHER_LIST_BY_CATEGORY/{$TIMESTAMP}/{$SALT_STRING}/{$TOKEN}")
-    suspend fun fetchVouchersForCategory(
+    suspend fun fetchAvailableVouchersForCategory(
         @Path(TIMESTAMP) timestamp: String,
         @Path(SALT_STRING) saltString: String,
         @Path(TOKEN) token: String,

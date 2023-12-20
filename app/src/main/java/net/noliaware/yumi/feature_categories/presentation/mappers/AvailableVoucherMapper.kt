@@ -51,7 +51,6 @@ class AvailableVoucherMapper @Inject constructor() : VoucherMapper {
                 )
             )
         }
-
         else -> {
             val expiryDate = voucher.voucherExpiryDate?.parseDateToFormat(SHORT_DATE_FORMAT).orEmpty()
             context.getString(

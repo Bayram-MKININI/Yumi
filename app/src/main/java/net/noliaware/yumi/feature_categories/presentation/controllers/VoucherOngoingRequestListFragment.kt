@@ -118,7 +118,6 @@ class VoucherOngoingRequestListFragment : AppCompatDialogFragment() {
             .setNegativeButton(R.string.cancel) { dialog, _ ->
                 dialog.dismiss()
             }
-            .create()
             .show()
     }
 

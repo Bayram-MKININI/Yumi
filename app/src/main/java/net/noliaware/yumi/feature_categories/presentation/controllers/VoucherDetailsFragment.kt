@@ -203,12 +203,19 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
         voucher: Voucher
     ) = when (voucher.voucherStatus) {
         USABLE -> {
-            val expiryDate = voucher.voucherExpiryDate?.parseDateToFormat(SHORT_DATE_FORMAT).orEmpty()
             val startDate = voucher.voucherStartDate?.parseDateToFormat(SHORT_DATE_FORMAT).orEmpty()
-            decorateTextWithFont(
-                getString(R.string.voucher_date, startDate, expiryDate),
-                listOf(startDate, expiryDate)
-            )
+            val expiryDate = voucher.voucherExpiryDate?.parseDateToFormat(SHORT_DATE_FORMAT).orEmpty()
+            if (voucher.voucherStartDate == voucher.voucherExpiryDate) {
+                decorateTextWithFont(
+                    getString(R.string.usable_single_date, startDate),
+                    listOf(startDate)
+                )
+            } else {
+                decorateTextWithFont(
+                    getString(R.string.voucher_date, startDate, expiryDate),
+                    listOf(startDate, expiryDate)
+                )
+            }
         }
         USED -> {
             val usageDate = voucher.voucherUseDate?.parseDateToFormat(SHORT_DATE_FORMAT).orEmpty()
@@ -356,7 +363,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                                 voucherId = voucher.voucherId,
                                 productLabel = voucher.productLabel,
                                 voucherStartDate = voucher.voucherStartDate.orEmpty(),
-                                voucherEndDate = voucher.voucherExpiryDate.orEmpty(),
+                                voucherExpiryDate = voucher.voucherExpiryDate.orEmpty(),
                                 voucherCode = voucher.voucherCode,
                                 voucherCodeSize = resources.displayMetrics.widthPixels
                             )

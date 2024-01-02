@@ -179,7 +179,7 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 voucherNumber = mapVoucherNumber(voucher.voucherNumber),
                 date = mapVoucherDate(voucher),
                 ongoingRequestsAvailable = voucher.voucherOngoingRequestCount > 0,
-                partnerAvailable = voucher.partnerInfoText?.isNotEmpty() == true,
+                partnerAvailable = voucher.isPartnerInfoAvailable == true,
                 partnerLabel = voucher.partnerInfoText,
                 voucherDescription = voucher.productDescription,
                 moreActionAvailable = voucher.productWebpage?.isNotEmpty() == true,
@@ -382,17 +382,15 @@ class VoucherDetailsFragment : AppCompatDialogFragment() {
                 )
             )
             setView(voucherRequestView)
-            setPositiveButton(R.string.send) { dialog, _ ->
+            setPositiveButton(R.string.send) { _, _ ->
                 viewModel.callSendVoucherRequestWithTypeId(
                     voucherRequestTypeId = selectedRequestType.requestTypeId,
                     voucherRequestComment = voucherRequestView.getUserComment()
                 )
-                dialog.dismiss()
             }
-            setNegativeButton(R.string.cancel) { dialog, _ ->
-                dialog.dismiss()
-            }
-        }.create().show()
+            setNegativeButton(R.string.cancel, null)
+        }
+        .show()
     }
 
     override fun onDismiss(dialog: DialogInterface) {

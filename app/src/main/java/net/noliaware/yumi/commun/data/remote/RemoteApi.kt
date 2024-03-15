@@ -1,6 +1,5 @@
 package net.noliaware.yumi.commun.data.remote
 
-import net.noliaware.yumi.commun.*
 import net.noliaware.yumi.commun.ApiConstants.CONNECT
 import net.noliaware.yumi.commun.ApiConstants.DELETE_INBOX_MESSAGE
 import net.noliaware.yumi.commun.ApiConstants.DELETE_OUTBOX_MESSAGE
